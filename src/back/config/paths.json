@@ -1,0 +1,35 @@
+{
+  "linux": {
+    "app_data": "~/.local/share/RomsManager",
+    "database": "database",
+    "covers": {
+      "original": "covers/original",
+      "custom": "covers/custom"
+    },
+    "roms": "roms",
+    "saves": "saves",
+    "backups": "backups"
+  },
+  "windows": {
+    "app_data": "%APPDATA%/RomsManager",
+    "database": "database",
+    "covers": {
+      "original": "covers\\original",
+      "custom": "covers\\custom"
+    },
+    "roms": "roms",
+    "saves": "saves",
+    "backups": "backups"
+  },
+  "mac": {
+    "app_data": "~/Library/Application Support/RomsManager",
+    "database": "database",
+    "covers": {
+      "original": "covers/original",
+      "custom": "covers/custom"
+    },
+    "roms": "roms",
+    "saves": "saves",
+    "backups": "backups"
+  }
+}
