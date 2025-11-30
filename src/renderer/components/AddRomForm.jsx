@@ -3,7 +3,7 @@ import SelectConsole from "./SelectConsole";
 import FilePickerInput from "./FilePickerInput";
 import FormInput from "./FormInput";
 import FormButtons from "./FormButtons";
-import { consoles } from "../../back/data/consoles.json";
+import consolesData from "../../back/data/consoles.json";
 
 function AddRomForm({ onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
@@ -54,7 +54,7 @@ function AddRomForm({ onSubmit, onCancel }) {
         <div className="form-group">
           <label className="nes-text">Console</label>
           <SelectConsole
-            consoles={Object.values(consoles)}
+            consoles={Object.values(consolesData.consoles)}
             onChange={(e) =>
               setFormData({ ...formData, console: e.target.value })
             }

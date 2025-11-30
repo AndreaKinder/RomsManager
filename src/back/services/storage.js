@@ -2,9 +2,14 @@ import fs from "fs";
 import path from "path";
 import { app } from "electron";
 import { v4 as uuidv4 } from "uuid";
-import pathsConfig from "../config/paths.json";
+import pathsConfig from "../data/paths.json";
 
-const platform = process.platform === "win32" ? "windows" : process.platform === "darwin" ? "mac" : "linux";
+const platform =
+  process.platform === "win32"
+    ? "windows"
+    : process.platform === "darwin"
+      ? "mac"
+      : "linux";
 const config = pathsConfig[platform];
 
 function expandPath(pathStr) {
@@ -24,11 +29,11 @@ export const PATHS = {
   database: path.join(BASE_PATH, config.database),
   covers: {
     original: path.join(BASE_PATH, config.covers.original),
-    custom: path.join(BASE_PATH, config.covers.custom)
+    custom: path.join(BASE_PATH, config.covers.custom),
   },
   roms: path.join(BASE_PATH, config.roms),
   saves: path.join(BASE_PATH, config.saves),
-  backups: path.join(BASE_PATH, config.backups)
+  backups: path.join(BASE_PATH, config.backups),
 };
 
 export function initStorage() {
@@ -39,10 +44,10 @@ export function initStorage() {
     PATHS.covers.custom,
     PATHS.roms,
     PATHS.saves,
-    PATHS.backups
+    PATHS.backups,
   ];
 
-  dirsToCreate.forEach(dir => {
+  dirsToCreate.forEach((dir) => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -53,7 +58,7 @@ export function initStorage() {
     const indexData = {
       roms: [],
       collections: [],
-      last_updated: new Date().toISOString()
+      last_updated: new Date().toISOString(),
     };
     fs.writeFileSync(indexPath, JSON.stringify(indexData, null, 2));
   }
@@ -68,7 +73,11 @@ function getIndexPath() {
 function readIndex() {
   const indexPath = getIndexPath();
   if (!fs.existsSync(indexPath)) {
-    return { roms: [], collections: [], last_updated: new Date().toISOString() };
+    return {
+      roms: [],
+      collections: [],
+      last_updated: new Date().toISOString(),
+    };
   }
   return JSON.parse(fs.readFileSync(indexPath, "utf-8"));
 }
@@ -104,10 +113,10 @@ export function createRom(romData) {
       num_players: null,
       region: null,
       language: null,
-      rating: null
+      rating: null,
     },
     collections: [],
-    save_states: []
+    save_states: [],
   };
 
   const romPath = path.join(PATHS.database, `rom_${id}.json`);
@@ -128,14 +137,18 @@ export function getRom(id) {
 
 export function getAllRoms() {
   const index = readIndex();
-  return index.roms.map(id => getRom(id)).filter(rom => rom !== null);
+  return index.roms.map((id) => getRom(id)).filter((rom) => rom !== null);
 }
 
 export function updateRom(id, updates) {
   const rom = getRom(id);
   if (!rom) return null;
 
-  const updatedRom = { ...rom, ...updates, date_modified: new Date().toISOString() };
+  const updatedRom = {
+    ...rom,
+    ...updates,
+    date_modified: new Date().toISOString(),
+  };
   const romPath = path.join(PATHS.database, `rom_${id}.json`);
   fs.writeFileSync(romPath, JSON.stringify(updatedRom, null, 2));
 
@@ -149,7 +162,7 @@ export function deleteRom(id) {
   fs.unlinkSync(romPath);
 
   const index = readIndex();
-  index.roms = index.roms.filter(romId => romId !== id);
+  index.roms = index.roms.filter((romId) => romId !== id);
   writeIndex(index);
 
   return true;

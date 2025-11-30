@@ -1,4 +1,5 @@
-import { onChange } from "react";
+import React from "react";
+
 export default function SelectConsole({ consoles, value, onChange }) {
   return (
     <select value={value} onChange={onChange}>
