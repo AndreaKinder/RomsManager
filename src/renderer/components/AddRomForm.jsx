@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import SelectConsole from "./SelectConsole";
+import FilePickerInput from "./FilePickerInput";
+import FormInput from "./FormInput";
+import FormButtons from "./FormButtons";
+import { consoles } from "../../back/data/consoles.json";
 
 function AddRomForm({ onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
-    file_name: '',
-    file_path: '',
-    console: '',
-    title: '',
-    genre: '',
-    year: ''
+    file_name: "",
+    file_path: "",
+    console: "",
+    title: "",
+    genre: "",
+    year: "",
   });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -30,7 +35,7 @@ function AddRomForm({ onSubmit, onCancel }) {
         ...formData,
         file_path: filePath,
         file_name: fileName,
-        title: fileName.replace(/\.[^/.]+$/, '')
+        title: fileName.replace(/\.[^/.]+$/, ""),
       });
     }
   };
@@ -40,95 +45,56 @@ function AddRomForm({ onSubmit, onCancel }) {
       <h2 className="nes-text is-primary">Add New ROM</h2>
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="nes-text">ROM File</label>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <input
-              type="text"
-              className="nes-input"
-              value={formData.file_path}
-              placeholder="Select a ROM file..."
-              readOnly
-            />
-            <button
-              type="button"
-              className="nes-btn"
-              onClick={handleFilePicker}
-            >
-              Browse
-            </button>
-          </div>
-        </div>
+        <FilePickerInput
+          label="ROM File"
+          value={formData.file_path}
+          onFilePick={handleFilePicker}
+        />
 
         <div className="form-group">
           <label className="nes-text">Console</label>
-          <div className="nes-select">
-            <select
-              name="console"
-              value={formData.console}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select console...</option>
-              <option value="NES">NES</option>
-              <option value="SNES">SNES</option>
-              <option value="GBA">Game Boy Advance</option>
-              <option value="GBC">Game Boy Color</option>
-              <option value="N64">Nintendo 64</option>
-              <option value="PS1">PlayStation 1</option>
-              <option value="PS2">PlayStation 2</option>
-              <option value="Genesis">Sega Genesis</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label className="nes-text">Title</label>
-          <input
-            type="text"
-            className="nes-input"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Game title..."
-            required
+          <SelectConsole
+            consoles={Object.values(consoles)}
+            onChange={(e) =>
+              setFormData({ ...formData, console: e.target.value })
+            }
+            value={formData.console}
           />
         </div>
 
-        <div className="form-group">
-          <label className="nes-text">Genre</label>
-          <input
-            type="text"
-            className="nes-input"
-            name="genre"
-            value={formData.genre}
-            onChange={handleChange}
-            placeholder="e.g., Action, RPG, Platformer..."
-          />
-        </div>
+        <FormInput
+          label="Title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Game title..."
+          required
+        />
 
-        <div className="form-group">
-          <label className="nes-text">Year</label>
-          <input
-            type="number"
-            className="nes-input"
-            name="year"
-            value={formData.year}
-            onChange={handleChange}
-            placeholder="Release year..."
-            min="1970"
-            max={new Date().getFullYear()}
-          />
-        </div>
+        <FormInput
+          label="Genre"
+          name="genre"
+          value={formData.genre}
+          onChange={handleChange}
+          placeholder="e.g., Action, RPG, Platformer..."
+        />
 
-        <div className="form-actions">
-          <button type="submit" className="nes-btn is-success">
-            Add ROM
-          </button>
-          <button type="button" className="nes-btn" onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
+        <FormInput
+          label="Year"
+          type="number"
+          name="year"
+          value={formData.year}
+          onChange={handleChange}
+          placeholder="Release year..."
+          min="1970"
+          max={new Date().getFullYear()}
+        />
+
+        <FormButtons
+          onCancel={onCancel}
+          submitText="Add ROM"
+          cancelText="Cancel"
+        />
       </form>
     </div>
   );
