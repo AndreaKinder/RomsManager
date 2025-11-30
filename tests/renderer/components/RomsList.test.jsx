@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import RomsList from "../../../src/renderer/components/RomsList";
+import RomsList from "../../../src/renderer/components/roms/RomsList";
 
 const mockRoms = [
   {

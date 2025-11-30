@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import FormInput from "../../../src/renderer/components/FormInput";
+import FormInput from "../../../src/renderer/components/forms/FormInput";
 
 describe("FormInput", () => {
   test("renders with label and input", () => {

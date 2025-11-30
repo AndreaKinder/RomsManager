@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import SelectConsole from "../../../src/renderer/components/SelectConsole";
+import SelectConsole from "../../../src/renderer/components/forms/SelectConsole";
 
 const mockConsoles = [
   { id: "1", id_name: "nes", name: "Nintendo Entertainment System" },
@@ -56,6 +56,6 @@ describe("SelectConsole", () => {
     );
 
     const options = screen.getAllByRole("option");
-    expect(options).toHaveLength(3);
+    expect(options).toHaveLength(4); // 3 consoles + 1 placeholder
   });
 });

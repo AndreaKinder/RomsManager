@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const path = require("node:path");
 
 if (require("electron-squirrel-startup")) {
@@ -70,6 +70,31 @@ app.whenReady().then(async () => {
       ],
     });
     return result.canceled ? null : result.filePaths[0];
+  });
+
+  ipcMain.handle("select-cover-image", async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openFile"],
+      filters: [
+        {
+          name: "Image Files",
+          extensions: ["jpg", "jpeg", "png", "gif", "webp", "bmp"],
+        },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+    return result.canceled ? null : result.filePaths[0];
+  });
+
+  ipcMain.handle("open-rom", async (event, filePath) => {
+    if (!filePath) return false;
+    try {
+      await shell.openPath(filePath);
+      return true;
+    } catch (e) {
+      console.error("Failed to open ROM:", e);
+      return false;
+    }
   });
 
   createWindow();

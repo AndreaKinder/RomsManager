@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import FormButtons from "../../../src/renderer/components/FormButtons";
+import FormButtons from "../../../src/renderer/components/forms/FormButtons";
 
 describe("FormButtons", () => {
   test("renders with default text", () => {

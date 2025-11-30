@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import FilePickerInput from "../../../src/renderer/components/FilePickerInput";
+import FilePickerInput from "../../../src/renderer/components/forms/FilePickerInput";
 
 describe("FilePickerInput", () => {
   test("renders with label and readonly input", () => {

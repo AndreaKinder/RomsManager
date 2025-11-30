@@ -88,15 +88,35 @@ function writeIndex(data) {
   fs.writeFileSync(indexPath, JSON.stringify(data, null, 2));
 }
 
+function saveCoverImage(sourcePath, id) {
+  if (!sourcePath) return null;
+  try {
+    const ext = path.extname(sourcePath);
+    const fileName = `${id}${ext}`;
+    const destPath = path.join(PATHS.covers.original, fileName);
+    fs.copyFileSync(sourcePath, destPath);
+    return destPath;
+  } catch (error) {
+    console.error("Error saving cover image:", error);
+    return null;
+  }
+}
+
 export function createRom(romData) {
   const id = uuidv4();
+
+  let coverPath = null;
+  if (romData.cover_path) {
+    coverPath = saveCoverImage(romData.cover_path, id);
+  }
+
   const rom = {
     id,
     file_path: romData.file_path || "",
     file_name: romData.file_name || "",
     file_size: romData.file_size || 0,
     console: romData.console || "",
-    cover_path: null,
+    cover_path: coverPath,
     custom_cover_path: null,
     date_added: new Date().toISOString(),
     date_modified: new Date().toISOString(),
@@ -105,10 +125,10 @@ export function createRom(romData) {
     favorite: false,
     metadata: {
       title: romData.title || romData.file_name || "",
-      year: null,
+      year: romData.year || null,
       developer: null,
       publisher: null,
-      genre: null,
+      genre: romData.genre || null,
       description: null,
       num_players: null,
       region: null,
@@ -144,9 +164,18 @@ export function updateRom(id, updates) {
   const rom = getRom(id);
   if (!rom) return null;
 
+  // Handle cover update if present
+  if (updates.cover_path && updates.cover_path !== rom.cover_path) {
+    updates.cover_path = saveCoverImage(updates.cover_path, id);
+  }
+
   const updatedRom = {
     ...rom,
     ...updates,
+    metadata: {
+      ...rom.metadata,
+      ...(updates.metadata || {}),
+    },
     date_modified: new Date().toISOString(),
   };
   const romPath = path.join(PATHS.database, `rom_${id}.json`);

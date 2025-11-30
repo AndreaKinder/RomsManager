@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Mock window.electronAPI
 global.window.electronAPI = {
@@ -8,4 +8,5 @@ global.window.electronAPI = {
   updateRom: jest.fn(),
   deleteRom: jest.fn(),
   selectRomFile: jest.fn(),
+  selectCoverImage: jest.fn(),
 };

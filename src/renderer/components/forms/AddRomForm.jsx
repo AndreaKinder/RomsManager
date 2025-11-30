@@ -3,17 +3,12 @@ import SelectConsole from "./SelectConsole";
 import FilePickerInput from "./FilePickerInput";
 import FormInput from "./FormInput";
 import FormButtons from "./FormButtons";
-import consolesData from "../../back/data/consoles.json";
+import consolesData from "../../../back/data/consoles.json";
+
+import romFormData from "../../../back/data/romFormData.json";
 
 function AddRomForm({ onSubmit, onCancel }) {
-  const [formData, setFormData] = useState({
-    file_name: "",
-    file_path: "",
-    console: "",
-    title: "",
-    genre: "",
-    year: "",
-  });
+  const [formData, setFormData] = useState(romFormData);
 
   const handleChange = (e) => {
     setFormData({
@@ -40,6 +35,16 @@ function AddRomForm({ onSubmit, onCancel }) {
     }
   };
 
+  const handleCoverPicker = async () => {
+    const coverPath = await window.electronAPI.selectCoverImage();
+    if (coverPath) {
+      setFormData({
+        ...formData,
+        cover_path: coverPath,
+      });
+    }
+  };
+
   return (
     <div className="form-container">
       <h2 className="nes-text is-primary">Add New ROM</h2>
@@ -55,9 +60,8 @@ function AddRomForm({ onSubmit, onCancel }) {
           <label className="nes-text">Console</label>
           <SelectConsole
             consoles={Object.values(consolesData.consoles)}
-            onChange={(e) =>
-              setFormData({ ...formData, console: e.target.value })
-            }
+            onChange={handleChange}
+            name="console"
             value={formData.console}
           />
         </div>
@@ -88,6 +92,12 @@ function AddRomForm({ onSubmit, onCancel }) {
           placeholder="Release year..."
           min="1970"
           max={new Date().getFullYear()}
+        />
+
+        <FilePickerInput
+          label="Cover Image (Optional)"
+          value={formData.cover_path}
+          onFilePick={handleCoverPicker}
         />
 
         <FormButtons

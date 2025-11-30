@@ -7,4 +7,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateRom: (id, updates) => ipcRenderer.invoke("update-rom", id, updates),
   deleteRom: (id) => ipcRenderer.invoke("delete-rom", id),
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
+  selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
+  openRom: (filePath) => ipcRenderer.invoke("open-rom", filePath),
 });

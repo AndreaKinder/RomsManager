@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AddRomForm from "../../../src/renderer/components/AddRomForm";
+import AddRomForm from "../../../src/renderer/components/forms/AddRomForm";
 
 jest.mock("../../../src/back/data/consoles.json", () => ({
   consoles: {
@@ -12,6 +12,7 @@ jest.mock("../../../src/back/data/consoles.json", () => ({
 describe("AddRomForm", () => {
   beforeEach(() => {
     window.electronAPI.selectRomFile.mockClear();
+    window.electronAPI.selectCoverImage.mockClear();
   });
 
   test("renders form with all fields", () => {
@@ -25,6 +26,7 @@ describe("AddRomForm", () => {
       screen.getByPlaceholderText("e.g., Action, RPG, Platformer..."),
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Release year...")).toBeInTheDocument();
+    expect(screen.getByText("Cover Image (Optional)")).toBeInTheDocument();
   });
 
   test("calls onSubmit with form data when submitted", async () => {
@@ -68,7 +70,8 @@ describe("AddRomForm", () => {
 
     render(<AddRomForm onSubmit={() => {}} onCancel={() => {}} />);
 
-    fireEvent.click(screen.getByText("Browse"));
+    const browseButtons = screen.getAllByText("Browse");
+    fireEvent.click(browseButtons[0]); // First browse button is for ROM file
 
     await waitFor(() => {
       expect(window.electronAPI.selectRomFile).toHaveBeenCalled();
@@ -81,7 +84,8 @@ describe("AddRomForm", () => {
 
     render(<AddRomForm onSubmit={() => {}} onCancel={() => {}} />);
 
-    fireEvent.click(screen.getByText("Browse"));
+    const browseButtons = screen.getAllByText("Browse");
+    fireEvent.click(browseButtons[0]); // First browse button is for ROM file
 
     await waitFor(() => {
       const titleInput = screen.getByPlaceholderText("Game title...");
@@ -95,5 +99,43 @@ describe("AddRomForm", () => {
     const yearInput = screen.getByPlaceholderText("Release year...");
     expect(yearInput).toHaveAttribute("min", "1970");
     expect(yearInput).toHaveAttribute("max", String(new Date().getFullYear()));
+  });
+
+  test("handles cover image selection", async () => {
+    const mockCoverPath = "C:\\Covers\\mario.jpg";
+    window.electronAPI.selectCoverImage.mockResolvedValue(mockCoverPath);
+    const handleSubmit = jest.fn();
+
+    render(<AddRomForm onSubmit={handleSubmit} onCancel={() => {}} />);
+
+    // Select cover image first
+    const browseButtons = screen.getAllByText("Browse");
+    fireEvent.click(browseButtons[1]); // Second browse button is for cover
+
+    await waitFor(() => {
+      expect(window.electronAPI.selectCoverImage).toHaveBeenCalled();
+    });
+
+    // Wait for state to update
+    await waitFor(() => {
+      const coverInputs = screen.getAllByPlaceholderText(
+        "Select a ROM file...",
+      );
+      expect(coverInputs[1]).toHaveValue(mockCoverPath);
+    });
+
+    // Fill title and submit
+    fireEvent.change(screen.getByPlaceholderText("Game title..."), {
+      target: { value: "Test Game" },
+    });
+    fireEvent.click(screen.getByText("Add ROM"));
+
+    await waitFor(() => {
+      expect(handleSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cover_path: mockCoverPath,
+        }),
+      );
+    });
   });
 });
