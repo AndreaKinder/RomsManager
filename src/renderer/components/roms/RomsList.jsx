@@ -1,7 +1,7 @@
 import React from "react";
 import CoverImage from "./CoverImage";
 
-function RomsList({ roms, onDelete, onEdit, onPlay }) {
+function RomsList({ roms, onDelete, onEdit }) {
   if (roms.length === 0) {
     return (
       <div className="empty-state">
@@ -48,12 +48,6 @@ function RomsList({ roms, onDelete, onEdit, onPlay }) {
           {rom.favorite && <i className="nes-icon is-small star"></i>}
 
           <div className="rom-actions">
-            <button
-              className="nes-btn is-success"
-              onClick={() => onPlay(rom.file_path)}
-            >
-              Play
-            </button>
             <button
               className="nes-btn is-warning"
               onClick={() => onEdit(rom)}

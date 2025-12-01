@@ -1,7 +1,15 @@
 import React from 'react';
 
 function CoverImage({ coverPath, customCoverPath, title }) {
-  const displayCover = customCoverPath || coverPath;
+  const rawPath = customCoverPath || coverPath;
+
+  // Normalize path: convert backslashes to forward slashes for URI
+  const normalizedPath = rawPath ? rawPath.replace(/\\/g, '/') : null;
+  // Encode the path to preserve special characters like colons in Windows drive letters
+  const encodedPath = normalizedPath ? encodeURIComponent(normalizedPath) : null;
+  const displayCover = encodedPath ? `media://${encodedPath}` : null;
+
+  console.log('CoverImage Debug:', { coverPath, customCoverPath, rawPath, normalizedPath, encodedPath, displayCover });
 
   if (!displayCover) {
     return (

@@ -8,5 +8,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   deleteRom: (id) => ipcRenderer.invoke("delete-rom", id),
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
   selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
-  openRom: (filePath) => ipcRenderer.invoke("open-rom", filePath),
+  selectFolder: () => ipcRenderer.invoke("select-folder"),
+  syncRoms: (data) => ipcRenderer.invoke("sync-roms", data),
 });

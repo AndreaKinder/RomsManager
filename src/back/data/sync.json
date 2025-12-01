@@ -1,3 +1,49 @@
 {
-  "RG35XX": {}
+  "systems": [
+    {
+      "id": "garlic_os",
+      "name": "Garlic OS",
+      "mappings": {
+        "roms": "Roms",
+        "nes": "FC",
+        "genesis": "MD",
+        "gb": "GB",
+        "snes": "SFC",
+        "sega_cd": "SEGACD",
+        "gbc": "GBC",
+        "ps1": "PS",
+        "n64": "N64",
+        "gba": "GBA",
+        "nds": "NDS",
+        "ps2": "PS2",
+        "gc": "GC",
+        "wii": "WII",
+        "3ds": "3DS",
+        "wiiu": "WIIU",
+        "switch": "SWITCH"
+      }
+    },
+    {
+      "id": "ark_os",
+      "name": "ArkOS",
+      "mappings": {
+        "nes": "nes",
+        "genesis": "megadrive",
+        "gb": "gb",
+        "snes": "snes",
+        "sega_cd": "segacd",
+        "gbc": "gbc",
+        "ps1": "psx",
+        "n64": "n64",
+        "gba": "gba",
+        "nds": "nds",
+        "ps2": "ps2",
+        "gc": "gc",
+        "wii": "wii",
+        "3ds": "3ds",
+        "wiiu": "wiiu",
+        "switch": "switch"
+      }
+    }
+  ]
 }

@@ -3,14 +3,15 @@ import 'nes.css/css/nes.min.css';
 import '../styles/index.css';
 import RomsList from './components/roms/RomsList';
 import AddRomForm from './components/forms/AddRomForm';
-
 import EditRomForm from './components/forms/EditRomForm';
+import SyncModal from './components/modals/SyncModal';
 
 function App() {
   const [roms, setRoms] = useState([]);
   const [activeView, setActiveView] = useState('list');
   const [editingRom, setEditingRom] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
 
   useEffect(() => {
     loadRoms();
@@ -48,16 +49,13 @@ function App() {
     setIsLoading(false);
   };
 
-  const handlePlayRom = async (filePath) => {
-    const success = await window.electronAPI.openRom(filePath);
-    if (!success) {
-      alert("Could not open ROM file.");
-    }
-  };
-
   const startEditing = (rom) => {
     setEditingRom(rom);
     setActiveView('edit');
+  };
+
+  const handleSyncRoms = async (systemId, drivePath) => {
+    return await window.electronAPI.syncRoms({ systemId, drivePath });
   };
 
   return (
@@ -68,6 +66,12 @@ function App() {
           ROM Manager
         </h1>
         <div className="header-actions">
+          <button
+            className="nes-btn is-warning"
+            onClick={() => setIsSyncModalOpen(true)}
+          >
+            Sync
+          </button>
           <button
             className={`nes-btn ${activeView === 'list' ? 'is-primary' : ''}`}
             onClick={() => {
@@ -96,7 +100,6 @@ function App() {
             roms={roms}
             onDelete={handleDeleteRom}
             onEdit={startEditing}
-            onPlay={handlePlayRom}
           />
         )}
         {!isLoading && activeView === 'add' && (
@@ -112,6 +115,11 @@ function App() {
             }}
           />
         )}
+        <SyncModal
+          isOpen={isSyncModalOpen}
+          onClose={() => setIsSyncModalOpen(false)}
+          onSync={handleSyncRoms}
+        />
       </main>
 
       <footer className="app-footer">
