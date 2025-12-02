@@ -103,7 +103,7 @@ function App() {
             📥 Import from SD
           </button>
           <button className="btn" onClick={loadConsoles}>
-            Refresh
+            🔄️ Refresh
           </button>
         </div>
       </header>
