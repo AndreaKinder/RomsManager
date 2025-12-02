@@ -14,12 +14,9 @@ function ConsoleCollection({ console }) {
       <div
         className="console-header"
         onClick={() => setIsExpanded(!isExpanded)}
-        style={{ cursor: "pointer" }}
       >
-        <h2 className="nes-text is-primary">
-          <i
-            className={`nes-icon ${isExpanded ? "chevron-down" : "chevron-right"}`}
-          ></i>
+        <h2>
+          <span className="chevron">{isExpanded ? "▼" : "▶"}</span>
           {console.consoleName || console.consoleId}
           <span className="rom-count">({console.romCount} ROMs)</span>
         </h2>
@@ -32,7 +29,7 @@ function ConsoleCollection({ console }) {
               <RomCard key={rom.romName || `rom-${index}`} rom={rom} />
             ))
           ) : (
-            <p className="nes-text is-disabled">No ROMs in this collection</p>
+            <p className="no-roms">No ROMs in this collection</p>
           )}
         </div>
       )}

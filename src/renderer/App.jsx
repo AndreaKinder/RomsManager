@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "nes.css/css/nes.min.css";
 import "../styles/index.css";
 import ConsoleCollection from "./components/roms/ConsoleCollection";
 import SyncModal from "./components/modals/SyncModal";
@@ -85,43 +84,38 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1 className="nes-text is-primary">
-          <i className="nes-icon trophy is-medium"></i>
-          ROM Manager
-        </h1>
+        <h1>🎮 ROM Manager</h1>
         <div className="sd-path-input">
-          <label className="nes-text">SD Path:</label>
+          <label>SD Path:</label>
           <input
             type="text"
-            className="nes-input"
             value={sdPath}
             onChange={(e) => setSdPath(e.target.value)}
             placeholder="D:/"
-            style={{ width: "150px" }}
           />
         </div>
         <div className="header-actions">
           <button
-            className="nes-btn is-success"
+            className="btn btn-success"
             onClick={handleImportFromPC}
             disabled={isLoading}
           >
             Import from PC
           </button>
           <button
-            className="nes-btn is-primary"
+            className="btn btn-primary"
             onClick={handleImportFromSD}
             disabled={isLoading}
           >
             Import from SD
           </button>
           <button
-            className="nes-btn is-warning"
+            className="btn btn-warning"
             onClick={() => setIsSyncModalOpen(true)}
           >
             Sync ROMs
           </button>
-          <button className="nes-btn" onClick={loadConsoles}>
+          <button className="btn" onClick={loadConsoles}>
             Refresh
           </button>
         </div>
@@ -136,11 +130,9 @@ function App() {
 
         {!isLoading && consoles.length === 0 && (
           <div className="empty-state">
-            <div className="nes-container is-rounded">
-              <p className="nes-text is-primary">No ROM collections found!</p>
-              <p className="nes-text">
-                Click "Sync ROMs" to import your ROMs from SD card.
-              </p>
+            <div className="empty-card">
+              <p className="empty-title">No ROM collections found!</p>
+              <p>Click "Sync ROMs" to import your ROMs from SD card.</p>
             </div>
           </div>
         )}
@@ -161,7 +153,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p className="nes-text is-disabled">
+        <p>
           Total Consoles: {consoles.length} | Total ROMs: {totalRoms}
         </p>
       </footer>
