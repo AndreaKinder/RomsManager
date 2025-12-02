@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2c3e50" rx="64"/>
+  <g transform="translate(64, 128)">
+    <!-- Gamepad body -->
+    <path d="M192 64 Q64 64 32 128 L32 192 Q32 224 64 224 L128 224 L128 192 Q128 160 160 160 L224 160 Q256 160 256 192 L256 224 L320 224 Q352 224 352 192 L352 128 Q320 64 192 64 Z" fill="#34495e"/>
+
+    <!-- Main controller shape -->
+    <ellipse cx="192" cy="128" rx="140" ry="80" fill="#34495e"/>
+
+    <!-- D-pad -->
+    <g transform="translate(80, 100)">
+      <!-- Vertical bar -->
+      <rect x="12" y="0" width="16" height="48" fill="#ecf0f1" rx="2"/>
+      <!-- Horizontal bar -->
+      <rect x="0" y="12" width="48" height="16" fill="#ecf0f1" rx="2"/>
+    </g>
+
+    <!-- Buttons (A, B) -->
+    <g transform="translate(260, 100)">
+      <!-- Button A -->
+      <circle cx="20" cy="24" r="12" fill="#e74c3c"/>
+      <!-- Button B -->
+      <circle cx="0" cy="8" r="12" fill="#f39c12"/>
+    </g>
+
+    <!-- Start/Select buttons -->
+    <g transform="translate(160, 130)">
+      <rect x="0" y="0" width="24" height="8" fill="#7f8c8d" rx="4"/>
+      <rect x="40" y="0" width="24" height="8" fill="#7f8c8d" rx="4"/>
+    </g>
+
+    <!-- Analog sticks indicators -->
+    <circle cx="120" cy="180" r="20" fill="#2c3e50" stroke="#7f8c8d" stroke-width="3"/>
+    <circle cx="264" cy="180" r="20" fill="#2c3e50" stroke="#7f8c8d" stroke-width="3"/>
+  </g>
+</svg>

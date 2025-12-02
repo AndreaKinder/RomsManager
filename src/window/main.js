@@ -28,16 +28,18 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: path.join(__dirname, "../../assets/icon.png"),
+    autoHideMenuBar: true,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: true, // Keep security enabled
+      webSecurity: true,
     },
   });
 
+  mainWindow.setMenu(null);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.webContents.openDevTools();
 };
 
 app.whenReady().then(async () => {
