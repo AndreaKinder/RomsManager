@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/data/*": ["src/back/data/*"]
+    },
+    "jsx": "react"
+  },
+  "exclude": ["node_modules", ".webpack", "out"]
+}

@@ -1,61 +1,64 @@
 import fs from "fs";
 import path from "path";
-import syncConfig from "../data/sync.json";
+import { systemRomDecider } from "./utils/getFilters.js";
+import { getRomPathPC, getRomPathGalic } from "./utils/getPaths.js";
+import { getSystemIdArray } from "./utils/getArrays.js";
+import {
+  getRegisterRomTemplate,
+  getWriteRomSystemJsonPC,
+} from "./utils/getJsonRegisters.js";
 
-export function syncRoms(systemId, drivePath, roms) {
-    const systemConfig = syncConfig.systems.find((s) => s.id === systemId);
-    if (!systemConfig) {
-        throw new Error(`System configuration not found for ID: ${systemId}`);
-    }
-
-    if (!fs.existsSync(drivePath)) {
-        throw new Error(`Drive path does not exist: ${drivePath}`);
-    }
-
-    let copiedCount = 0;
-    let errors = [];
-
-    roms.forEach((rom) => {
-        try {
-            if (!rom.file_path || !fs.existsSync(rom.file_path)) {
-                errors.push(`File not found: ${rom.file_name}`);
-                return;
-            }
-
-            const consoleKey = rom.console;
-            if (!consoleKey) {
-                errors.push(`Console key not found for ROM: ${rom.file_name}`);
-                return;
-            }
-
-            const targetDir = path.join(drivePath, "Roms", consoleKey);
-
-            if (!fs.existsSync(targetDir)) {
-                fs.mkdirSync(targetDir, { recursive: true });
-            }
-
-            const destPath = path.join(targetDir, rom.file_name);
-
-            if (!fs.existsSync(destPath)) {
-                fs.copyFileSync(rom.file_path, destPath);
-                copiedCount++;
-            } else {
-                const srcStat = fs.statSync(rom.file_path);
-                const destStat = fs.statSync(destPath);
-                if (srcStat.size !== destStat.size) {
-                    fs.copyFileSync(rom.file_path, destPath);
-                    copiedCount++;
-                }
-            }
-
-        } catch (err) {
-            errors.push(`Failed to copy ${rom.file_name}: ${err.message}`);
-        }
-    });
-
-    return {
-        success: true,
-        copied: copiedCount,
-        errors: errors,
-    };
+function importSingleRomPC(romPath) {
+  const romName = path.basename(romPath);
+  const system = systemRomDecider(romName);
+  if (!system) {
+    console.log(`Skipping non-ROM file: ${romName}`);
+    return null;
+  }
+  console.log(`Syncing ROM: ${romName} -> System: ${system}`);
+  const romPathPC = getRomPathPC(system, romName);
+  const destDir = path.dirname(romPathPC);
+  if (!fs.existsSync(destDir)) {
+    fs.mkdirSync(destDir, { recursive: true });
+  }
+  fs.copyFileSync(romPath, romPathPC);
+  console.log(`  Copied to: ${romPathPC}`);
+  return getRegisterRomTemplate(romPathPC);
 }
+
+function importRomsToSystemPC(romPath) {
+  if (!fs.existsSync(romPath)) {
+    console.log(`  Directory not found, skipping...`);
+    return;
+  }
+  const files = fs.readdirSync(romPath);
+  if (files.length === 0) {
+    console.log(`  No files found`);
+    return;
+  }
+  for (const file of files) {
+    const filePath = path.join(romPath, file);
+    if (fs.lstatSync(filePath).isDirectory()) continue;
+    const romData = importSingleRomPC(filePath);
+    if (romData) {
+      getWriteRomSystemJsonPC(romData);
+    }
+  }
+}
+
+function importRomsPC(sdPath) {
+  console.log(`Starting ROM sync from SD: ${sdPath}`);
+  const systemsArray = getSystemIdArray();
+  console.log(`Systems found: ${systemsArray.join(", ")}`);
+  for (const system of systemsArray) {
+    console.log(`\nProcessing system: ${system}`);
+    const romPath = getRomPathGalic(sdPath, system);
+    console.log(`  Looking in: ${romPath}`);
+    importRomsToSystemPC(romPath);
+  }
+  console.log("\n✓ Sync completed!");
+}
+
+const sdPath = "D:/";
+
+importRomsPC(sdPath);

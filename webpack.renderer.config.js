@@ -1,3 +1,4 @@
+const path = require("path");
 const rules = require("./webpack.rules");
 
 rules.push({
@@ -20,5 +21,8 @@ module.exports = {
   },
   resolve: {
     extensions: [".js", ".jsx", ".json"],
+    alias: {
+      "@/data": path.resolve(__dirname, "src/back/data"),
+    },
   },
 };

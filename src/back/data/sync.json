@@ -4,7 +4,6 @@
       "id": "garlic_os",
       "name": "Garlic OS",
       "mappings": {
-        "roms": "Roms",
         "nes": "FC",
         "genesis": "MD",
         "gb": "GB",
@@ -21,6 +20,10 @@
         "3ds": "3DS",
         "wiiu": "WIIU",
         "switch": "SWITCH"
+      },
+      "paths": {
+        "roms": "Roms",
+        "cover": "Imgs"
       }
     },
     {

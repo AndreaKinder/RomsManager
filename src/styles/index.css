@@ -6,7 +6,7 @@
 
 body {
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   background-color: #f5f5f5;
 }
@@ -22,7 +22,7 @@ body {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Press Start 2P', cursive;
+  font-family: "Press Start 2P", cursive;
   background-color: #212529;
   color: #fff;
 }
@@ -131,4 +131,87 @@ body {
 .empty-state i {
   font-size: 48px;
   margin-bottom: 20px;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.consoles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.console-collection {
+  margin-bottom: 20px;
+}
+
+.console-header {
+  padding: 15px;
+  background-color: #212529;
+  border: 4px solid #fff;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  transition: background-color 0.2s;
+}
+
+.console-header:hover {
+  background-color: #2a2e33;
+}
+
+.console-header h2 {
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rom-count {
+  margin-left: 10px;
+  font-size: 12px;
+  color: #92cc41;
+}
+
+.rom-card {
+  padding: 15px;
+  background-color: #212529;
+  border: 2px solid #fff;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.rom-card:hover {
+  transform: translateY(-2px);
+  border-color: #92cc41;
+}
+
+.rom-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rom-title {
+  font-size: 12px;
+  margin: 0 0 10px 0;
+  color: #92cc41;
+}
+
+.rom-details {
+  font-size: 8px;
+  line-height: 1.8;
+}
+
+.rom-details p {
+  margin: 5px 0;
+  word-break: break-all;
+}
+
+.rom-details strong {
+  color: #fff;
+  margin-right: 5px;
 }

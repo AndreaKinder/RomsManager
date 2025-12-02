@@ -1,6 +1,7 @@
 module.exports = {
   testEnvironment: "jsdom",
   moduleNameMapper: {
+    "^@/data/(.*)$": "<rootDir>/src/back/data/$1",
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/__mocks__/fileMock.js",
     "^nes\\.css/css/nes\\.min\\.css$": "identity-obj-proxy",

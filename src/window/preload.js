@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
   selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
   selectFolder: () => ipcRenderer.invoke("select-folder"),
+  exportToSD: (data) => ipcRenderer.invoke("export-to-sd", data),
+  importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
   syncRoms: (data) => ipcRenderer.invoke("sync-roms", data),
+  getGeneratedConsoles: () => ipcRenderer.invoke("get-generated-consoles"),
+  importRomsPC: () => ipcRenderer.invoke("import-roms-pc"),
 });
