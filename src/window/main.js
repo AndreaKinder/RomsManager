@@ -221,77 +221,24 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("import-roms-pc", async () => {
+  ipcMain.handle("import-roms-pc", async (event, sdPath = "D:/") => {
     try {
-      const fs = require("fs");
-      const path = require("path");
-
-      // Re-implementar la lógica aquí llamando a las funciones exportadas
-      const { getSystemIdArray } =
-        await import("../back/services/utils/getArrays.js");
-      const { getRomPathGalic } =
-        await import("../back/services/utils/getPaths.js");
-      const { systemRomDecider } =
-        await import("../back/services/utils/getFilters.js");
-      const { getRomPathPC } =
-        await import("../back/services/utils/getPaths.js");
-      const { getRegisterRomTemplate, getWriteRomSystemJsonPC } =
-        await import("../back/services/utils/getJsonRegisters.js");
-
-      console.log("Starting ROM import...");
-
-      const systemsArray = getSystemIdArray();
-      console.log("Systems to check:", systemsArray);
-
-      let totalImported = 0;
-
-      for (const system of systemsArray) {
-        const romPath = getRomPathGalic(system);
-        console.log(`Checking path: ${romPath}`);
-
-        if (!fs.existsSync(romPath)) {
-          console.log(`Path does not exist: ${romPath}`);
-          continue;
-        }
-
-        const files = fs.readdirSync(romPath);
-        console.log(`Found ${files.length} files in ${romPath}`);
-
-        for (const file of files) {
-          const filePath = path.join(romPath, file);
-
-          if (fs.lstatSync(filePath).isDirectory()) {
-            console.log(`Skipping directory: ${file}`);
-            continue;
-          }
-
-          console.log(`Processing ROM: ${file}`);
-
-          const romName = path.basename(filePath);
-          const systemId = systemRomDecider(romName);
-          const romPathPC = getRomPathPC(systemId, romName);
-
-          // Create directory if it doesn't exist
-          const romDir = path.dirname(romPathPC);
-          if (!fs.existsSync(romDir)) {
-            fs.mkdirSync(romDir, { recursive: true });
-          }
-
-          fs.copyFileSync(filePath, romPathPC);
-          console.log(`Copied ${romName} to ${romPathPC}`);
-
-          const romTemplate = getRegisterRomTemplate(romPathPC);
-          getWriteRomSystemJsonPC(romTemplate);
-          console.log(`Registered ${romName} in JSON`);
-
-          totalImported++;
-        }
-      }
-
-      console.log(`Import completed. Total ROMs imported: ${totalImported}`);
-      return { success: true, totalImported };
+      const syncService = await import("../back/services/syncService.js");
+      syncService.importRomsPC(sdPath);
+      return { success: true };
     } catch (error) {
-      console.error("Failed to import ROMs:", error);
+      console.error("Failed to import ROMs from PC:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("import-roms-sd", async (event, sdPath) => {
+    try {
+      const syncService = await import("../back/services/syncService.js");
+      syncService.importRomsSD(sdPath);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to import ROMs from SD:", error);
       return { success: false, error: error.message };
     }
   });

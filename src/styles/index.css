@@ -51,9 +51,27 @@ body {
   gap: 10px;
 }
 
+.sd-path-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.sd-path-input label {
+  font-size: 10px;
+  margin: 0;
+}
+
+.sd-path-input input {
+  height: 40px;
+  font-size: 10px;
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .app-content {

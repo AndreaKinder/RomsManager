@@ -13,5 +13,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
   syncRoms: (data) => ipcRenderer.invoke("sync-roms", data),
   getGeneratedConsoles: () => ipcRenderer.invoke("get-generated-consoles"),
-  importRomsPC: () => ipcRenderer.invoke("import-roms-pc"),
+  importRomsPC: (sdPath) => ipcRenderer.invoke("import-roms-pc", sdPath),
+  importRomsSD: (sdPath) => ipcRenderer.invoke("import-roms-sd", sdPath),
 });

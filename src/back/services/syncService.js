@@ -46,7 +46,7 @@ function importRomsToSystemPC(romPath) {
   }
 }
 
-function importRomsPC(sdPath) {
+export function importRomsPC(sdPath) {
   console.log(`Starting ROM sync from SD: ${sdPath}`);
   const systemsArray = getSystemIdArray();
   console.log(`Systems found: ${systemsArray.join(", ")}`);
@@ -59,6 +59,15 @@ function importRomsPC(sdPath) {
   console.log("\n✓ Sync completed!");
 }
 
-const sdPath = "D:/";
-
-importRomsPC(sdPath);
+export function importRomsSD(sdPath) {
+  console.log(`Starting ROM import from SD: ${sdPath}`);
+  const systemsArray = getSystemIdArray();
+  console.log(`Systems found: ${systemsArray.join(", ")}`);
+  for (const system of systemsArray) {
+    console.log(`\nProcessing system: ${system}`);
+    const romPath = getRomPathGalic(sdPath, system);
+    console.log(`  Looking in: ${romPath}`);
+    importRomsToSystemPC(romPath);
+  }
+  console.log("\n✓ Import from SD completed!");
+}

@@ -1,5 +1,5 @@
 export function getRomPathGalic(sdPath, consoleId) {
-  return `${sdPath}/Roms/${consoleId}`;
+  return `${sdPath}/Roms/${consoleId.toUpperCase()}`;
 }
 
 export function getCoverPathGalic(consoleId) {

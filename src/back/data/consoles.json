@@ -20,7 +20,7 @@
     },
     "SNES": {
       "id": "4",
-      "id_name": "snes",
+      "id_name": "sfc",
       "name": "Super Nintendo Entertainment System",
       "file": [".smc", ".sfc"]
     },
@@ -36,62 +36,68 @@
       "name": "Game Boy Color",
       "file": [".gbc"]
     },
-    "PS1": {
+    "PS": {
       "id": "7",
+      "id_name": "ps",
+      "name": "PlayStation",
+      "file": [".bin", ".cue", ".iso", ".pbp"]
+    },
+    "PS1": {
+      "id": "8",
       "id_name": "ps1",
       "name": "PlayStation",
-      "file": [".bin", ".cue", ".iso"]
+      "file": [".bin", ".cue", ".iso", ".pbp"]
     },
     "N64": {
-      "id": "8",
+      "id": "9",
       "id_name": "n64",
       "name": "Nintendo 64",
       "file": [".z64", ".v64", ".n64"]
     },
     "GBA": {
-      "id": "9",
+      "id": "10",
       "id_name": "gba",
       "name": "Game Boy Advance",
       "file": [".gba"]
     },
     "NDS": {
-      "id": "10",
+      "id": "11",
       "id_name": "nds",
       "name": "Nintendo DS",
       "file": [".nds"]
     },
     "PS2": {
-      "id": "11",
+      "id": "12",
       "id_name": "ps2",
       "name": "PlayStation 2",
       "file": [".bin", ".cue", ".iso"]
     },
     "GC": {
-      "id": "12",
+      "id": "13",
       "id_name": "gc",
       "name": "Nintendo GameCube",
       "file": [".gcm", ".iso", ".gcz"]
     },
     "Wii": {
-      "id": "13",
+      "id": "14",
       "id_name": "wii",
       "name": "Nintendo Wii",
       "file": [".iso", ".wbfs", ".wad"]
     },
     "3DS": {
-      "id": "14",
+      "id": "15",
       "id_name": "3ds",
       "name": "Nintendo 3DS",
       "file": [".3ds", ".cia"]
     },
     "WiiU": {
-      "id": "15",
+      "id": "16",
       "id_name": "wiiu",
       "name": "Nintendo Wii U",
       "file": [".wud", ".wux", ".rpx"]
     },
     "Switch": {
-      "id": "16",
+      "id": "17",
       "id_name": "switch",
       "name": "Nintendo Switch",
       "file": [".nsp", ".xci", ".nsz"]

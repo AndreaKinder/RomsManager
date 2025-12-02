@@ -8,6 +8,7 @@ function App() {
   const [consoles, setConsoles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
+  const [sdPath, setSdPath] = useState("D:/");
 
   useEffect(() => {
     loadConsoles();
@@ -26,19 +27,44 @@ function App() {
     return result;
   };
 
-  const handleImportRoms = async () => {
+  const handleImportFromPC = async () => {
     if (isLoading) return;
 
     const confirmed = window.confirm(
-      "¿Desea importar las ROMs desde la SD al PC?",
+      `¿Desea importar las ROMs desde ${sdPath} al PC?`,
     );
     if (!confirmed) return;
 
     setIsLoading(true);
     try {
-      const result = await window.electronAPI.importRomsPC();
+      const result = await window.electronAPI.importRomsPC(sdPath);
       if (result.success) {
-        alert("ROMs importadas exitosamente!");
+        alert("ROMs importadas exitosamente desde PC!");
+        await loadConsoles();
+      } else {
+        alert(
+          "Error al importar ROMs: " + (result.error || "Error desconocido"),
+        );
+      }
+    } catch (error) {
+      alert("Error al importar ROMs: " + error.message);
+    }
+    setIsLoading(false);
+  };
+
+  const handleImportFromSD = async () => {
+    if (isLoading) return;
+
+    const confirmed = window.confirm(
+      `¿Desea importar las ROMs desde la SD (${sdPath}) al PC?`,
+    );
+    if (!confirmed) return;
+
+    setIsLoading(true);
+    try {
+      const result = await window.electronAPI.importRomsSD(sdPath);
+      if (result.success) {
+        alert("ROMs importadas exitosamente desde SD!");
         await loadConsoles();
       } else {
         alert(
@@ -63,13 +89,31 @@ function App() {
           <i className="nes-icon trophy is-medium"></i>
           ROM Manager
         </h1>
+        <div className="sd-path-input">
+          <label className="nes-text">SD Path:</label>
+          <input
+            type="text"
+            className="nes-input"
+            value={sdPath}
+            onChange={(e) => setSdPath(e.target.value)}
+            placeholder="D:/"
+            style={{ width: "150px" }}
+          />
+        </div>
         <div className="header-actions">
           <button
             className="nes-btn is-success"
-            onClick={handleImportRoms}
+            onClick={handleImportFromPC}
             disabled={isLoading}
           >
-            Import ROMs
+            Import from PC
+          </button>
+          <button
+            className="nes-btn is-primary"
+            onClick={handleImportFromSD}
+            disabled={isLoading}
+          >
+            Import from SD
           </button>
           <button
             className="nes-btn is-warning"
@@ -77,7 +121,7 @@ function App() {
           >
             Sync ROMs
           </button>
-          <button className="nes-btn is-primary" onClick={loadConsoles}>
+          <button className="nes-btn" onClick={loadConsoles}>
             Refresh
           </button>
         </div>
