@@ -27,7 +27,7 @@ RomsManager/
 │   │       └── utils/           # Utility functions
 │   │           ├── getArrays.js
 │   │           ├── getFilters.js
-│   │           ├── getJsonRegisters.js
+│   │           ├── getJsonUtils.js
 │   │           └── getPaths.js
 │   ├── renderer/                # React frontend
 │   │   ├── components/
@@ -72,7 +72,7 @@ Aggregates data for UI display:
 **getArrays.js**: Data extraction from console definitions
 - `getSystemIdArray()`: Returns list of all console system IDs
 
-**getJsonRegisters.js**: ROM metadata management
+**getJsonUtils.js**: ROM metadata management
 - `getRegisterRomTemplate(romPath)`: Creates ROM metadata object
 - `getWriteRomSystemJsonPC(romData)`: Writes ROM to system JSON file
 

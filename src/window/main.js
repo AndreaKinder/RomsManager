@@ -179,7 +179,7 @@ app.whenReady().then(async () => {
       const { getRomPathPC } =
         await import("../back/services/utils/getPaths.js");
       const { getRegisterRomTemplate, getWriteRomSystemJsonPC } =
-        await import("../back/services/utils/getJsonRegisters.js");
+        await import("../back/services/utils/getJsonUtils.js");
 
       const romName = path.basename(romFilePath);
       const system = systemRomDecider(romName);
@@ -210,6 +210,17 @@ app.whenReady().then(async () => {
       };
     } catch (error) {
       console.error("Failed to add ROM:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("edit-rom-title", async (event, romName, newTitle) => {
+    try {
+      const { editRomTitle } = await import("../back/services/editService.js");
+      const result = editRomTitle(romName, newTitle);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Failed to edit ROM title:", error);
       return { success: false, error: error.message };
     }
   });

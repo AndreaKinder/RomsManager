@@ -48,7 +48,7 @@ function App() {
         {isLoading && <LoadingState />}
         {!isLoading && consoles.length === 0 && <EmptyState />}
         {!isLoading && consoles.length > 0 && (
-          <ConsoleList consoles={consoles} />
+          <ConsoleList consoles={consoles} onRomUpdated={loadConsoles} />
         )}
       </main>
 

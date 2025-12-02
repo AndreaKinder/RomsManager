@@ -11,9 +11,11 @@ export function getXmlPathGalic(consoleId) {
 }
 
 export function getRomPathPC(consoleId, romFileName) {
-  return `C:/Users/andre/Documents/Roms/Roms/${consoleId}/${romFileName}`;
+  const userHome = process.env.USERPROFILE || process.env.HOME;
+  return `${userHome}/Documents/Roms/Roms/${consoleId}/${romFileName}`;
 }
 
 export function getPathSystemJsonSystemsPC() {
-  return `C:/Users/andre/Documents/Roms/Json`;
+  const userHome = process.env.USERPROFILE || process.env.HOME;
+  return `${userHome}/Documents/Roms/Json`;
 }

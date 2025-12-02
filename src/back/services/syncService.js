@@ -6,7 +6,7 @@ import { getSystemIdArray } from "./utils/getArrays.js";
 import {
   getRegisterRomTemplate,
   getWriteRomSystemJsonPC,
-} from "./utils/getJsonRegisters.js";
+} from "./utils/getJsonUtils.js";
 
 function importSingleRomPC(romPath) {
   const romName = path.basename(romPath);

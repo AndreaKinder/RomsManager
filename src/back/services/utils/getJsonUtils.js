@@ -12,6 +12,25 @@ function getRegisterTemplate(templateData) {
   };
 }
 
+function getSearchObjectRomInJson(jsonFilePath, romName) {
+  for (const rom of fs.readFileSync(jsonFilePath, "utf-8")) {
+    const romData = JSON.parse(rom);
+    if (romData.romName === romName) {
+      return true;
+    }
+    return false;
+  }
+}
+
+function getCheckRomJsonExists(jsonFilePath, romName) {
+  const jsonExists = fs.existsSync(jsonFilePath);
+  if (!jsonExists) {
+    console.error(`JSON file for ${romName} does not exist.`);
+    return false;
+  }
+  return getSearchObjectRomInJson(jsonFilePath, romName);
+}
+
 function getTemplateData(romFinalPath) {
   const romName = path.basename(romFinalPath);
   const system = systemRomDecider(romName);
@@ -62,4 +81,22 @@ export function getWriteRomSystemJsonPC(romObject) {
   writeRomsDataToFile(jsonFilePath, updatedRomsData);
 
   return updatedRomsData;
+}
+
+export function getEditRomSystemJsonPC(romName, fieldToUpdate, newValue) {
+  const baseDir = getPathSystemJsonSystemsPC();
+  const jsonFiles = fs.readdirSync(baseDir).filter((f) => f.endsWith(".json"));
+
+  for (const jsonFile of jsonFiles) {
+    const jsonFilePath = path.join(baseDir, jsonFile);
+    const romsData = readExistingRomsData(jsonFilePath);
+
+    if (romsData[romName]) {
+      romsData[romName][fieldToUpdate] = newValue;
+      writeRomsDataToFile(jsonFilePath, romsData);
+      return romsData[romName];
+    }
+  }
+
+  throw new Error(`ROM "${romName}" no encontrada en ningún sistema`);
 }

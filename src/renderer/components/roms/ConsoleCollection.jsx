@@ -15,7 +15,7 @@ const icons = {
   generic: require("../../../assets/icons/systems/generic-system.png"),
 };
 
-function ConsoleCollection({ console }) {
+function ConsoleCollection({ console, onRomUpdated }) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Handle both array and object formats for roms
@@ -51,7 +51,11 @@ function ConsoleCollection({ console }) {
         <div className="roms-grid">
           {romsArray.length > 0 ? (
             romsArray.map((rom, index) => (
-              <RomCard key={rom.romName || `rom-${index}`} rom={rom} />
+              <RomCard
+                key={rom.romName || `rom-${index}`}
+                rom={rom}
+                onRomUpdated={onRomUpdated}
+              />
             ))
           ) : (
             <p className="no-roms">No ROMs in this collection</p>

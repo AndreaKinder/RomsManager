@@ -17,4 +17,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   importRomsSD: (sdPath) => ipcRenderer.invoke("import-roms-sd", sdPath),
   exportRomsToSD: (sdPath) => ipcRenderer.invoke("export-roms-to-sd", sdPath),
   addRomFromPC: () => ipcRenderer.invoke("add-rom-from-pc"),
+  editRomTitle: (romName, newTitle) =>
+    ipcRenderer.invoke("edit-rom-title", romName, newTitle),
 });
