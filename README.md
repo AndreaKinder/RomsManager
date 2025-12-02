@@ -1,5 +1,7 @@
 # 🎮 ROM Manager
 
+![App Screen](./screenshots/app-screenshot.png)
+
 A modern desktop application for managing retro gaming ROM collections across multiple console systems.
 
 ![ROM Manager](https://img.shields.io/badge/Electron-App-blue)
