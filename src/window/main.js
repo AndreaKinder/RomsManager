@@ -130,6 +130,88 @@ app.whenReady().then(async () => {
     return result.canceled ? null : result.filePaths[0];
   });
 
+  ipcMain.handle("add-rom-from-pc", async () => {
+    try {
+      const fs = require("fs");
+      const path = require("path");
+
+      // Select ROM file
+      const result = await dialog.showOpenDialog({
+        properties: ["openFile"],
+        filters: [
+          {
+            name: "ROM Files",
+            extensions: [
+              "nes",
+              "smc",
+              "sfc",
+              "md",
+              "gen",
+              "sms",
+              "gb",
+              "gbc",
+              "gba",
+              "n64",
+              "z64",
+              "v64",
+              "nds",
+              "bin",
+              "cue",
+              "iso",
+              "pbp",
+            ],
+          },
+          { name: "All Files", extensions: ["*"] },
+        ],
+      });
+
+      if (result.canceled || !result.filePaths[0]) {
+        return { success: false, canceled: true };
+      }
+
+      const romFilePath = result.filePaths[0];
+
+      // Import using existing functions
+      const { systemRomDecider } =
+        await import("../back/services/utils/getFilters.js");
+      const { getRomPathPC } =
+        await import("../back/services/utils/getPaths.js");
+      const { getRegisterRomTemplate, getWriteRomSystemJsonPC } =
+        await import("../back/services/utils/getJsonRegisters.js");
+
+      const romName = path.basename(romFilePath);
+      const system = systemRomDecider(romName);
+
+      if (!system) {
+        return { success: false, error: "ROM file type not recognized" };
+      }
+
+      const romPathPC = getRomPathPC(system, romName);
+      const destDir = path.dirname(romPathPC);
+
+      // Create directory if needed
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+
+      // Copy ROM
+      fs.copyFileSync(romFilePath, romPathPC);
+
+      // Register ROM
+      const romTemplate = getRegisterRomTemplate(romPathPC);
+      getWriteRomSystemJsonPC(romTemplate);
+
+      return {
+        success: true,
+        romName: romName,
+        system: system,
+      };
+    } catch (error) {
+      console.error("Failed to add ROM:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   // ipcMain.handle("export-to-sd", async (event, { systemId, drivePath }) => {
   //   try {
   //     const syncService = await import("../back/services/syncService.js");
@@ -239,6 +321,17 @@ app.whenReady().then(async () => {
       return { success: true };
     } catch (error) {
       console.error("Failed to import ROMs from SD:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("export-roms-to-sd", async (event, sdPath) => {
+    try {
+      const syncService = await import("../back/services/syncService.js");
+      syncService.exportRomsToSD(sdPath);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to export ROMs to SD:", error);
       return { success: false, error: error.message };
     }
   });

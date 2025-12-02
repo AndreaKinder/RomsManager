@@ -71,3 +71,50 @@ export function importRomsSD(sdPath) {
   }
   console.log("\n✓ Import from SD completed!");
 }
+
+function exportSingleRomToSD(romPath, sdPath) {
+  const romName = path.basename(romPath);
+  const system = systemRomDecider(romName);
+  if (!system) {
+    console.log(`Skipping non-ROM file: ${romName}`);
+    return null;
+  }
+  console.log(`Exporting ROM: ${romName} -> System: ${system}`);
+  const romPathSD = path.join(getRomPathGalic(sdPath, system), romName);
+  const destDir = path.dirname(romPathSD);
+  if (!fs.existsSync(destDir)) {
+    fs.mkdirSync(destDir, { recursive: true });
+  }
+  fs.copyFileSync(romPath, romPathSD);
+  console.log(`  Copied to: ${romPathSD}`);
+  return romName;
+}
+
+function exportRomsFromSystemToSD(systemId, sdPath) {
+  const pcRomPath = `C:/Users/andre/Documents/Roms/${systemId}`;
+  if (!fs.existsSync(pcRomPath)) {
+    console.log(`  PC directory not found, skipping...`);
+    return;
+  }
+  const files = fs.readdirSync(pcRomPath);
+  if (files.length === 0) {
+    console.log(`  No files found`);
+    return;
+  }
+  for (const file of files) {
+    const filePath = path.join(pcRomPath, file);
+    if (fs.lstatSync(filePath).isDirectory()) continue;
+    exportSingleRomToSD(filePath, sdPath);
+  }
+}
+
+export function exportRomsToSD(sdPath) {
+  console.log(`Starting ROM export to SD: ${sdPath}`);
+  const systemsArray = getSystemIdArray();
+  console.log(`Systems found: ${systemsArray.join(", ")}`);
+  for (const system of systemsArray) {
+    console.log(`\nProcessing system: ${system}`);
+    exportRomsFromSystemToSD(system, sdPath);
+  }
+  console.log("\n✓ Export to SD completed!");
+}

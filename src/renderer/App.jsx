@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../styles/index.css";
 import ConsoleCollection from "./components/roms/ConsoleCollection";
-import SyncModal from "./components/modals/SyncModal";
 
 function App() {
   const [consoles, setConsoles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [sdPath, setSdPath] = useState("D:/");
 
   useEffect(() => {
@@ -17,37 +15,6 @@ function App() {
     setIsLoading(true);
     const generatedConsoles = await window.electronAPI.getGeneratedConsoles();
     setConsoles(generatedConsoles);
-    setIsLoading(false);
-  };
-
-  const handleSyncRoms = async (systemId, drivePath) => {
-    const result = await window.electronAPI.syncRoms({ systemId, drivePath });
-    await loadConsoles();
-    return result;
-  };
-
-  const handleImportFromPC = async () => {
-    if (isLoading) return;
-
-    const confirmed = window.confirm(
-      `¿Desea importar las ROMs desde ${sdPath} al PC?`,
-    );
-    if (!confirmed) return;
-
-    setIsLoading(true);
-    try {
-      const result = await window.electronAPI.importRomsPC(sdPath);
-      if (result.success) {
-        alert("ROMs importadas exitosamente desde PC!");
-        await loadConsoles();
-      } else {
-        alert(
-          "Error al importar ROMs: " + (result.error || "Error desconocido"),
-        );
-      }
-    } catch (error) {
-      alert("Error al importar ROMs: " + error.message);
-    }
     setIsLoading(false);
   };
 
@@ -76,6 +43,32 @@ function App() {
     setIsLoading(false);
   };
 
+  const handleAddRomFromPC = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const result = await window.electronAPI.addRomFromPC();
+
+      if (result.canceled) {
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.success) {
+        alert(
+          `ROM "${result.romName}" añadida exitosamente al sistema ${result.system.toUpperCase()}!`,
+        );
+        await loadConsoles();
+      } else {
+        alert("Error al añadir ROM: " + (result.error || "Error desconocido"));
+      }
+    } catch (error) {
+      alert("Error al añadir ROM: " + error.message);
+    }
+    setIsLoading(false);
+  };
+
   const totalRoms = consoles.reduce(
     (sum, console) => sum + console.romCount,
     0,
@@ -96,24 +89,18 @@ function App() {
         </div>
         <div className="header-actions">
           <button
-            className="btn btn-success"
-            onClick={handleImportFromPC}
+            className="btn btn-primary"
+            onClick={handleAddRomFromPC}
             disabled={isLoading}
           >
-            Import from PC
+            ➕ Add ROM
           </button>
           <button
-            className="btn btn-primary"
+            className="btn btn-success"
             onClick={handleImportFromSD}
             disabled={isLoading}
           >
-            Import from SD
-          </button>
-          <button
-            className="btn btn-warning"
-            onClick={() => setIsSyncModalOpen(true)}
-          >
-            Sync ROMs
+            📥 Import from SD
           </button>
           <button className="btn" onClick={loadConsoles}>
             Refresh
@@ -144,12 +131,6 @@ function App() {
             ))}
           </div>
         )}
-
-        <SyncModal
-          isOpen={isSyncModalOpen}
-          onClose={() => setIsSyncModalOpen(false)}
-          onSync={handleSyncRoms}
-        />
       </main>
 
       <footer className="app-footer">
