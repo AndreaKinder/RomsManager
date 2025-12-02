@@ -59,62 +59,51 @@ export function importRomsPC(sdPath) {
   console.log("\n✓ Sync completed!");
 }
 
-export function importRomsSD(sdPath) {
-  console.log(`Starting ROM import from SD: ${sdPath}`);
-  const systemsArray = getSystemIdArray();
-  console.log(`Systems found: ${systemsArray.join(", ")}`);
-  for (const system of systemsArray) {
-    console.log(`\nProcessing system: ${system}`);
-    const romPath = getRomPathGalic(sdPath, system);
-    console.log(`  Looking in: ${romPath}`);
-    importRomsToSystemPC(romPath);
-  }
-  console.log("\n✓ Import from SD completed!");
-}
-
-function exportSingleRomToSD(romPath, sdPath) {
-  const romName = path.basename(romPath);
+function exportSingleRomPcToGalic(romPathPc, sdPath) {
+  const romName = path.basename(romPathPc);
   const system = systemRomDecider(romName);
   if (!system) {
     console.log(`Skipping non-ROM file: ${romName}`);
     return null;
   }
-  console.log(`Exporting ROM: ${romName} -> System: ${system}`);
-  const romPathSD = path.join(getRomPathGalic(sdPath, system), romName);
-  const destDir = path.dirname(romPathSD);
+  console.log(`Syncing ROM: ${romName} -> System: ${system}`);
+  const romPathGalicDir = getRomPathGalic(sdPath, system);
+  const romPathGalic = path.join(romPathGalicDir, romName);
+  const destDir = path.dirname(romPathGalic);
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
-  fs.copyFileSync(romPath, romPathSD);
-  console.log(`  Copied to: ${romPathSD}`);
-  return romName;
+  fs.copyFileSync(romPathPc, romPathGalic);
+  console.log(`  Copied to: ${romPathGalic}`);
 }
 
-function exportRomsFromSystemToSD(systemId, sdPath) {
-  const pcRomPath = `C:/Users/andre/Documents/Roms/${systemId}`;
-  if (!fs.existsSync(pcRomPath)) {
-    console.log(`  PC directory not found, skipping...`);
+function exportRomsFromSystemPcToGalic(romPathPC, sdPath) {
+  if (!fs.existsSync(romPathPC)) {
+    console.log(`  Directory not found, skipping...`);
     return;
   }
-  const files = fs.readdirSync(pcRomPath);
+  const files = fs.readdirSync(romPathPC);
   if (files.length === 0) {
     console.log(`  No files found`);
     return;
   }
   for (const file of files) {
-    const filePath = path.join(pcRomPath, file);
+    const filePath = path.join(romPathPC, file);
     if (fs.lstatSync(filePath).isDirectory()) continue;
-    exportSingleRomToSD(filePath, sdPath);
+    exportSingleRomPcToGalic(filePath, sdPath);
   }
 }
 
-export function exportRomsToSD(sdPath) {
-  console.log(`Starting ROM export to SD: ${sdPath}`);
+export function exportAllRomsPcToGalic(sdPath) {
+  console.log(`Starting ROM export from PC to SD: ${sdPath}`);
   const systemsArray = getSystemIdArray();
   console.log(`Systems found: ${systemsArray.join(", ")}`);
   for (const system of systemsArray) {
     console.log(`\nProcessing system: ${system}`);
-    exportRomsFromSystemToSD(system, sdPath);
+    const systemRomPathPC = getRomPathPC(system, "dummy.rom");
+    const systemDir = path.dirname(systemRomPathPC);
+    console.log(`  Looking in: ${systemDir}`);
+    exportRomsFromSystemPcToGalic(systemDir, sdPath);
   }
-  console.log("\n✓ Export to SD completed!");
+  console.log("\n✓ Export completed!");
 }

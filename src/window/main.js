@@ -317,7 +317,7 @@ app.whenReady().then(async () => {
   ipcMain.handle("import-roms-sd", async (event, sdPath) => {
     try {
       const syncService = await import("../back/services/syncService.js");
-      syncService.importRomsSD(sdPath);
+      syncService.importRomsPC(sdPath);
       return { success: true };
     } catch (error) {
       console.error("Failed to import ROMs from SD:", error);
@@ -328,7 +328,7 @@ app.whenReady().then(async () => {
   ipcMain.handle("export-roms-to-sd", async (event, sdPath) => {
     try {
       const syncService = await import("../back/services/syncService.js");
-      syncService.exportRomsToSD(sdPath);
+      syncService.exportAllRomsPcToGalic(sdPath);
       return { success: true };
     } catch (error) {
       console.error("Failed to export ROMs to SD:", error);

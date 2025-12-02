@@ -4,7 +4,8 @@
       "id": "1",
       "id_name": "nes",
       "name": "Nintendo Entertainment System",
-      "file": [".nes"]
+      "file": [".nes"],
+      "icon": ""
     },
     "Genesis": {
       "id": "2",
@@ -101,6 +102,12 @@
       "id_name": "switch",
       "name": "Nintendo Switch",
       "file": [".nsp", ".xci", ".nsz"]
+    },
+    "PSP": {
+      "id": "18",
+      "id_name": "psp",
+      "name": "PlayStation Portable",
+      "file": [".iso", ".cso", ".psp"]
     }
   }
 }

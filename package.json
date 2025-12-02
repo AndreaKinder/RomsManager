@@ -1,9 +1,17 @@
 {
   "name": "romsmanager",
-  "productName": "romsmanager",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "productName": "ROM Manager",
+  "version": "0.1.0-alpha",
+  "description": "A desktop application for managing retro game ROMs with SD card sync capabilities",
   "main": ".webpack/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andreakinder/RomsManager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andreakinder/RomsManager/issues"
+  },
+  "homepage": "https://github.com/andreakinder/RomsManager#readme",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -41,6 +49,7 @@
     "babel-loader": "^10.0.0",
     "css-loader": "^6.11.0",
     "electron": "39.2.4",
+    "electron-builder": "^26.0.12",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",

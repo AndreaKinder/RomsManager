@@ -168,6 +168,16 @@ body {
   font-size: 14px;
 }
 
+.app-footer p {
+  margin: 4px 0;
+}
+
+.version-info {
+  font-size: 12px;
+  opacity: 0.6;
+  font-style: italic;
+}
+
 .loading-container {
   text-align: center;
   padding: 60px 20px;
@@ -239,6 +249,12 @@ body {
   font-size: 14px;
   color: var(--text-secondary);
   transition: transform 0.2s;
+}
+
+.console-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .rom-count {
