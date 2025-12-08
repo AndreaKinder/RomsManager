@@ -530,3 +530,133 @@ body {
 .btn-secondary:hover:not(:disabled) {
   background: var(--hover-bg);
 }
+
+/* Console Selector Styles */
+.form-field select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.form-field select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-field select:hover {
+  border-color: var(--primary-color);
+}
+
+.form-field select option {
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 10px;
+}
+
+/* File Selection Button Container */
+.file-select-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.file-name-display {
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  flex: 1;
+  min-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ROM Card Icon Actions */
+.rom-card-actions-icons {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.rom-card:hover .rom-card-actions-icons {
+  opacity: 1;
+}
+
+.rom-icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rom-icon-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.rom-icon-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.rom-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rom-icon-btn.btn-edit {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.rom-icon-btn.btn-edit:hover:not(:disabled) {
+  background: var(--primary-color);
+  color: white;
+}
+
+.rom-icon-btn.btn-delete {
+  border-color: var(--danger-color);
+  color: var(--danger-color);
+}
+
+.rom-icon-btn.btn-delete:hover:not(:disabled) {
+  background: var(--danger-color);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger-color);
+  border-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}

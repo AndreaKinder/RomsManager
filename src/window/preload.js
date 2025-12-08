@@ -13,10 +13,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
   syncRoms: (data) => ipcRenderer.invoke("sync-roms", data),
   getGeneratedConsoles: () => ipcRenderer.invoke("get-generated-consoles"),
+  getAvailableConsoles: () => ipcRenderer.invoke("get-available-consoles"),
   importRomsPC: (sdPath) => ipcRenderer.invoke("import-roms-pc", sdPath),
   importRomsSD: (sdPath) => ipcRenderer.invoke("import-roms-sd", sdPath),
   exportRomsToSD: (sdPath) => ipcRenderer.invoke("export-roms-to-sd", sdPath),
-  addRomFromPC: () => ipcRenderer.invoke("add-rom-from-pc"),
+  addRomFromPC: (selectedConsole, romFilePath) =>
+    ipcRenderer.invoke("add-rom-from-pc", selectedConsole, romFilePath),
   editRomTitle: (romName, newTitle) =>
     ipcRenderer.invoke("edit-rom-title", romName, newTitle),
+  deleteRom: (romName) => ipcRenderer.invoke("delete-rom", romName),
 });

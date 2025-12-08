@@ -1,61 +1,78 @@
 import fs from "fs";
 import path from "path";
 import { getPathSystemJsonSystemsPC } from "./utils/getPaths.js";
+import logger from "./utils/logger.js";
 
-function getTitleRom(jsonSystemFile) {
-  return jsonSystemFile.split(".")[0];
+const FILE_EXTENSION_SEPARATOR = ".";
+const FIRST_ELEMENT = 0;
+const JSON_FILE_EXTENSION = ".json";
+const FILE_ENCODING = "utf-8";
+
+function extractConsoleIdFromFilename(jsonSystemFile) {
+  return jsonSystemFile.split(FILE_EXTENSION_SEPARATOR)[FIRST_ELEMENT];
 }
 
-export function getArraySystemsJson() {
-  const systemPath = getPathSystemJsonSystemsPC();
+function readJsonFiles(directoryPath) {
   try {
-    if (!fs.existsSync(systemPath)) {
+    if (!fs.existsSync(directoryPath)) {
       return [];
     }
-    const systems = fs.readdirSync(systemPath, { withFileTypes: true });
+    const systems = fs.readdirSync(directoryPath, { withFileTypes: true });
     return systems
-      .filter((dirent) => dirent.isFile() && dirent.name.endsWith(".json"))
+      .filter(
+        (dirent) =>
+          dirent.isFile() && dirent.name.endsWith(JSON_FILE_EXTENSION),
+      )
       .map((dirent) => dirent.name);
   } catch (err) {
-    console.error("Error leyendo directorio:", err);
+    logger.error("Error reading directory:", err);
     return [];
   }
 }
 
-function getArraySystems() {
-  const systemsJson = getArraySystemsJson();
-  return systemsJson.map((system) => getTitleRom(system));
+export function getArraySystemsJson() {
+  const systemPath = getPathSystemJsonSystemsPC();
+  return readJsonFiles(systemPath);
+}
+
+function parseRomsFromJsonFile(jsonFilePath) {
+  try {
+    const fileContent = fs.readFileSync(jsonFilePath, FILE_ENCODING);
+    const romsData = JSON.parse(fileContent);
+    return Object.values(romsData);
+  } catch (err) {
+    logger.error(`Error parsing JSON file ${jsonFilePath}:`, err);
+    return [];
+  }
+}
+
+function buildConsoleData(consoleId, roms) {
+  return {
+    consoleId,
+    consoleName: consoleId.toUpperCase(),
+    romCount: roms.length,
+    roms: roms,
+  };
+}
+
+function loadConsoleFromJsonFile(systemPath, jsonFile) {
+  const consoleId = extractConsoleIdFromFilename(jsonFile);
+  const jsonPath = path.join(systemPath, jsonFile);
+  const roms = parseRomsFromJsonFile(jsonPath);
+  return buildConsoleData(consoleId, roms);
+}
+
+function filterConsolesWithRoms(consoles) {
+  return consoles.filter((console) => console.romCount > 0);
 }
 
 export function getGeneratedConsoles() {
   const systemPath = getPathSystemJsonSystemsPC();
   const systemsJson = getArraySystemsJson();
 
-  const consoles = systemsJson.map((jsonFile) => {
-    const consoleId = getTitleRom(jsonFile);
-    const jsonPath = path.join(systemPath, jsonFile);
+  const consoles = systemsJson.map((jsonFile) =>
+    loadConsoleFromJsonFile(systemPath, jsonFile),
+  );
 
-    try {
-      const fileContent = fs.readFileSync(jsonPath, "utf-8");
-      const romsData = JSON.parse(fileContent);
-      const roms = Object.values(romsData);
-
-      return {
-        consoleId,
-        consoleName: consoleId.toUpperCase(),
-        romCount: roms.length,
-        roms: roms,
-      };
-    } catch (err) {
-      console.error(`Error reading ${jsonFile}:`, err);
-      return {
-        consoleId,
-        consoleName: consoleId.toUpperCase(),
-        romCount: 0,
-        roms: [],
-      };
-    }
-  });
-
-  return consoles.filter((console) => console.romCount > 0);
+  return filterConsolesWithRoms(consoles);
 }

@@ -3,7 +3,13 @@ import fs from "fs";
 import path from "path";
 import { getPathSystemJsonSystemsPC } from "./getPaths.js";
 
-function getRegisterTemplate(templateData) {
+const FILE_EXTENSION_SEPARATOR = ".";
+const FIRST_ELEMENT = 0;
+const JSON_INDENT_SPACES = 2;
+const JSON_FILE_EXTENSION = ".json";
+const FILE_ENCODING = "utf-8";
+
+function createRomObject(templateData) {
   return {
     romName: templateData[0],
     system: templateData[1],
@@ -12,40 +18,21 @@ function getRegisterTemplate(templateData) {
   };
 }
 
-function getSearchObjectRomInJson(jsonFilePath, romName) {
-  for (const rom of fs.readFileSync(jsonFilePath, "utf-8")) {
-    const romData = JSON.parse(rom);
-    if (romData.romName === romName) {
-      return true;
-    }
-    return false;
-  }
-}
-
-function getCheckRomJsonExists(jsonFilePath, romName) {
-  const jsonExists = fs.existsSync(jsonFilePath);
-  if (!jsonExists) {
-    console.error(`JSON file for ${romName} does not exist.`);
-    return false;
-  }
-  return getSearchObjectRomInJson(jsonFilePath, romName);
-}
-
-function getTemplateData(romFinalPath) {
+function extractRomMetadata(romFinalPath) {
   const romName = path.basename(romFinalPath);
   const system = systemRomDecider(romName);
-  const romTitle = romName.split(".")[0];
+  const romTitle = romName.split(FILE_EXTENSION_SEPARATOR)[FIRST_ELEMENT];
   return [romName, system, romTitle, romFinalPath];
 }
 
-export function getRegisterRomTemplate(romFinalPath) {
-  const templateData = [...getTemplateData(romFinalPath)];
-  return getRegisterTemplate(templateData);
+export function createRomTemplate(romFinalPath) {
+  const templateData = [...extractRomMetadata(romFinalPath)];
+  return createRomObject(templateData);
 }
 
-function getJsonFilePath(consoleId) {
+function buildJsonFilePath(consoleId) {
   const baseDir = getPathSystemJsonSystemsPC();
-  return path.join(baseDir, `${consoleId}.json`);
+  return path.join(baseDir, `${consoleId}${JSON_FILE_EXTENSION}`);
 }
 
 function readExistingRomsData(jsonFilePath) {
@@ -53,7 +40,7 @@ function readExistingRomsData(jsonFilePath) {
     return {};
   }
 
-  const fileContent = fs.readFileSync(jsonFilePath, "utf-8");
+  const fileContent = fs.readFileSync(jsonFilePath, FILE_ENCODING);
   return JSON.parse(fileContent);
 }
 
@@ -69,12 +56,12 @@ function addRomToCollection(romsData, romObject) {
 }
 
 function writeRomsDataToFile(jsonFilePath, romsData) {
-  const jsonContent = JSON.stringify(romsData, null, 2);
-  fs.writeFileSync(jsonFilePath, jsonContent, "utf-8");
+  const jsonContent = JSON.stringify(romsData, null, JSON_INDENT_SPACES);
+  fs.writeFileSync(jsonFilePath, jsonContent, FILE_ENCODING);
 }
 
-export function getWriteRomSystemJsonPC(romObject) {
-  const jsonFilePath = getJsonFilePath(romObject.system);
+export function persistRomToJson(romObject) {
+  const jsonFilePath = buildJsonFilePath(romObject.system);
   const romsData = readExistingRomsData(jsonFilePath);
   const updatedRomsData = addRomToCollection(romsData, romObject);
 
@@ -83,9 +70,11 @@ export function getWriteRomSystemJsonPC(romObject) {
   return updatedRomsData;
 }
 
-export function getEditRomSystemJsonPC(romName, fieldToUpdate, newValue) {
+export function updateRomInJson(romName, fieldToUpdate, newValue) {
   const baseDir = getPathSystemJsonSystemsPC();
-  const jsonFiles = fs.readdirSync(baseDir).filter((f) => f.endsWith(".json"));
+  const jsonFiles = fs
+    .readdirSync(baseDir)
+    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
 
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
@@ -98,5 +87,40 @@ export function getEditRomSystemJsonPC(romName, fieldToUpdate, newValue) {
     }
   }
 
-  throw new Error(`ROM "${romName}" no encontrada en ningún sistema`);
+  throw new Error(`ROM "${romName}" not found in any system`);
 }
+
+export function deleteRomFromJson(romName) {
+  const baseDir = getPathSystemJsonSystemsPC();
+  const jsonFiles = fs
+    .readdirSync(baseDir)
+    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
+
+  for (const jsonFile of jsonFiles) {
+    const jsonFilePath = path.join(baseDir, jsonFile);
+    const romsData = readExistingRomsData(jsonFilePath);
+
+    if (romsData[romName]) {
+      const romPath = romsData[romName].romPath;
+
+      // Delete ROM entry from JSON
+      delete romsData[romName];
+      writeRomsDataToFile(jsonFilePath, romsData);
+
+      // Delete physical ROM file if it exists
+      if (fs.existsSync(romPath)) {
+        fs.unlinkSync(romPath);
+      }
+
+      return { success: true, romName, romPath };
+    }
+  }
+
+  throw new Error(`ROM "${romName}" not found in any system`);
+}
+
+// Deprecated aliases for backward compatibility
+export const getRegisterRomTemplate = createRomTemplate;
+export const getWriteRomSystemJsonPC = persistRomToJson;
+export const getEditRomSystemJsonPC = updateRomInJson;
+export const getDeleteRomSystemJsonPC = deleteRomFromJson;

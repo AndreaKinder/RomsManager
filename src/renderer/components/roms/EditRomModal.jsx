@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import {
+  VALIDATION_MESSAGES,
+  ERROR_MESSAGES,
+  BUTTON_LABELS,
+  MAX_TITLE_LENGTH,
+} from "../../constants/messages";
 
 function EditRomModal({ rom, onClose, onSave }) {
   const [title, setTitle] = useState(rom.title);
@@ -8,8 +14,15 @@ function EditRomModal({ rom, onClose, onSave }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación: título vacío
     if (!title.trim()) {
-      setError("El título no puede estar vacío");
+      setError(VALIDATION_MESSAGES.EMPTY_TITLE);
+      return;
+    }
+
+    // Validación: longitud máxima
+    if (title.length > MAX_TITLE_LENGTH) {
+      setError(VALIDATION_MESSAGES.MAX_TITLE_LENGTH(MAX_TITLE_LENGTH));
       return;
     }
 
@@ -22,10 +35,10 @@ function EditRomModal({ rom, onClose, onSave }) {
       if (result.success) {
         onSave();
       } else {
-        setError(result.error || "Error al actualizar la ROM");
+        setError(result.error || ERROR_MESSAGES.UPDATE_ROM("desconocido"));
       }
     } catch (err) {
-      setError("Error de conexión: " + err.message);
+      setError(ERROR_MESSAGES.CONNECTION_ERROR(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -81,8 +94,12 @@ function EditRomModal({ rom, onClose, onSave }) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ingresa el título de la ROM"
+                maxLength={MAX_TITLE_LENGTH}
                 autoFocus
               />
+              <small className="field-hint">
+                {title.length}/{MAX_TITLE_LENGTH} caracteres
+              </small>
             </div>
 
             {error && <div className="error-message">{error}</div>}
@@ -95,14 +112,14 @@ function EditRomModal({ rom, onClose, onSave }) {
               onClick={onClose}
               disabled={isLoading}
             >
-              Cancelar
+              {BUTTON_LABELS.CANCEL}
             </button>
             <button
               type="submit"
               className="btn btn-primary"
               disabled={isLoading}
             >
-              {isLoading ? "Guardando..." : "Guardar"}
+              {isLoading ? "Guardando..." : BUTTON_LABELS.SAVE}
             </button>
           </div>
         </form>

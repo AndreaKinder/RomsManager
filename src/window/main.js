@@ -1,4 +1,4 @@
-const {
+import {
   app,
   BrowserWindow,
   ipcMain,
@@ -6,11 +6,10 @@ const {
   shell,
   protocol,
   net,
-} = require("electron");
-const path = require("node:path");
-const url = require("url");
+} from "electron";
+import path from "node:path";
+import url from "url";
 
-// Register scheme as privileged
 protocol.registerSchemesAsPrivileged([
   {
     scheme: "media",
@@ -21,8 +20,6 @@ protocol.registerSchemesAsPrivileged([
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-
-// let storage;
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -43,15 +40,9 @@ const createWindow = () => {
 };
 
 app.whenReady().then(async () => {
-  // const storageModule = await import("../back/services/storage.js");
-  // storage = storageModule;
-  // storage.initStorage();
-
   protocol.handle("media", (request) => {
     const filePath = request.url.slice("media://".length);
-    // Decode URI component to handle spaces and special chars
     const decodedPath = decodeURIComponent(filePath);
-    // Normalize path separators (convert forward slashes back to backslashes on Windows)
     const normalizedPath =
       process.platform === "win32"
         ? decodedPath.replace(/\//g, "\\")
@@ -65,26 +56,6 @@ app.whenReady().then(async () => {
     // Ensure we are using file protocol correctly
     return net.fetch(url.pathToFileURL(normalizedPath).toString());
   });
-
-  // ipcMain.handle("get-all-roms", async () => {
-  //   return storage.getAllRoms();
-  // });
-
-  // ipcMain.handle("get-rom", async (event, id) => {
-  //   return storage.getRom(id);
-  // });
-
-  // ipcMain.handle("create-rom", async (event, romData) => {
-  //   return storage.createRom(romData);
-  // });
-
-  // ipcMain.handle("update-rom", async (event, id, updates) => {
-  //   return storage.updateRom(id, updates);
-  // });
-
-  // ipcMain.handle("delete-rom", async (event, id) => {
-  //   return storage.deleteRom(id);
-  // });
 
   ipcMain.handle("select-rom-file", async () => {
     const result = await dialog.showOpenDialog({
@@ -132,87 +103,65 @@ app.whenReady().then(async () => {
     return result.canceled ? null : result.filePaths[0];
   });
 
-  ipcMain.handle("add-rom-from-pc", async () => {
-    try {
-      const fs = require("fs");
-      const path = require("path");
+  ipcMain.handle(
+    "add-rom-from-pc",
+    async (event, selectedConsole, romFilePath) => {
+      try {
+        const fs = require("fs");
+        const path = require("path");
 
-      // Select ROM file
-      const result = await dialog.showOpenDialog({
-        properties: ["openFile"],
-        filters: [
-          {
-            name: "ROM Files",
-            extensions: [
-              "nes",
-              "smc",
-              "sfc",
-              "md",
-              "gen",
-              "sms",
-              "gb",
-              "gbc",
-              "gba",
-              "n64",
-              "z64",
-              "v64",
-              "nds",
-              "bin",
-              "cue",
-              "iso",
-              "pbp",
-            ],
-          },
-          { name: "All Files", extensions: ["*"] },
-        ],
-      });
+        // If no console is selected, return error
+        if (!selectedConsole) {
+          return {
+            success: false,
+            error: "No console selected",
+            needsConsoleSelection: true,
+          };
+        }
 
-      if (result.canceled || !result.filePaths[0]) {
-        return { success: false, canceled: true };
+        // If no ROM file path is provided, return error
+        if (!romFilePath) {
+          return {
+            success: false,
+            error: "No ROM file selected",
+          };
+        }
+
+        // Import using existing functions
+        const { getRomPathPC } =
+          await import("../back/services/utils/getPaths.js");
+        const { createRomTemplate, persistRomToJson } =
+          await import("../back/services/utils/getJsonUtils.js");
+
+        const romName = path.basename(romFilePath);
+        const system = selectedConsole;
+
+        const romPathPC = getRomPathPC(system, romName);
+        const destDir = path.dirname(romPathPC);
+
+        // Create directory if needed
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        // Copy ROM
+        fs.copyFileSync(romFilePath, romPathPC);
+
+        // Register ROM
+        const romTemplate = createRomTemplate(romPathPC);
+        persistRomToJson(romTemplate);
+
+        return {
+          success: true,
+          romName: romName,
+          system: system,
+        };
+      } catch (error) {
+        console.error("Failed to add ROM:", error);
+        return { success: false, error: error.message };
       }
-
-      const romFilePath = result.filePaths[0];
-
-      // Import using existing functions
-      const { systemRomDecider } =
-        await import("../back/services/utils/getFilters.js");
-      const { getRomPathPC } =
-        await import("../back/services/utils/getPaths.js");
-      const { getRegisterRomTemplate, getWriteRomSystemJsonPC } =
-        await import("../back/services/utils/getJsonUtils.js");
-
-      const romName = path.basename(romFilePath);
-      const system = systemRomDecider(romName);
-
-      if (!system) {
-        return { success: false, error: "ROM file type not recognized" };
-      }
-
-      const romPathPC = getRomPathPC(system, romName);
-      const destDir = path.dirname(romPathPC);
-
-      // Create directory if needed
-      if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true });
-      }
-
-      // Copy ROM
-      fs.copyFileSync(romFilePath, romPathPC);
-
-      // Register ROM
-      const romTemplate = getRegisterRomTemplate(romPathPC);
-      getWriteRomSystemJsonPC(romTemplate);
-
-      return {
-        success: true,
-        romName: romName,
-        system: system,
-      };
-    } catch (error) {
-      console.error("Failed to add ROM:", error);
-      return { success: false, error: error.message };
-    }
-  });
+    },
+  );
 
   ipcMain.handle("edit-rom-title", async (event, romName, newTitle) => {
     try {
@@ -225,86 +174,33 @@ app.whenReady().then(async () => {
     }
   });
 
-  // ipcMain.handle("export-to-sd", async (event, { systemId, drivePath }) => {
-  //   try {
-  //     const syncService = await import("../back/services/syncService.js");
-  //     const allRoms = await storage.getAllRoms();
+  ipcMain.handle("delete-rom", async (event, romName) => {
+    try {
+      const { deleteRomFromJson } =
+        await import("../back/services/utils/getJsonUtils.js");
+      const result = deleteRomFromJson(romName);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Failed to delete ROM:", error);
+      return { success: false, error: error.message };
+    }
+  });
 
-  //     // Extract covers from ROMs
-  //     const covers = allRoms
-  //       .filter((rom) => rom.cover_path)
-  //       .map((rom) => ({
-  //         file_name: path.basename(rom.cover_path),
-  //         file_path: rom.cover_path,
-  //         console: rom.console,
-  //       }));
-
-  //     return syncService.exportToSD(systemId, drivePath, allRoms, covers);
-  //   } catch (error) {
-  //     console.error("Export failed:", error);
-  //     return { success: false, error: error.message };
-  //   }
-  // });
-
-  // ipcMain.handle("import-from-sd", async (event, { systemId, drivePath }) => {
-  //   try {
-  //     const syncService = await import("../back/services/syncService.js");
-  //     const result = await syncService.importFromSD(systemId, drivePath);
-
-  //     console.log("Import result:", {
-  //       romsFound: result.romsFound?.length || 0,
-  //       coversFound: result.coversFound?.length || 0,
-  //       errors: result.errors,
-  //     });
-
-  //     let imported = 0;
-  //     if (result.romsFound && result.romsFound.length > 0) {
-  //       for (const romData of result.romsFound) {
-  //         const existingRoms = await storage.getAllRoms();
-  //         const exists = existingRoms.some(
-  //           (r) => r.file_name === romData.file_name,
-  //         );
-
-  //         console.log(`ROM ${romData.file_name} - exists: ${exists}`);
-
-  //         if (!exists) {
-  //           // Find matching cover
-  //           const matchingCover = result.coversFound?.find(
-  //             (c) =>
-  //               path.parse(c.file_name).name ===
-  //               path.parse(romData.file_name).name,
-  //           );
-
-  //           await storage.createRom({
-  //             file_path: romData.file_path,
-  //             file_name: romData.file_name,
-  //             file_size: romData.size,
-  //             console: romData.console,
-  //             cover_path: matchingCover?.file_path || null,
-  //             title:
-  //               romData.metadata?.title || path.parse(romData.file_name).name,
-  //             year: romData.metadata?.year,
-  //             genre: romData.metadata?.genre,
-  //             metadata: romData.metadata,
-  //           });
-  //           imported++;
-  //         }
-  //       }
-  //     }
-
-  //     return {
-  //       success: true,
-  //       romsImported: imported,
-  //       romsFound: result.romsFound?.length || 0,
-  //       coversFound: result.coversFound?.length || 0,
-  //       metadataImported: result.metadataImported || 0,
-  //       errors: result.errors,
-  //     };
-  //   } catch (error) {
-  //     console.error("Import failed:", error);
-  //     return { success: false, error: error.message };
-  //   }
-  // });
+  ipcMain.handle("get-available-consoles", async () => {
+    try {
+      const consolesData = await import("../back/data/consoles.json", {
+        with: { type: "json" },
+      });
+      return Object.values(consolesData.default.consoles).map((console) => ({
+        id: console.id_name,
+        name: console.name,
+        extensions: console.file,
+      }));
+    } catch (error) {
+      console.error("Failed to get available consoles:", error);
+      return [];
+    }
+  });
 
   ipcMain.handle("get-generated-consoles", async () => {
     try {
@@ -348,83 +244,6 @@ app.whenReady().then(async () => {
       return { success: false, error: error.message };
     }
   });
-
-  // ipcMain.handle("sync-roms", async (event, { systemId, drivePath }) => {
-  //   try {
-  //     const syncService = await import("../back/services/syncService.js");
-  //     const allRoms = await storage.getAllRoms();
-
-  //     // Extract covers from ROMs
-  //     const covers = allRoms
-  //       .filter((rom) => rom.cover_path)
-  //       .map((rom) => ({
-  //         file_name: path.basename(rom.cover_path),
-  //         file_path: rom.cover_path,
-  //         console: rom.console,
-  //       }));
-
-  //     // Perform bidirectional sync
-  //     const syncResult = await syncService.syncBidirectional(
-  //       systemId,
-  //       drivePath,
-  //       allRoms,
-  //       covers,
-  //     );
-
-  //     // Import found ROMs into database
-  //     let imported = 0;
-  //     if (
-  //       syncResult.import.romsFound &&
-  //       syncResult.import.romsFound.length > 0
-  //     ) {
-  //       for (const romData of syncResult.import.romsFound) {
-  //         // Check if ROM already exists by file_name
-  //         const existingRoms = await storage.getAllRoms();
-  //         const exists = existingRoms.some(
-  //           (r) => r.file_name === romData.file_name,
-  //         );
-
-  //         if (!exists) {
-  //           // Find matching cover
-  //           const matchingCover = syncResult.import.coversFound?.find(
-  //             (c) =>
-  //               path.parse(c.file_name).name ===
-  //               path.parse(romData.file_name).name,
-  //           );
-
-  //           await storage.createRom({
-  //             file_path: romData.file_path,
-  //             file_name: romData.file_name,
-  //             file_size: romData.size,
-  //             console: romData.console,
-  //             cover_path: matchingCover?.file_path || null,
-  //             title:
-  //               romData.metadata?.title || path.parse(romData.file_name).name,
-  //             year: romData.metadata?.year,
-  //             genre: romData.metadata?.genre,
-  //             metadata: romData.metadata,
-  //           });
-  //           imported++;
-  //         }
-  //       }
-  //     }
-
-  //     return {
-  //       success: true,
-  //       export: syncResult.export,
-  //       import: {
-  //         romsImported: imported,
-  //         romsFound: syncResult.import.romsFound?.length || 0,
-  //         coversFound: syncResult.import.coversFound?.length || 0,
-  //         metadataImported: syncResult.import.metadataImported || 0,
-  //         errors: syncResult.import.errors,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     console.error("Sync failed:", error);
-  //     return { success: false, error: error.message };
-  //   }
-  // });
 
   createWindow();
 

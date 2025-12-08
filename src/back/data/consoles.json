@@ -45,14 +45,14 @@
     "PS": {
       "id": "7",
       "id_name": "ps",
-      "name": "PlayStation",
+      "name": "Play Station",
       "file": [".bin", ".cue", ".iso", ".pbp"],
       "save_formats": [".mcr", ".mcd", ".srm"]
     },
     "PS1": {
       "id": "8",
       "id_name": "ps1",
-      "name": "PlayStation",
+      "name": "Play Station 1",
       "file": [".bin", ".cue", ".iso", ".pbp"],
       "save_formats": [".mcr", ".mcd", ".srm"]
     },

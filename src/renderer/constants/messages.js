@@ -3,38 +3,61 @@ export const CONFIRMATION_MESSAGES = {
     `¿Desea importar las ROMs desde la SD (${sdPath}) al PC?`,
   EXPORT_TO_SD: (sdPath) =>
     `¿Desea exportar todas las ROMs del PC a la SD (${sdPath})?`,
+  DELETE_ROM: (romTitle) =>
+    `¿Estás seguro de que quieres eliminar "${romTitle}"?\n\nEsto eliminará:\n- El archivo ROM\n- La entrada del JSON\n\nEsta acción no se puede deshacer.`,
 };
 
 export const SUCCESS_MESSAGES = {
-  IMPORT_FROM_SD: "ROMs importadas exitosamente desde SD!",
-  EXPORT_TO_SD: "ROMs exportadas exitosamente a la SD!",
+  IMPORT_FROM_SD: "¡ROMs importadas exitosamente desde la SD!",
+  EXPORT_TO_SD: "¡ROMs exportadas exitosamente a la SD!",
   ADD_ROM: (romName, system) =>
-    `ROM "${romName}" añadida exitosamente al sistema ${system.toUpperCase()}!`,
+    `¡ROM "${romName}" añadida exitosamente al sistema ${system.toUpperCase()}!`,
+  DELETE_ROM: (romTitle) => `ROM "${romTitle}" eliminada correctamente`,
+  UPDATE_ROM: "ROM actualizada correctamente",
 };
 
 export const ERROR_MESSAGES = {
   IMPORT_ROMS: (error) => `Error al importar ROMs: ${error}`,
   EXPORT_ROMS: (error) => `Error al exportar ROMs: ${error}`,
   ADD_ROM: (error) => `Error al añadir ROM: ${error}`,
+  DELETE_ROM: (error) => `Error al eliminar ROM: ${error}`,
+  UPDATE_ROM: (error) => `Error al actualizar ROM: ${error}`,
+  LOAD_CONSOLES: (error) => `Error al cargar las consolas: ${error}`,
+  SELECT_FILE: (error) => `Error al seleccionar archivo: ${error}`,
   UNKNOWN_ERROR: "Error desconocido",
+  CONNECTION_ERROR: (error) => `Error de conexión: ${error}`,
+};
+
+export const VALIDATION_MESSAGES = {
+  EMPTY_TITLE: "El título no puede estar vacío",
+  SELECT_CONSOLE: "Por favor selecciona una consola",
+  SELECT_ROM_FILE: "Por favor selecciona un archivo ROM",
+  MAX_TITLE_LENGTH: (max) => `El título no puede exceder ${max} caracteres`,
 };
 
 export const UI_TEXT = {
-  APP_TITLE: "🎮 ROM Manager",
-  SD_PATH_LABEL: "Galic SD Path:",
+  APP_TITLE: "🎮 Gestor de ROMs",
+  SD_PATH_LABEL: "Ruta Galic SD:",
   SD_PATH_PLACEHOLDER: "D:/",
-  LOADING: "Loading...",
-  NO_COLLECTIONS_TITLE: "No ROM collections found!",
-  NO_COLLECTIONS_MESSAGE: 'Click "Sync ROMs" to import your ROMs from SD card.',
-  TOTAL_CONSOLES: "Total Consoles:",
-  TOTAL_ROMS: "Total ROMs:",
+  LOADING: "Cargando...",
+  NO_COLLECTIONS_TITLE: "¡No se encontraron colecciones de ROMs!",
+  NO_COLLECTIONS_MESSAGE:
+    'Haz clic en "Importar desde Galic SD" para importar tus ROMs desde la tarjeta SD.',
+  TOTAL_CONSOLES: "Total de Consolas:",
+  TOTAL_ROMS: "Total de ROMs:",
 };
 
 export const BUTTON_LABELS = {
-  ADD_ROM: "➕ Add ROM",
-  IMPORT_FROM_SD: "📥 Import from Galic SD",
-  EXPORT_TO_SD: "📤 Export to Galic SD",
-  REFRESH: "🔄️ Refresh",
+  ADD_ROM: "➕ Añadir ROM",
+  IMPORT_FROM_SD: "📥 Importar desde Galic SD",
+  EXPORT_TO_SD: "📤 Exportar a Galic SD",
+  REFRESH: "🔄️ Actualizar",
+  CANCEL: "Cancelar",
+  CONFIRM: "Confirmar",
+  CLOSE: "Cerrar",
+  SAVE: "Guardar",
+  DELETE: "Eliminar",
 };
 
 export const DEFAULT_SD_PATH = "D:/";
+export const MAX_TITLE_LENGTH = 100;

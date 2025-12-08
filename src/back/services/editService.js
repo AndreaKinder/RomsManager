@@ -1,5 +1,5 @@
-import { getEditRomSystemJsonPC } from "./utils/getJsonUtils";
+import { updateRomInJson } from "./utils/getJsonUtils.js";
 
 export function editRomTitle(romName, newRomTitle) {
-  return getEditRomSystemJsonPC(romName, "title", newRomTitle);
+  return updateRomInJson(romName, "title", newRomTitle);
 }
