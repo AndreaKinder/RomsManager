@@ -1,5 +1,5 @@
-const path = require("path");
-const rules = require("./webpack.rules");
+import path from "path";
+import rules from "./webpack.rules";
 
 rules.push({
   test: /\.css$/,
@@ -15,7 +15,6 @@ rules.push({
 });
 
 module.exports = {
-  // Put your normal webpack config below here
   module: {
     rules,
   },
