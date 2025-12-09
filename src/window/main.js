@@ -174,6 +174,17 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("edit-rom-name", async (event, romName, newRomName) => {
+    try {
+      const { editRomName } = await import("../back/services/editService.js");
+      const result = editRomName(romName, newRomName);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error("Failed to edit ROM name:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("delete-rom", async (event, romName) => {
     try {
       const { deleteRomFromJson } =

@@ -21,5 +21,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("add-rom-from-pc", selectedConsole, romFilePath),
   editRomTitle: (romName, newTitle) =>
     ipcRenderer.invoke("edit-rom-title", romName, newTitle),
+  editRomName: (romName, newRomName) =>
+    ipcRenderer.invoke("edit-rom-name", romName, newRomName),
   deleteRom: (romName) => ipcRenderer.invoke("delete-rom", romName),
 });
