@@ -14,8 +14,13 @@ A modern desktop application for managing retro gaming ROM collections across mu
 ✅ **SD Card Import**: Import ROMs directly from SD cards or external drives  
 ✅ **Smart Detection**: Automatic system detection based on file extensions  
 ✅ **Organized Storage**: ROMs organized by console system with JSON metadata  
-✅ **Modern UI**: Clean, dark-themed interface with smooth animations  
+✅ **Modern UI**: Clean, dark-themed interface with retro gaming aesthetics  
 ✅ **File Management**: Add individual ROMs or bulk import entire collections  
+✅ **ROM Editing**: Edit ROM titles and metadata with inline editor  
+✅ **Cover Art Support**: Display custom cover images for each ROM  
+✅ **Save Management**: Import, export, and manage save files for your ROMs  
+✅ **Retro Styling**: Pixel-art font and retro visual effects for authentic gaming feel  
+✅ **Quick Export**: One-click ROM and save file export functionality  
 
 ## Screenshots
 
@@ -77,13 +82,32 @@ npm run package
 3. Click **"📥 Import from SD"**
 4. All ROMs will be imported and organized by system
 
-### Browsing Your Collection
+### Managing Your Collection
 
+#### Browsing ROMs
 - Click on any console header to expand/collapse the ROM list
 - Each ROM card displays:
-  - ROM title
-  - File name
-  - Storage path
+  - ROM title with retro pixel-art font
+  - Custom cover art (if available)
+  - Save file indicator (💾) if a save exists
+  - Action buttons for edit, delete, and export
+
+#### Editing ROMs
+1. Click the **✏️ Edit** button on any ROM card
+2. Modify the ROM title
+3. Select a cover image (PNG, JPG, GIF, WebP)
+4. Import a save file if available
+5. Click **Save** to apply changes
+
+#### Managing Save Files
+- **View Save Status**: ROMs with save files show a 💾 icon
+- **Export Save**: Click the 💾 icon to export the save file
+- **Import Save**: Use the Edit modal to import save files from your PC
+
+#### Exporting ROMs
+- Click the **⬇️ Download** button on any ROM card
+- Choose export location
+- ROM file is copied to your selected directory
 
 ## Supported Systems
 
@@ -117,14 +141,18 @@ RomsManager/
 │   │       ├── syncService.js   # Import/export logic
 │   │       └── uiDataService.js # Data aggregation
 │   ├── renderer/                # React frontend
+│   │   ├── assets/
+│   │   │   └── fonts/           # Retro gaming fonts
 │   │   ├── components/
 │   │   │   └── roms/
+│   │   │       ├── RomCard.jsx  # ROM display component
+│   │   │       └── EditRomModal.jsx # ROM editing modal
 │   │   └── App.jsx
 │   ├── window/
 │   │   ├── main.js             # Electron main process
 │   │   └── preload.js          # IPC bridge
 │   └── styles/
-│       └── index.css
+│       └── index.css           # Global styles with retro theme
 ├── docs/
 │   └── ARCHITECTURE.md         # Detailed architecture docs
 └── README.md
@@ -137,11 +165,27 @@ RomsManager/
 ROMs are stored in:
 ```
 C:/Users/{user}/Documents/Roms/
-├── Json/           # Metadata for each system
+├── Json/           # Metadata for each system (title, paths, etc.)
+├── Covers/         # Cover art images for ROMs
+├── Saves/          # Save files organized by console
 ├── gb/             # Game Boy ROMs
 ├── gba/            # Game Boy Advance ROMs
 ├── ps/             # PlayStation 1 ROMs
 └── ...
+```
+
+#### Metadata Structure (JSON)
+Each console has a JSON file storing ROM metadata:
+```json
+{
+  "romName.gba": {
+    "title": "Game Title",
+    "romName": "romName.gba",
+    "romPath": "C:/Users/.../Roms/gba/romName.gba",
+    "coverPath": "C:/Users/.../Roms/Covers/gba/romName.png",
+    "savePath": "C:/Users/.../Roms/Saves/gba/romName.sav"
+  }
+}
 ```
 
 ### SD Card Structure
@@ -171,10 +215,14 @@ npm run lint       # Lint code
 
 ### Tech Stack
 
-- **Electron**: Desktop app framework
+- **Electron 39**: Desktop app framework
 - **React 19**: UI library
 - **Webpack**: Module bundler
 - **Electron Forge**: Build tooling
+- **Better-SQLite3**: Database for ROM metadata
+- **Sharp**: Image processing for cover art
+- **xml2js**: XML parsing for game metadata
+- **Press Start 2P Font**: Retro pixel-art typography
 - **ES Modules**: Modern JavaScript modules
 
 ## Configuration
@@ -218,6 +266,18 @@ Edit `src/back/data/consoles.json`:
 1. **File Extension**: Check if the ROM extension is supported
 2. **Console Definitions**: Verify system exists in `consoles.json`
 3. **Extension Format**: Extensions must include the dot (e.g., `.gb` not `gb`)
+
+### Cover Images Not Displaying
+
+1. **File Format**: Ensure cover is PNG, JPG, GIF, or WebP
+2. **File Permissions**: Check read permissions on cover files
+3. **Path Validation**: Verify cover path is correctly stored in JSON metadata
+
+### Save Files Not Loading
+
+1. **Save Path**: Ensure save file exists at the specified path
+2. **File Extension**: Common extensions: `.sav`, `.srm`, `.dat`, `.state`
+3. **Import Process**: Use the Edit modal to properly import save files
 
 ## Contributing
 
