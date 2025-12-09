@@ -1,7 +1,7 @@
 import React from "react";
 import { UI_TEXT } from "../../constants/messages";
 
-const APP_VERSION = "0.1.0-alpha";
+const APP_VERSION = "0.2.0-alpha";
 
 function AppFooter({ totalConsoles, totalRoms }) {
   return (
