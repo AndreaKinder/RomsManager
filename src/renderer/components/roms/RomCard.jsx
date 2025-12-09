@@ -68,6 +68,29 @@ function RomCard({ rom, onRomUpdated }) {
       alert(`Error al exportar la ROM: ${error.message}`);
     }
   };
+
+  const handleExportSaveClick = async (e) => {
+    e.stopPropagation();
+
+    if (!rom.savePath) {
+      alert("No hay partida guardada para esta ROM");
+      return;
+    }
+
+    try {
+      const result = await window.electronAPI.exportSaveCopy(rom.savePath);
+
+      if (result.success) {
+        alert(
+          `Partida guardada de "${rom.title}" exportada correctamente a: ${result.filePath}`,
+        );
+      } else if (result.error !== "Export cancelled") {
+        alert(`Error al exportar la partida: ${result.error}`);
+      }
+    } catch (error) {
+      alert(`Error al exportar la partida: ${error.message}`);
+    }
+  };
   const handleSave = async () => {
     setIsModalOpen(false);
     if (onRomUpdated) {
@@ -93,6 +116,15 @@ function RomCard({ rom, onRomUpdated }) {
             </p>
           </div>
         </div>
+        {rom.savePath && (
+          <button
+            className="rom-save-indicator"
+            onClick={handleExportSaveClick}
+            title="Exportar partida guardada"
+          >
+            💾
+          </button>
+        )}
         <div className="rom-card-actions-icons">
           <button
             className="rom-icon-btn btn-delete"
