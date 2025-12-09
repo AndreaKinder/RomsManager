@@ -96,6 +96,34 @@ app.whenReady().then(async () => {
     return result.canceled ? null : result.filePaths[0];
   });
 
+  ipcMain.handle("select-save-file", async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openFile"],
+      filters: [
+        {
+          name: "Save Files",
+          extensions: [
+            "sav",
+            "srm",
+            "brm",
+            "mcr",
+            "mcd",
+            "eep",
+            "sra",
+            "fla",
+            "dsv",
+            "ps2",
+            "raw",
+            "gci",
+            "bin",
+          ],
+        },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+    return result.canceled ? null : result.filePaths[0];
+  });
+
   ipcMain.handle("select-folder", async () => {
     const result = await dialog.showOpenDialog({
       properties: ["openDirectory"],
@@ -163,6 +191,73 @@ app.whenReady().then(async () => {
     },
   );
 
+  ipcMain.handle(
+    "add-save-from-pc",
+    async (event, romName, consoleId, saveFilePath) => {
+      try {
+        const fs = require("fs");
+        const path = require("path");
+
+        // Validate inputs
+        if (!romName) {
+          return {
+            success: false,
+            error: "No ROM selected",
+          };
+        }
+
+        if (!consoleId) {
+          return {
+            success: false,
+            error: "No console specified",
+          };
+        }
+
+        if (!saveFilePath) {
+          return {
+            success: false,
+            error: "No save file selected",
+          };
+        }
+
+        // Import utility functions
+        const { getSavePathPC } =
+          await import("../back/services/utils/getPaths.js");
+        const { updateRomInJson } =
+          await import("../back/services/utils/getJsonUtils.js");
+
+        // Get destination path for save file
+        const savePathPC = getSavePathPC(consoleId, romName);
+        const destDir = path.dirname(savePathPC);
+
+        // Create Saves directory if it doesn't exist
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        // Copy save file to destination
+        fs.copyFileSync(saveFilePath, savePathPC);
+
+        // Update ROM JSON with save path
+        try {
+          updateRomInJson(romName, "savePath", savePathPC);
+        } catch (jsonError) {
+          console.warn("Could not update ROM JSON:", jsonError.message);
+        }
+
+        return {
+          success: true,
+          romName: romName,
+          savePath: savePathPC,
+          system: consoleId,
+        };
+      } catch (error) {
+        console.error("Failed to add save file:", error);
+        return { success: false, error: error.message };
+      }
+    },
+  );
+
   ipcMain.handle("edit-rom-title", async (event, romName, newTitle) => {
     try {
       const { editRomTitle } = await import("../back/services/editService.js");
@@ -211,6 +306,21 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("export-save-copy", async (event, sourcePath) => {
+    try {
+      const { exportSaveCopy } =
+        await import("../back/services/syncService.js");
+      const filePath = await exportSaveCopy(sourcePath, dialog);
+      if (filePath) {
+        return { success: true, filePath };
+      }
+      return { success: false, error: "Export cancelled" };
+    } catch (error) {
+      console.error("Failed to export save file:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("get-available-consoles", async () => {
     try {
       const consolesData = await import("../back/data/consoles.json", {
@@ -234,6 +344,16 @@ app.whenReady().then(async () => {
     } catch (error) {
       console.error("Failed to get generated consoles:", error);
       return [];
+    }
+  });
+
+  ipcMain.handle("get-all-roms", async () => {
+    try {
+      const uiDataService = await import("../back/services/uiDataService.js");
+      return uiDataService.getAllRoms();
+    } catch (error) {
+      console.error("Failed to get all roms:", error);
+      return {};
     }
   });
 
