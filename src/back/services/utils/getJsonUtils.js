@@ -81,9 +81,65 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
     const romsData = readExistingRomsData(jsonFilePath);
 
     if (romsData[romName]) {
-      romsData[romName][fieldToUpdate] = newValue;
-      writeRomsDataToFile(jsonFilePath, romsData);
-      return romsData[romName];
+      // Caso: actualizar campos simples (title, system, etc)
+      if (fieldToUpdate !== "romName" && fieldToUpdate !== "romPath") {
+        romsData[romName][fieldToUpdate] = newValue;
+        writeRomsDataToFile(jsonFilePath, romsData);
+        return romsData[romName];
+      }
+
+      // Caso: actualizar romName
+      if (fieldToUpdate === "romName") {
+        const oldRomPath = romsData[romName].romPath;
+        const newRomPath = path.join(path.dirname(oldRomPath), newValue);
+
+        // Renombrar archivo físico si existe
+        if (fs.existsSync(oldRomPath)) {
+          fs.renameSync(oldRomPath, newRomPath);
+        }
+
+        // Crear nueva entrada con el nuevo nombre
+        const updatedRom = {
+          ...romsData[romName],
+          romName: newValue,
+          romPath: newRomPath,
+        };
+
+        // Eliminar entrada vieja y agregar nueva
+        delete romsData[romName];
+        romsData[newValue] = updatedRom;
+
+        writeRomsDataToFile(jsonFilePath, romsData);
+        return updatedRom;
+      }
+
+      // Caso: actualizar romPath
+      if (fieldToUpdate === "romPath") {
+        const oldRomPath = romsData[romName].romPath;
+        const newRomName = path.basename(newValue);
+
+        // Renombrar archivo físico si existe
+        if (fs.existsSync(oldRomPath)) {
+          fs.renameSync(oldRomPath, newValue);
+        }
+
+        // Actualizar o recrear entrada según si cambió el nombre
+        if (newRomName !== romName) {
+          const updatedRom = {
+            ...romsData[romName],
+            romName: newRomName,
+            romPath: newValue,
+          };
+          delete romsData[romName];
+          romsData[newRomName] = updatedRom;
+          writeRomsDataToFile(jsonFilePath, romsData);
+          return updatedRom;
+        } else {
+          romsData[romName].romPath = newValue;
+          writeRomsDataToFile(jsonFilePath, romsData);
+          return romsData[romName];
+        }
+      }
     }
   }
 

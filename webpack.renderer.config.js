@@ -1,5 +1,5 @@
-import path from "path";
-import rules from "./webpack.rules";
+const path = require("path");
+const rules = require("./webpack.rules");
 
 rules.push({
   test: /\.css$/,

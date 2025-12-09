@@ -33,6 +33,11 @@ function EditRomModal({ rom, onClose, onSave }) {
       const result = await window.electronAPI.editRomTitle(rom.romName, title);
 
       if (result.success) {
+        const fileExtension = rom.romName.split(".").pop();
+        await window.electronAPI.editRomName(
+          rom.romName,
+          `${title}.${fileExtension}`,
+        );
         onSave();
       } else {
         setError(result.error || ERROR_MESSAGES.UPDATE_ROM("desconocido"));
@@ -81,7 +86,6 @@ function EditRomModal({ rom, onClose, onSave }) {
                 type="text"
                 id="romName"
                 value={rom.romName}
-                disabled
                 className="input-disabled"
               />
             </div>
