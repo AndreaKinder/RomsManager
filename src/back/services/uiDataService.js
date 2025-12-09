@@ -76,3 +76,21 @@ export function getGeneratedConsoles() {
 
   return filterConsolesWithRoms(consoles);
 }
+
+export function getAllRoms() {
+  const systemPath = getPathSystemJsonSystemsPC();
+  const systemsJson = getArraySystemsJson();
+
+  const allRoms = {};
+
+  systemsJson.forEach((jsonFile) => {
+    const consoleId = extractConsoleIdFromFilename(jsonFile);
+    const jsonPath = path.join(systemPath, jsonFile);
+    const roms = parseRomsFromJsonFile(jsonPath);
+    if (roms.length > 0) {
+      allRoms[consoleId] = roms;
+    }
+  });
+
+  return allRoms;
+}
