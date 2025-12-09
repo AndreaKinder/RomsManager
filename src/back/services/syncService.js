@@ -4,7 +4,6 @@ import { identifyRomSystem } from "./utils/getFilters.js";
 import { getRomPathPC, getRomPathGalic } from "./utils/getPaths.js";
 import { getSystemIdArray } from "./utils/getArrays.js";
 import { createRomTemplate, persistRomToJson } from "./utils/getJsonUtils.js";
-import axios from "axios";
 import logger from "./utils/logger.js";
 
 // Generic function to sync a single ROM file
@@ -113,6 +112,7 @@ export function exportAllRomsPcToGalic(sdPath) {
 
   logger.exportComplete();
 }
+
 export async function exportRomCopy(sourcePath, dialog) {
   if (!fs.existsSync(sourcePath)) {
     throw new Error(`ROM file not found: ${sourcePath}`);
@@ -133,6 +133,28 @@ export async function exportRomCopy(sourcePath, dialog) {
     logger.info(`ROM exported to: ${result.filePath}`);
     return result.filePath;
   }
+  return null;
+}
 
+export async function exportSaveCopy(sourcePath, dialog) {
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`Save file not found: ${sourcePath}`);
+  }
+
+  const saveName = path.basename(sourcePath);
+  const result = await dialog.showSaveDialog({
+    title: "Guardar partida como",
+    defaultPath: saveName,
+    filters: [
+      { name: "Save Files", extensions: [path.extname(saveName).slice(1)] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+
+  if (!result.canceled && result.filePath) {
+    fs.copyFileSync(sourcePath, result.filePath);
+    logger.info(`Save file exported to: ${result.filePath}`);
+    return result.filePath;
+  }
   return null;
 }
