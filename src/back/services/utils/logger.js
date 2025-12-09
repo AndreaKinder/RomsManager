@@ -56,7 +56,7 @@ class Logger {
 
   // Utility methods for common log patterns
   syncStart(location) {
-    this.info(`Starting ROM sync from: ${location}`);
+    this.info(`Starting sync from: ${location}`);
   }
 
   syncComplete() {
