@@ -51,6 +51,30 @@ function RomCard({ rom, onRomUpdated }) {
     setIsModalOpen(false);
   };
 
+  const handleDownloadClick = async (e) => {
+    e.stopPropagation();
+
+    try {
+      const result = await window.electronAPI.downloadRom(rom.romPath);
+
+      if (result.success) {
+        alert(
+          SUCCESS_MESSAGES.DOWNLOAD_ROM ||
+            `ROM "${rom.title}" descargada correctamente`,
+        );
+      } else {
+        alert(
+          ERROR_MESSAGES.DOWNLOAD_ROM ||
+            `Error al descargar la ROM: ${result.error}`,
+        );
+      }
+    } catch (error) {
+      alert(
+        ERROR_MESSAGES.DOWNLOAD_ROM ||
+          `Error al descargar la ROM: ${error.message}`,
+      );
+    }
+  };
   const handleSave = async () => {
     setIsModalOpen(false);
     if (onRomUpdated) {
