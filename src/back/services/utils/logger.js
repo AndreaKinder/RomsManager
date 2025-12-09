@@ -4,10 +4,10 @@
  */
 
 const LogLevel = {
-  ERROR: 'ERROR',
-  WARN: 'WARN',
-  INFO: 'INFO',
-  DEBUG: 'DEBUG',
+  ERROR: "ERROR",
+  WARN: "WARN",
+  INFO: "INFO",
+  DEBUG: "DEBUG",
 };
 
 class Logger {
@@ -60,7 +60,7 @@ class Logger {
   }
 
   syncComplete() {
-    this.info('✓ Sync completed!');
+    this.info("✓ Sync completed!");
   }
 
   exportStart(location) {
@@ -68,7 +68,7 @@ class Logger {
   }
 
   exportComplete() {
-    this.info('✓ Export completed!');
+    this.info("✓ Export completed!");
   }
 
   processingSystem(systemName) {
@@ -80,14 +80,14 @@ class Logger {
   }
 
   directoryNotFound() {
-    this.info('  Directory not found, skipping...');
+    this.info("  Directory not found, skipping...");
   }
 
   noFilesFound() {
-    this.info('  No files found');
+    this.info("  No files found");
   }
 
-  skippingFile(fileName, reason = 'non-ROM file') {
+  skippingFile(fileName, reason = "non-ROM file") {
     this.info(`Skipping ${reason}: ${fileName}`);
   }
 
@@ -100,11 +100,11 @@ class Logger {
   }
 
   systemsFound(systems) {
-    this.info(`Systems found: ${systems.join(', ')}`);
+    this.info(`Systems found: ${systems.join(", ")}`);
   }
 }
 
 // Create singleton instance
-const logger = new Logger(process.env.DEBUG === 'true');
+const logger = new Logger(process.env.DEBUG === "true");
 
 export default logger;

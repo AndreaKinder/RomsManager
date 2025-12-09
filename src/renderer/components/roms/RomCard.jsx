@@ -51,28 +51,21 @@ function RomCard({ rom, onRomUpdated }) {
     setIsModalOpen(false);
   };
 
-  const handleDownloadClick = async (e) => {
+  const handleExportClick = async (e) => {
     e.stopPropagation();
 
     try {
-      const result = await window.electronAPI.downloadRom(rom.romPath);
+      const result = await window.electronAPI.exportRomCopy(rom.romPath);
 
       if (result.success) {
         alert(
-          SUCCESS_MESSAGES.DOWNLOAD_ROM ||
-            `ROM "${rom.title}" descargada correctamente`,
+          `ROM "${rom.title}" exportada correctamente a: ${result.filePath}`,
         );
-      } else {
-        alert(
-          ERROR_MESSAGES.DOWNLOAD_ROM ||
-            `Error al descargar la ROM: ${result.error}`,
-        );
+      } else if (result.error !== "Export cancelled") {
+        alert(`Error al exportar la ROM: ${result.error}`);
       }
     } catch (error) {
-      alert(
-        ERROR_MESSAGES.DOWNLOAD_ROM ||
-          `Error al descargar la ROM: ${error.message}`,
-      );
+      alert(`Error al exportar la ROM: ${error.message}`);
     }
   };
   const handleSave = async () => {
@@ -148,9 +141,9 @@ function RomCard({ rom, onRomUpdated }) {
           </button>
           <button
             className="rom-icon-btn btn-download"
-            onClick={handleDownloadClick}
+            onClick={handleExportClick}
             disabled={isDeleting}
-            title="Descargar ROM"
+            title="Exportar ROM"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

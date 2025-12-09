@@ -4,6 +4,7 @@ import { identifyRomSystem } from "./utils/getFilters.js";
 import { getRomPathPC, getRomPathGalic } from "./utils/getPaths.js";
 import { getSystemIdArray } from "./utils/getArrays.js";
 import { createRomTemplate, persistRomToJson } from "./utils/getJsonUtils.js";
+import axios from "axios";
 import logger from "./utils/logger.js";
 
 // Generic function to sync a single ROM file
@@ -112,9 +113,26 @@ export function exportAllRomsPcToGalic(sdPath) {
 
   logger.exportComplete();
 }
-export async function downloadRom(url, destinationPath) {
-  logger.downloadStart(url, destinationPath);
-  const response = await axios.get(url, { responseType: "arraybuffer" });
-  fs.writeFileSync(destinationPath, response.data);
-  logger.downloadComplete();
+export async function exportRomCopy(sourcePath, dialog) {
+  if (!fs.existsSync(sourcePath)) {
+    throw new Error(`ROM file not found: ${sourcePath}`);
+  }
+
+  const romName = path.basename(sourcePath);
+  const result = await dialog.showSaveDialog({
+    title: "Guardar ROM como",
+    defaultPath: romName,
+    filters: [
+      { name: "ROM Files", extensions: [path.extname(romName).slice(1)] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+
+  if (!result.canceled && result.filePath) {
+    fs.copyFileSync(sourcePath, result.filePath);
+    logger.info(`ROM exported to: ${result.filePath}`);
+    return result.filePath;
+  }
+
+  return null;
 }

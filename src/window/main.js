@@ -197,13 +197,16 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("download-rom", async (event, url, destinationPath) => {
+  ipcMain.handle("export-rom-copy", async (event, sourcePath) => {
     try {
-      const { downloadRom } = await import("../back/services/syncService.js");
-      await downloadRom(url, destinationPath);
-      return { success: true };
+      const { exportRomCopy } = await import("../back/services/syncService.js");
+      const filePath = await exportRomCopy(sourcePath, dialog);
+      if (filePath) {
+        return { success: true, filePath };
+      }
+      return { success: false, error: "Export cancelled" };
     } catch (error) {
-      console.error("Failed to download ROM:", error);
+      console.error("Failed to export ROM:", error);
       return { success: false, error: error.message };
     }
   });
