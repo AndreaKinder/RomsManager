@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("../renderer/assets/fonts/PressStart2P-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -289,35 +298,106 @@ body {
   border-color: var(--primary-color);
 }
 
+/* ROM Card Background Icon */
+.rom-card-bg-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  fill: var(--text-primary);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rom-card:hover .rom-card-bg-icon {
+  opacity: 0.05;
+}
+
+/* ROM Card Cover Image */
+.rom-card-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+  will-change: opacity;
+}
+
+/* Overlay oscuro sobre la carátula para mejorar legibilidad */
+.rom-card-cover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.75) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
+  z-index: 1;
+  transition: background 0.2s ease;
+}
+
+.rom-card:hover .rom-card-cover::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.65) 0%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+}
+
 .rom-card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
+  z-index: 2;
+  padding: 20px;
+  padding-bottom: 100px;
 }
 
 .rom-title {
+  font-family: "Press Start 2P", monospace;
   font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: var(--primary-color);
-  line-height: 1.4;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.6;
+  text-align: center;
+  text-shadow:
+    2px 2px 0px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(99, 102, 241, 0.5);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  max-width: 100%;
+  display: block;
+  word-break: break-word;
 }
 
 .rom-details {
+  margin: 6px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   font-size: 13px;
   line-height: 1.8;
   color: var(--text-secondary);
-}
-
-.rom-details p {
-  margin: 6px 0;
-  word-break: break-all;
-}
-
-.rom-details strong {
-  color: var(--text-primary);
-  margin-right: 8px;
-  font-weight: 500;
 }
 
 .no-roms {
@@ -603,6 +683,7 @@ body {
   border: none;
   padding: 0;
   line-height: 1;
+  z-index: 2;
 }
 
 .rom-save-indicator:hover {
@@ -628,6 +709,7 @@ body {
   gap: 8px;
   opacity: 0.8;
   transition: opacity 0.2s;
+  z-index: 2;
 }
 
 .rom-card:hover .rom-card-actions-icons {

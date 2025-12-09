@@ -25,3 +25,9 @@ export function getSavePathPC(consoleId, romFileName) {
   const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
   return `${userHome}/Documents/Roms/Saves/${consoleId}/${romNameWithoutExt}.sav`;
 }
+
+export function getCoverPathPC(consoleId, romFileName, imageExtension) {
+  const userHome = process.env.USERPROFILE || process.env.HOME;
+  const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
+  return `${userHome}/Documents/Roms/Covers/${consoleId}/${romNameWithoutExt}${imageExtension}`;
+}
