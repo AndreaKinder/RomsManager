@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   deleteRom: (id) => ipcRenderer.invoke("delete-rom", id),
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
   selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
+  selectSaveFile: () => ipcRenderer.invoke("select-save-file"),
   selectFolder: () => ipcRenderer.invoke("select-folder"),
   exportToSD: (data) => ipcRenderer.invoke("export-to-sd", data),
   importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
@@ -19,6 +20,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   exportRomsToSD: (sdPath) => ipcRenderer.invoke("export-roms-to-sd", sdPath),
   addRomFromPC: (selectedConsole, romFilePath) =>
     ipcRenderer.invoke("add-rom-from-pc", selectedConsole, romFilePath),
+  addSaveFromPC: (romName, consoleId, saveFilePath) =>
+    ipcRenderer.invoke("add-save-from-pc", romName, consoleId, saveFilePath),
   editRomTitle: (romName, newTitle) =>
     ipcRenderer.invoke("edit-rom-title", romName, newTitle),
   editRomName: (romName, newRomName) =>
@@ -26,4 +29,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   deleteRom: (romName) => ipcRenderer.invoke("delete-rom", romName),
   exportRomCopy: (sourcePath) =>
     ipcRenderer.invoke("export-rom-copy", sourcePath),
+  exportSaveCopy: (sourcePath) =>
+    ipcRenderer.invoke("export-save-copy", sourcePath),
 });
