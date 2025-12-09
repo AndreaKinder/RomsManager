@@ -587,6 +587,36 @@ body {
   white-space: nowrap;
 }
 
+/* ROM Save Indicator */
+.rom-save-indicator {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-size: 20px;
+  opacity: 0.8;
+  transition: all 0.2s;
+  cursor: pointer;
+  animation: fadeIn 0.3s ease-out;
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.rom-save-indicator:hover {
+  opacity: 1;
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+}
+
+.rom-save-indicator:active {
+  transform: scale(1.05);
+}
+
+.rom-card:hover .rom-save-indicator {
+  opacity: 1;
+}
+
 /* ROM Card Icon Actions */
 .rom-card-actions-icons {
   position: absolute;
