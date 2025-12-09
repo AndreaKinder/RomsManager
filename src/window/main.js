@@ -258,6 +258,83 @@ app.whenReady().then(async () => {
     },
   );
 
+  ipcMain.handle(
+    "add-cover-from-pc",
+    async (event, romName, consoleId, coverFilePath) => {
+      try {
+        const fs = require("fs");
+        const path = require("path");
+
+        // Validate inputs
+        if (!romName) {
+          return {
+            success: false,
+            error: "No ROM selected",
+          };
+        }
+
+        if (!consoleId) {
+          return {
+            success: false,
+            error: "No console specified",
+          };
+        }
+
+        if (!coverFilePath) {
+          return {
+            success: false,
+            error: "No cover file selected",
+          };
+        }
+
+        // Import utility functions
+        const { getCoverPathPC } =
+          await import("../back/services/utils/getPaths.js");
+        const { updateRomInJson } =
+          await import("../back/services/utils/getJsonUtils.js");
+        const sharp = require("sharp");
+
+        // Always use .webp for optimized covers
+        const imageExtension = ".webp";
+
+        // Get destination path for cover file
+        const coverPathPC = getCoverPathPC(consoleId, romName, imageExtension);
+        const destDir = path.dirname(coverPathPC);
+
+        // Create Covers directory if it doesn't exist
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        // Optimize and resize image to 400x400 maintaining aspect ratio
+        await sharp(coverFilePath)
+          .resize(400, 400, {
+            fit: "cover",
+            position: "center",
+          })
+          .webp({ quality: 85 })
+          .toFile(coverPathPC);
+
+        // Update ROM JSON with cover path
+        try {
+          updateRomInJson(romName, "coverPath", coverPathPC);
+        } catch (jsonError) {
+          console.warn("Could not update ROM JSON:", jsonError.message);
+        }
+
+        return {
+          success: true,
+          romName: romName,
+          coverPath: coverPathPC,
+          system: consoleId,
+        };
+      } catch (error) {
+        console.error("Failed to add cover file:", error);
+        return { success: false, error: error.message };
+      }
+    },
+  );
+
   ipcMain.handle("edit-rom-title", async (event, romName, newTitle) => {
     try {
       const { editRomTitle } = await import("../back/services/editService.js");

@@ -22,6 +22,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("add-rom-from-pc", selectedConsole, romFilePath),
   addSaveFromPC: (romName, consoleId, saveFilePath) =>
     ipcRenderer.invoke("add-save-from-pc", romName, consoleId, saveFilePath),
+  addCoverFromPC: (romName, consoleId, coverFilePath) =>
+    ipcRenderer.invoke("add-cover-from-pc", romName, consoleId, coverFilePath),
   editRomTitle: (romName, newTitle) =>
     ipcRenderer.invoke("edit-rom-title", romName, newTitle),
   editRomName: (romName, newRomName) =>

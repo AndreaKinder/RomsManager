@@ -12,6 +12,8 @@ function EditRomModal({ rom, onClose, onSave }) {
   const [error, setError] = useState(null);
   const [selectedSaveFile, setSelectedSaveFile] = useState(null);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [selectedCoverFile, setSelectedCoverFile] = useState(null);
+  const [coverMessage, setCoverMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,6 +66,19 @@ function EditRomModal({ rom, onClose, onSave }) {
     }
   };
 
+  const handleSelectCoverFile = async () => {
+    try {
+      const filePath = await window.electronAPI.selectCoverImage();
+      if (filePath) {
+        setSelectedCoverFile(filePath);
+        setError(null);
+        setCoverMessage(null);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.SELECT_FILE(err.message));
+    }
+  };
+
   const handleImportSave = async () => {
     if (!selectedSaveFile) {
       setError("Por favor selecciona un archivo de guardado primero");
@@ -86,6 +101,38 @@ function EditRomModal({ rom, onClose, onSave }) {
           `Partida guardada importada exitosamente para ${result.romName}`,
         );
         setSelectedSaveFile(null);
+      } else {
+        setError(result.error || ERROR_MESSAGES.UNKNOWN_ERROR);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.CONNECTION_ERROR(err.message));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImportCover = async () => {
+    if (!selectedCoverFile) {
+      setError("Por favor selecciona una imagen primero");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setCoverMessage(null);
+
+    try {
+      const result = await window.electronAPI.addCoverFromPC(
+        rom.romName,
+        rom.system,
+        selectedCoverFile,
+      );
+
+      if (result.success) {
+        setCoverMessage(
+          `Carátula importada exitosamente para ${result.romName}`,
+        );
+        setSelectedCoverFile(null);
       } else {
         setError(result.error || ERROR_MESSAGES.UNKNOWN_ERROR);
       }
@@ -159,6 +206,36 @@ function EditRomModal({ rom, onClose, onSave }) {
             </div>
 
             <div className="form-field">
+              <label htmlFor="coverFile">Importar Carátula</label>
+              <div className="file-select-container">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleSelectCoverFile}
+                  disabled={isLoading}
+                >
+                  Seleccionar imagen
+                </button>
+                {selectedCoverFile && (
+                  <span className="file-name-display">
+                    {getFileName(selectedCoverFile)}
+                  </span>
+                )}
+              </div>
+              {selectedCoverFile && (
+                <button
+                  type="button"
+                  className="btn btn-info"
+                  onClick={handleImportCover}
+                  disabled={isLoading}
+                  style={{ marginTop: "8px" }}
+                >
+                  {isLoading ? "Importando..." : "Importar Carátula"}
+                </button>
+              )}
+            </div>
+
+            <div className="form-field">
               <label htmlFor="saveFile">Importar Partida Guardada</label>
               <div className="file-select-container">
                 <button
@@ -188,6 +265,9 @@ function EditRomModal({ rom, onClose, onSave }) {
               )}
             </div>
 
+            {coverMessage && (
+              <div className="success-message">{coverMessage}</div>
+            )}
             {saveMessage && (
               <div className="success-message">{saveMessage}</div>
             )}
