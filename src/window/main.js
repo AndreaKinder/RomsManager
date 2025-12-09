@@ -197,6 +197,17 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("download-rom", async (event, url, destinationPath) => {
+    try {
+      const { downloadRom } = await import("../back/services/syncService.js");
+      await downloadRom(url, destinationPath);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to download ROM:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("get-available-consoles", async () => {
     try {
       const consolesData = await import("../back/data/consoles.json", {
