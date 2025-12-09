@@ -24,4 +24,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   editRomName: (romName, newRomName) =>
     ipcRenderer.invoke("edit-rom-name", romName, newRomName),
   deleteRom: (romName) => ipcRenderer.invoke("delete-rom", romName),
+  downloadRom: (url, destinationPath) =>
+    ipcRenderer.invoke("download-rom", url, destinationPath),
 });
