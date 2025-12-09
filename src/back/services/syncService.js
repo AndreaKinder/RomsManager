@@ -112,3 +112,9 @@ export function exportAllRomsPcToGalic(sdPath) {
 
   logger.exportComplete();
 }
+export async function downloadRom(url, destinationPath) {
+  logger.downloadStart(url, destinationPath);
+  const response = await axios.get(url, { responseType: "arraybuffer" });
+  fs.writeFileSync(destinationPath, response.data);
+  logger.downloadComplete();
+}
