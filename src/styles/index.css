@@ -278,6 +278,8 @@ body {
   background: var(--surface-light);
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  aspect-ratio: 1/1;
+  overflow: hidden;
   transition: all 0.2s;
 }
 
