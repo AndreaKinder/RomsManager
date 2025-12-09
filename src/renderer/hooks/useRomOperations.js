@@ -104,10 +104,57 @@ export const useRomOperations = () => {
     setIsLoading(false);
   };
 
+  const handleAddSaveFromPC = async (romName, consoleId, saveFilePath) => {
+    if (isLoading) return;
+
+    if (!romName) {
+      alert(ERROR_MESSAGES.ADD_ROM("Please select a ROM first"));
+      return;
+    }
+
+    if (!consoleId) {
+      alert(ERROR_MESSAGES.ADD_ROM("Console ID is missing"));
+      return;
+    }
+
+    if (!saveFilePath) {
+      alert(ERROR_MESSAGES.ADD_ROM("Please select a save file"));
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await window.electronAPI.addSaveFromPC(
+        romName,
+        consoleId,
+        saveFilePath,
+      );
+
+      if (result.canceled) {
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.success) {
+        alert(
+          `Partida guardada importada exitosamente para ${result.romName} (${result.system})`,
+        );
+      } else {
+        alert(
+          ERROR_MESSAGES.ADD_ROM(result.error || ERROR_MESSAGES.UNKNOWN_ERROR),
+        );
+      }
+    } catch (error) {
+      alert(ERROR_MESSAGES.ADD_ROM(error.message));
+    }
+    setIsLoading(false);
+  };
+
   return {
     isLoading,
     handleImportFromSD,
     handleExportToSD,
     handleAddRomFromPC,
+    handleAddSaveFromPC,
   };
 };
