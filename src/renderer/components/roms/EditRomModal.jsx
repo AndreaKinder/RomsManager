@@ -10,6 +10,8 @@ function EditRomModal({ rom, onClose, onSave }) {
   const [title, setTitle] = useState(rom.title);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSaveFile, setSelectedSaveFile] = useState(null);
+  const [saveMessage, setSaveMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,10 +51,60 @@ function EditRomModal({ rom, onClose, onSave }) {
     }
   };
 
+  const handleSelectSaveFile = async () => {
+    try {
+      const filePath = await window.electronAPI.selectSaveFile();
+      if (filePath) {
+        setSelectedSaveFile(filePath);
+        setError(null);
+        setSaveMessage(null);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.SELECT_FILE(err.message));
+    }
+  };
+
+  const handleImportSave = async () => {
+    if (!selectedSaveFile) {
+      setError("Por favor selecciona un archivo de guardado primero");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSaveMessage(null);
+
+    try {
+      const result = await window.electronAPI.addSaveFromPC(
+        rom.romName,
+        rom.system,
+        selectedSaveFile,
+      );
+
+      if (result.success) {
+        setSaveMessage(
+          `Partida guardada importada exitosamente para ${result.romName}`,
+        );
+        setSelectedSaveFile(null);
+      } else {
+        setError(result.error || ERROR_MESSAGES.UNKNOWN_ERROR);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.CONNECTION_ERROR(err.message));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleBackdropClick = (e) => {
     if (e.target.className === "modal-backdrop") {
       onClose();
     }
+  };
+
+  const getFileName = (path) => {
+    if (!path) return "";
+    return path.split(/[\\/]/).pop();
   };
 
   return (
@@ -106,6 +158,39 @@ function EditRomModal({ rom, onClose, onSave }) {
               </small>
             </div>
 
+            <div className="form-field">
+              <label htmlFor="saveFile">Importar Partida Guardada</label>
+              <div className="file-select-container">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleSelectSaveFile}
+                  disabled={isLoading}
+                >
+                  Seleccionar archivo .sav
+                </button>
+                {selectedSaveFile && (
+                  <span className="file-name-display">
+                    {getFileName(selectedSaveFile)}
+                  </span>
+                )}
+              </div>
+              {selectedSaveFile && (
+                <button
+                  type="button"
+                  className="btn btn-info"
+                  onClick={handleImportSave}
+                  disabled={isLoading}
+                  style={{ marginTop: "8px" }}
+                >
+                  {isLoading ? "Importando..." : "Importar Partida"}
+                </button>
+              )}
+            </div>
+
+            {saveMessage && (
+              <div className="success-message">{saveMessage}</div>
+            )}
             {error && <div className="error-message">{error}</div>}
           </div>
 
