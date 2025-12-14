@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import EditRomModal from "./EditRomModal";
+import ManualViewerModal from "./ManualViewerModal";
 import {
   CONFIRMATION_MESSAGES,
   SUCCESS_MESSAGES,
@@ -8,6 +9,7 @@ import {
 
 function RomCard({ rom, onRomUpdated }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEditClick = (e) => {
@@ -91,6 +93,15 @@ function RomCard({ rom, onRomUpdated }) {
       alert(`Error al exportar la partida: ${error.message}`);
     }
   };
+  const handleViewManualClick = useCallback((e) => {
+    e.stopPropagation();
+    setIsManualModalOpen(true);
+  }, []);
+
+  const handleCloseManualModal = useCallback(() => {
+    setIsManualModalOpen(false);
+  }, []);
+
   const handleExportManualClick = async (e) => {
     e.stopPropagation();
 
@@ -186,10 +197,10 @@ function RomCard({ rom, onRomUpdated }) {
         {rom.manualPath && (
           <button
             className="rom-save-indicator"
-            onClick={handleExportManualClick}
-            title="Exportar manual"
+            onClick={handleViewManualClick}
+            title="Ver manual"
           >
-            📄
+            📖
           </button>
         )}
         <div className="rom-card-actions-icons">
@@ -268,6 +279,14 @@ function RomCard({ rom, onRomUpdated }) {
           rom={rom}
           onClose={handleCloseModal}
           onSave={handleSave}
+        />
+      )}
+
+      {isManualModalOpen && rom.manualPath && (
+        <ManualViewerModal
+          manualPath={rom.manualPath}
+          romTitle={rom.title}
+          onClose={handleCloseManualModal}
         />
       )}
     </>
