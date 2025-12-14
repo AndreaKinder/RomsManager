@@ -51,6 +51,7 @@ function addRomToCollection(romsData, romObject) {
     title: romObject.title,
     romPath: romObject.romPath,
     savePath: romObject.savePath || null,
+    coverPath: romObject.coverPath || null,
   };
 
   return romsData;
