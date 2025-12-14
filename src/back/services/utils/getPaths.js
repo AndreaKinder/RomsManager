@@ -12,22 +12,22 @@ export function getXmlPathGalic(consoleId) {
 
 export function getRomPathPC(consoleId, romFileName) {
   const userHome = process.env.USERPROFILE || process.env.HOME;
-  return `${userHome}/Documents/Roms/Roms/${consoleId}/${romFileName}`;
+  return `${userHome}/Roms/Roms/${consoleId}/${romFileName}`;
 }
 
 export function getPathSystemJsonSystemsPC() {
   const userHome = process.env.USERPROFILE || process.env.HOME;
-  return `${userHome}/Documents/Roms/Json`;
+  return `${userHome}/Roms/Json`;
 }
 
 export function getSavePathPC(consoleId, romFileName) {
   const userHome = process.env.USERPROFILE || process.env.HOME;
   const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
-  return `${userHome}/Documents/Roms/Saves/${consoleId}/${romNameWithoutExt}.sav`;
+  return `${userHome}/Roms/Saves/${consoleId}/${romNameWithoutExt}.sav`;
 }
 
 export function getCoverPathPC(consoleId, romFileName, imageExtension) {
   const userHome = process.env.USERPROFILE || process.env.HOME;
   const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
-  return `${userHome}/Documents/Roms/Covers/${consoleId}/${romNameWithoutExt}${imageExtension}`;
+  return `${userHome}/Roms/Covers/${consoleId}/${romNameWithoutExt}${imageExtension}`;
 }

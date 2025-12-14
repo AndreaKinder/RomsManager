@@ -164,7 +164,7 @@ RomsManager/
 
 ROMs are stored in:
 ```
-C:/Users/{user}/Documents/Roms/
+C:/Users/{user}/Roms/
 ├── Json/           # Metadata for each system (title, paths, etc.)
 ├── Covers/         # Cover art images for ROMs
 ├── Saves/          # Save files organized by console
@@ -220,7 +220,6 @@ npm run lint       # Lint code
 - **Webpack**: Module bundler
 - **Electron Forge**: Build tooling
 - **Better-SQLite3**: Database for ROM metadata
-- **Sharp**: Image processing for cover art
 - **xml2js**: XML parsing for game metadata
 - **Press Start 2P Font**: Retro pixel-art typography
 - **ES Modules**: Modern JavaScript modules

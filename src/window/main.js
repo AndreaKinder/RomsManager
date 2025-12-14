@@ -292,7 +292,6 @@ app.whenReady().then(async () => {
           await import("../back/services/utils/getPaths.js");
         const { updateRomInJson } =
           await import("../back/services/utils/getJsonUtils.js");
-        const sharp = require("sharp");
 
         // Always use .webp for optimized covers
         const imageExtension = ".webp";
@@ -306,14 +305,8 @@ app.whenReady().then(async () => {
           fs.mkdirSync(destDir, { recursive: true });
         }
 
-        // Optimize and resize image to 400x400 maintaining aspect ratio
-        await sharp(coverFilePath)
-          .resize(400, 400, {
-            fit: "cover",
-            position: "center",
-          })
-          .webp({ quality: 85 })
-          .toFile(coverPathPC);
+        // Copy cover file to destination path
+        fs.copyFileSync(coverFilePath, coverPathPC);
 
         // Update ROM JSON with cover path
         try {
