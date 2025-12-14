@@ -36,6 +36,8 @@ const createWindow = () => {
   });
 
   mainWindow.setMenu(null);
+  mainWindow.webContents.openDevTools();
+
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 };
 
@@ -43,16 +45,27 @@ app.whenReady().then(async () => {
   protocol.handle("media", (request) => {
     const filePath = request.url.slice("media://".length);
     const decodedPath = decodeURIComponent(filePath);
-    const normalizedPath =
-      process.platform === "win32"
-        ? decodedPath.replace(/\//g, "\\")
-        : decodedPath;
+
+    // Normalize path based on platform
+    let normalizedPath;
+    if (process.platform === "win32") {
+      // Windows: convert forward slashes to backslashes
+      normalizedPath = decodedPath.replace(/\//g, "\\");
+    } else {
+      // Linux/macOS: ensure absolute path starts with /
+      normalizedPath = decodedPath.startsWith("/")
+        ? decodedPath
+        : path.resolve(decodedPath);
+    }
+
     console.log("Media protocol request:", {
       url: request.url,
       filePath,
       decodedPath,
       normalizedPath,
+      platform: process.platform,
     });
+
     // Ensure we are using file protocol correctly
     return net.fetch(url.pathToFileURL(normalizedPath).toString());
   });
