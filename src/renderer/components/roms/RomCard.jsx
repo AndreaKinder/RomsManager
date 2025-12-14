@@ -91,6 +91,26 @@ function RomCard({ rom, onRomUpdated }) {
       alert(`Error al exportar la partida: ${error.message}`);
     }
   };
+  const handleRenderManualSaveClick = async (e) => {
+    e.stopPropagation();
+
+    if (!rom.manualPath) {
+      alert("No hay partida guardada para esta ROM");
+      return;
+    }
+
+    try {
+      const result = await window.electronAPI.renderManualSave(rom.manualPath);
+
+      if (result.success) {
+        alert(`Manual de "${rom.title}" renderizado correctamente.`);
+      } else if (result.error !== "Render cancelled") {
+        alert(`Error al renderizar el manual.`);
+      }
+    } catch (error) {
+      alert(`Error al renderizar el manual: ${error.message}`);
+    }
+  };
   const handleSave = async () => {
     setIsModalOpen(false);
     if (onRomUpdated) {
@@ -164,7 +184,7 @@ function RomCard({ rom, onRomUpdated }) {
         {rom.manualPath && (
           <button
             className="rom-save-indicator"
-            onClick={() => console.log("Exportar manual")}
+            onClick={() => handleRenderManualSaveClick(rom.manualPath, dialog)}
             title="Exportar manual"
           >
             📄
