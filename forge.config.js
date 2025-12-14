@@ -9,20 +9,24 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: "@electron-forge/maker-squirrel",
-      config: {
-        iconUrl:
-          "https://raw.githubusercontent.com/andreakinder/RomsManager/main/assets/icon.ico",
-        setupIcon: "./assets/icon.ico",
-      },
-    },
+    // Squirrel requires Wine/Mono on Linux - disabled for cross-platform builds
+    // Uncomment when building on Windows directly
+    // {
+    //   name: "@electron-forge/maker-squirrel",
+    //   platforms: ["win32"],
+    //   config: {
+    //     iconUrl:
+    //       "https://raw.githubusercontent.com/andreakinder/RomsManager/main/assets/icon.ico",
+    //     setupIcon: "./assets/icon.ico",
+    //   },
+    // },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["darwin"],
+      platforms: ["win32", "darwin", "linux"],
     },
     {
       name: "@electron-forge/maker-deb",
+      platforms: ["linux"],
       config: {
         options: {
           icon: "./assets/icon.png",
