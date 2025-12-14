@@ -158,26 +158,3 @@ export async function exportSaveCopy(sourcePath, dialog) {
   }
   return null;
 }
-
-export async function exportManualCopy(sourcePath, dialog) {
-  if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Manual file not found: ${sourcePath}`);
-  }
-
-  const saveName = path.basename(sourcePath);
-  const result = await dialog.showSaveDialog({
-    title: "Guardar Manual como",
-    defaultPath: saveName,
-    filters: [
-      { name: "PDF Files", extensions: ["pdf"] },
-      { name: "All Files", extensions: ["*"] },
-    ],
-  });
-
-  if (!result.canceled && result.filePath) {
-    fs.copyFileSync(sourcePath, result.filePath);
-    logger.info(`Manual file exported to: ${result.filePath}`);
-    return result.filePath;
-  }
-  return null;
-}

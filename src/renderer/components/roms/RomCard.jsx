@@ -102,28 +102,6 @@ function RomCard({ rom, onRomUpdated }) {
     setIsManualModalOpen(false);
   }, []);
 
-  const handleExportManualClick = async (e) => {
-    e.stopPropagation();
-
-    if (!rom.manualPath) {
-      alert("No hay Manual para esta ROM");
-      return;
-    }
-
-    try {
-      const result = await window.electronAPI.exportManualCopy(rom.manualPath);
-
-      if (result.success) {
-        alert(
-          `Manual de "${rom.title}" exportada correctamente a: ${result.filePath}`,
-        );
-      } else if (result.error !== "Export cancelled") {
-        alert(`Error al exportar el manual: ${result.error}`);
-      }
-    } catch (error) {
-      alert(`Error al exportar el manual: ${error.message}`);
-    }
-  };
   const handleSave = async () => {
     setIsModalOpen(false);
     if (onRomUpdated) {
