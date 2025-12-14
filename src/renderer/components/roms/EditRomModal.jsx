@@ -186,6 +186,7 @@ function EditRomModal({ rom, onClose, onSave }) {
                 id="romName"
                 value={rom.romName}
                 className="input-disabled"
+                readOnly
               />
             </div>
 

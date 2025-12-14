@@ -102,6 +102,26 @@ function RomCard({ rom, onRomUpdated }) {
     }
   };
 
+  // Log cover path for debugging
+  React.useEffect(() => {
+    if (rom.coverPath) {
+      console.log("ROM Cover Info:", {
+        romName: rom.romName,
+        coverPath: rom.coverPath,
+        encodedPath: encodeURIComponent(rom.coverPath),
+        fullURL: `media://${encodeURIComponent(rom.coverPath)}`,
+      });
+    }
+  }, [rom.coverPath, rom.romName]);
+
+  // Generate the cover URL properly
+  const getCoverUrl = (coverPath) => {
+    if (!coverPath) return null;
+    // Don't encode slashes - only encode the path components
+    const encodedPath = coverPath.split("/").map(encodeURIComponent).join("/");
+    return `media://${encodedPath}`;
+  };
+
   return (
     <>
       <div className="rom-card">
@@ -109,7 +129,7 @@ function RomCard({ rom, onRomUpdated }) {
           <div
             className="rom-card-cover"
             style={{
-              backgroundImage: `url(media://${encodeURIComponent(rom.coverPath)})`,
+              backgroundImage: `url("${getCoverUrl(rom.coverPath)}")`,
             }}
           ></div>
         ) : (

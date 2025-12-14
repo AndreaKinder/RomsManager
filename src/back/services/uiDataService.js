@@ -77,6 +77,38 @@ export function getGeneratedConsoles() {
   return filterConsolesWithRoms(consoles);
 }
 
+function fixCoverPath(rom) {
+  if (!rom.coverPath) {
+    return rom;
+  }
+
+  // Check if the cover file exists
+  if (fs.existsSync(rom.coverPath)) {
+    return rom;
+  }
+
+  // Cover doesn't exist, try to find it with different extensions
+  console.log(`Cover file not found: ${rom.coverPath}`);
+  const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+  const basePathWithoutExt = rom.coverPath.replace(/\.[^.]+$/, "");
+  console.log(`Searching for covers with base path: ${basePathWithoutExt}`);
+
+  for (const ext of validExtensions) {
+    const possiblePath = basePathWithoutExt + ext;
+    console.log(`Trying: ${possiblePath}`);
+    if (fs.existsSync(possiblePath)) {
+      console.log(`✓ Found cover: ${possiblePath}`);
+      logger.info(`Fixed cover path for ${rom.romName}: ${possiblePath}`);
+      return { ...rom, coverPath: possiblePath };
+    }
+  }
+
+  // No cover found, return with null coverPath
+  console.log(`No cover found for ${rom.romName}`);
+  logger.warn(`Cover not found for ${rom.romName}, expected: ${rom.coverPath}`);
+  return { ...rom, coverPath: null };
+}
+
 export function getAllRoms() {
   const systemPath = getPathSystemJsonSystemsPC();
   const systemsJson = getArraySystemsJson();
@@ -88,7 +120,9 @@ export function getAllRoms() {
     const jsonPath = path.join(systemPath, jsonFile);
     const roms = parseRomsFromJsonFile(jsonPath);
     if (roms.length > 0) {
-      allRoms[consoleId] = roms;
+      // Fix cover paths for all ROMs
+      const fixedRoms = roms.map(fixCoverPath);
+      allRoms[consoleId] = fixedRoms;
     }
   });
 

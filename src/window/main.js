@@ -40,6 +40,9 @@ const createWindow = () => {
   mainWindow.setMenu(null);
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  // Open DevTools
+  mainWindow.webContents.openDevTools();
 };
 
 app.whenReady().then(async () => {
@@ -301,14 +304,47 @@ app.whenReady().then(async () => {
           };
         }
 
+        // Validate source file exists
+        if (!fs.existsSync(coverFilePath)) {
+          return {
+            success: false,
+            error: "Cover file does not exist",
+          };
+        }
+
+        // Validate it's actually a file (not a directory)
+        const stats = fs.statSync(coverFilePath);
+        if (!stats.isFile()) {
+          return {
+            success: false,
+            error: "Cover path is not a file",
+          };
+        }
+
         // Import utility functions
         const { getCoverPathPC } =
           await import("../back/services/utils/getPaths.js");
         const { updateRomInJson } =
           await import("../back/services/utils/getJsonUtils.js");
 
-        // Always use .webp for optimized covers
-        const imageExtension = ".webp";
+        // Use the original image extension
+        const imageExtension = path.extname(coverFilePath).toLowerCase();
+
+        // Validate image extension
+        const validExtensions = [
+          ".jpg",
+          ".jpeg",
+          ".png",
+          ".gif",
+          ".webp",
+          ".bmp",
+        ];
+        if (!validExtensions.includes(imageExtension)) {
+          return {
+            success: false,
+            error: `Invalid image format. Supported: ${validExtensions.join(", ")}`,
+          };
+        }
 
         // Get destination path for cover file
         const coverPathPC = getCoverPathPC(consoleId, romName, imageExtension);
@@ -319,8 +355,32 @@ app.whenReady().then(async () => {
           fs.mkdirSync(destDir, { recursive: true });
         }
 
+        // Delete old cover if exists with different extension
+        const baseNameWithoutExt = path.basename(coverPathPC, imageExtension);
+        const existingCovers = fs
+          .readdirSync(destDir)
+          .filter((file) => file.startsWith(baseNameWithoutExt));
+
+        for (const oldCover of existingCovers) {
+          const oldCoverPath = path.join(destDir, oldCover);
+          if (oldCoverPath !== coverPathPC && fs.existsSync(oldCoverPath)) {
+            fs.unlinkSync(oldCoverPath);
+            console.log(`Deleted old cover: ${oldCoverPath}`);
+          }
+        }
+
         // Copy cover file to destination path
         fs.copyFileSync(coverFilePath, coverPathPC);
+
+        // Verify the copy was successful
+        if (!fs.existsSync(coverPathPC)) {
+          return {
+            success: false,
+            error: "Failed to copy cover file",
+          };
+        }
+
+        console.log(`Cover copied successfully: ${coverPathPC}`);
 
         // Update ROM JSON with cover path
         try {
