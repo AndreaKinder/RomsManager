@@ -22,6 +22,15 @@ A modern desktop application for managing retro gaming ROM collections across mu
 ✅ **Retro Styling**: Pixel-art font and retro visual effects for authentic gaming feel  
 ✅ **Quick Export**: One-click ROM and save file export functionality  
 
+## Upcoming Features
+
+🔜 **Gallery View**: Browse your ROM collection with visual grid layouts  
+🔜 **Extended Metadata**: Track description, languages, release year, and publisher  
+🔜 **Player Info**: Record number of players for each game  
+🔜 **Game Ratings**: Personal rating system and difficulty scores  
+🔜 **PDF Manual Support**: Import and view game manuals in PDF format  
+🔜 **Game Notes**: Add personal notes and comments for each ROM  
+
 ## Screenshots
 
 ### Main Interface
