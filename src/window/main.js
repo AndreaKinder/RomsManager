@@ -9,6 +9,8 @@ import {
 } from "electron";
 import path from "node:path";
 import url from "url";
+import * as uiDataService from "../back/services/uiDataService.js";
+import * as syncService from "../back/services/syncService.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -28,9 +30,7 @@ const createWindow = () => {
     icon: path.join(__dirname, "../../assets/icon.png"),
     autoHideMenuBar: true,
     webPreferences: {
-      preload: {
-        js: "./src/window/preload.js",
-      },
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: true,
@@ -38,7 +38,6 @@ const createWindow = () => {
   });
 
   mainWindow.setMenu(null);
-  mainWindow.webContents.openDevTools();
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 };
@@ -379,8 +378,7 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("export-rom-copy", async (event, sourcePath) => {
     try {
-      const { exportRomCopy } = await import("../back/services/syncService.js");
-      const filePath = await exportRomCopy(sourcePath, dialog);
+      const filePath = await syncService.exportRomCopy(sourcePath, dialog);
       if (filePath) {
         return { success: true, filePath };
       }
@@ -393,9 +391,7 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("export-save-copy", async (event, sourcePath) => {
     try {
-      const { exportSaveCopy } =
-        await import("../back/services/syncService.js");
-      const filePath = await exportSaveCopy(sourcePath, dialog);
+      const filePath = await syncService.exportSaveCopy(sourcePath, dialog);
       if (filePath) {
         return { success: true, filePath };
       }
@@ -424,7 +420,6 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("get-generated-consoles", async () => {
     try {
-      const uiDataService = await import("../back/services/uiDataService.js");
       return uiDataService.getGeneratedConsoles();
     } catch (error) {
       console.error("Failed to get generated consoles:", error);
@@ -434,7 +429,6 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("get-all-roms", async () => {
     try {
-      const uiDataService = await import("../back/services/uiDataService.js");
       return uiDataService.getAllRoms();
     } catch (error) {
       console.error("Failed to get all roms:", error);
@@ -444,7 +438,6 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("import-roms-pc", async (event, sdPath = "D:/") => {
     try {
-      const syncService = await import("../back/services/syncService.js");
       syncService.importRomsPC(sdPath);
       return { success: true };
     } catch (error) {
@@ -455,7 +448,6 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("import-roms-sd", async (event, sdPath) => {
     try {
-      const syncService = await import("../back/services/syncService.js");
       syncService.importRomsPC(sdPath);
       return { success: true };
     } catch (error) {
@@ -466,7 +458,6 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("export-roms-to-sd", async (event, sdPath) => {
     try {
-      const syncService = await import("../back/services/syncService.js");
       syncService.exportAllRomsPcToGalic(sdPath);
       return { success: true };
     } catch (error) {

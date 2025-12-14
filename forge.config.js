@@ -5,6 +5,7 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: "./assets/icon",
+    executableName: "romsmanager",
   },
   rebuildConfig: {},
   makers: [
@@ -28,14 +29,14 @@ module.exports = {
         },
       },
     },
-    {
-      name: "@electron-forge/maker-rpm",
-      config: {
-        options: {
-          icon: "./assets/icon.png",
-        },
-      },
-    },
+    // {
+    //    name: "@electron-forge/maker-rpm",
+    //      config: {
+    // options: {
+    //  icon: "./assets/icon.png",
+    // },
+    //  },
+    //   },
   ],
   plugins: [
     {
