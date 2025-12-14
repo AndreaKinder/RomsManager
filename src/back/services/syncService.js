@@ -159,15 +159,15 @@ export async function exportSaveCopy(sourcePath, dialog) {
   return null;
 }
 
-export async function renderManualSave(sourcePath, dialog) {
+export async function exportManualCopy(sourcePath, dialog) {
   if (!fs.existsSync(sourcePath)) {
     throw new Error(`Manual file not found: ${sourcePath}`);
   }
 
-  const manualName = path.basename(sourcePath);
+  const saveName = path.basename(sourcePath);
   const result = await dialog.showSaveDialog({
-    title: "Renderizar manual como",
-    defaultPath: manualName,
+    title: "Guardar Manual como",
+    defaultPath: saveName,
     filters: [
       { name: "PDF Files", extensions: ["pdf"] },
       { name: "All Files", extensions: ["*"] },
@@ -175,14 +175,9 @@ export async function renderManualSave(sourcePath, dialog) {
   });
 
   if (!result.canceled && result.filePath) {
-    const result = await window.electronAPI.renderManualSave(
-      sourcePath,
-      result.filePath,
-    );
-    if (result.success) {
-      logger.info(`Manual rendered to: ${result.filePath}`);
-      return result.filePath;
-    }
+    fs.copyFileSync(sourcePath, result.filePath);
+    logger.info(`Manual file exported to: ${result.filePath}`);
+    return result.filePath;
   }
   return null;
 }

@@ -576,6 +576,19 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("export-manual-copy", async (event, sourcePath) => {
+    try {
+      const filePath = await syncService.exportManualCopy(sourcePath, dialog);
+      if (filePath) {
+        return { success: true, filePath };
+      }
+      return { success: false, error: "Export cancelled" };
+    } catch (error) {
+      console.error("Failed to export manual file:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("get-available-consoles", async () => {
     try {
       const consolesData = await import("../back/data/consoles.json", {

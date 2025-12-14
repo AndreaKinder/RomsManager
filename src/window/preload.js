@@ -41,4 +41,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("export-rom-copy", sourcePath),
   exportSaveCopy: (sourcePath) =>
     ipcRenderer.invoke("export-save-copy", sourcePath),
+  exportManualCopy: (sourcePath) =>
+    ipcRenderer.invoke("export-manual-copy", sourcePath),
+  readPdfFile: (filePath) => ipcRenderer.invoke("read-pdf-file", filePath),
 });

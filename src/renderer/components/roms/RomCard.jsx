@@ -91,24 +91,26 @@ function RomCard({ rom, onRomUpdated }) {
       alert(`Error al exportar la partida: ${error.message}`);
     }
   };
-  const handleRenderManualSaveClick = async (e) => {
+  const handleExportManualClick = async (e) => {
     e.stopPropagation();
 
     if (!rom.manualPath) {
-      alert("No hay partida guardada para esta ROM");
+      alert("No hay Manual para esta ROM");
       return;
     }
 
     try {
-      const result = await window.electronAPI.renderManualSave(rom.manualPath);
+      const result = await window.electronAPI.exportManualCopy(rom.manualPath);
 
       if (result.success) {
-        alert(`Manual de "${rom.title}" renderizado correctamente.`);
-      } else if (result.error !== "Render cancelled") {
-        alert(`Error al renderizar el manual.`);
+        alert(
+          `Manual de "${rom.title}" exportada correctamente a: ${result.filePath}`,
+        );
+      } else if (result.error !== "Export cancelled") {
+        alert(`Error al exportar el manual: ${result.error}`);
       }
     } catch (error) {
-      alert(`Error al renderizar el manual: ${error.message}`);
+      alert(`Error al exportar el manual: ${error.message}`);
     }
   };
   const handleSave = async () => {
@@ -184,7 +186,7 @@ function RomCard({ rom, onRomUpdated }) {
         {rom.manualPath && (
           <button
             className="rom-save-indicator"
-            onClick={() => handleRenderManualSaveClick(rom.manualPath, dialog)}
+            onClick={handleExportManualClick}
             title="Exportar manual"
           >
             📄
