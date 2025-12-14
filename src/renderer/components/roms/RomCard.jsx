@@ -161,6 +161,15 @@ function RomCard({ rom, onRomUpdated }) {
             💾
           </button>
         )}
+        {rom.manualPath && (
+          <button
+            className="rom-save-indicator"
+            onClick={() => console.log("Exportar manual")}
+            title="Exportar manual"
+          >
+            📄
+          </button>
+        )}
         <div className="rom-card-actions-icons">
           <button
             className="rom-icon-btn btn-delete"
