@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0-alpha] - 2025-12-02
+## [0.2.0-alpha] - 2025-12-02
 
 ### Added
 - Initial alpha release
@@ -56,4 +56,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stable (x.x.x)**: Production ready
 
 [Unreleased]: https://github.com/andreakinder/RomsManager/compare/v0.1.0-alpha...HEAD
-[0.1.0-alpha]: https://github.com/andreakinder/RomsManager/releases/tag/v0.1.0-alpha
+[0.2.0-alpha]: https://github.com/andreakinder/RomsManager/releases/tag/v0.1.0-alpha
