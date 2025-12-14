@@ -28,7 +28,9 @@ const createWindow = () => {
     icon: path.join(__dirname, "../../assets/icon.png"),
     autoHideMenuBar: true,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: {
+        js: "./src/window/preload.js",
+      },
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: true,
