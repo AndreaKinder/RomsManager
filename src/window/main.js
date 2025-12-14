@@ -40,9 +40,6 @@ const createWindow = () => {
   mainWindow.setMenu(null);
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  // Open DevTools
-  mainWindow.webContents.openDevTools();
 };
 
 app.whenReady().then(async () => {
