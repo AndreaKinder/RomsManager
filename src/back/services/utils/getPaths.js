@@ -31,3 +31,9 @@ export function getCoverPathPC(consoleId, romFileName, imageExtension) {
   const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
   return `${userHome}/Roms/Covers/${consoleId}/${romNameWithoutExt}${imageExtension}`;
 }
+
+export function getManualPathPC(consoleId, romFileName) {
+  const userHome = process.env.USERPROFILE || process.env.HOME;
+  const romNameWithoutExt = romFileName.replace(/\.[^.]+$/, "");
+  return `${userHome}/Roms/Manuals/${consoleId}/${romNameWithoutExt}.pdf`;
+}

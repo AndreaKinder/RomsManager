@@ -138,6 +138,20 @@ app.whenReady().then(async () => {
     return result.canceled ? null : result.filePaths[0];
   });
 
+  ipcMain.handle("select-manual-pdf", async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openFile"],
+      filters: [
+        {
+          name: "PDF Files",
+          extensions: ["pdf"],
+        },
+        { name: "All Files", extensions: ["*"] },
+      ],
+    });
+    return result.canceled ? null : result.filePaths[0];
+  });
+
   ipcMain.handle("select-folder", async () => {
     const result = await dialog.showOpenDialog({
       properties: ["openDirectory"],
@@ -394,6 +408,109 @@ app.whenReady().then(async () => {
         };
       } catch (error) {
         console.error("Failed to add cover file:", error);
+        return { success: false, error: error.message };
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "add-manual-from-pc",
+    async (event, romName, consoleId, manualFilePath) => {
+      try {
+        const fs = require("fs");
+        const path = require("path");
+
+        // Validate inputs
+        if (!romName) {
+          return {
+            success: false,
+            error: "No ROM selected",
+          };
+        }
+
+        if (!consoleId) {
+          return {
+            success: false,
+            error: "No console specified",
+          };
+        }
+
+        if (!manualFilePath) {
+          return {
+            success: false,
+            error: "No manual file selected",
+          };
+        }
+
+        // Validate source file exists
+        if (!fs.existsSync(manualFilePath)) {
+          return {
+            success: false,
+            error: "Manual file does not exist",
+          };
+        }
+
+        // Validate it's actually a file (not a directory)
+        const stats = fs.statSync(manualFilePath);
+        if (!stats.isFile()) {
+          return {
+            success: false,
+            error: "Manual path is not a file",
+          };
+        }
+
+        // Import utility functions
+        const { getManualPathPC } =
+          await import("../back/services/utils/getPaths.js");
+        const { updateRomInJson } =
+          await import("../back/services/utils/getJsonUtils.js");
+
+        // Validate PDF extension
+        const fileExtension = path.extname(manualFilePath).toLowerCase();
+        if (fileExtension !== ".pdf") {
+          return {
+            success: false,
+            error: "Only PDF files are supported for manuals",
+          };
+        }
+
+        // Get destination path for manual file
+        const manualPathPC = getManualPathPC(consoleId, romName);
+        const destDir = path.dirname(manualPathPC);
+
+        // Create Manuals directory if it doesn't exist
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        // Copy manual file to destination path
+        fs.copyFileSync(manualFilePath, manualPathPC);
+
+        // Verify the copy was successful
+        if (!fs.existsSync(manualPathPC)) {
+          return {
+            success: false,
+            error: "Failed to copy manual file",
+          };
+        }
+
+        console.log(`Manual copied successfully: ${manualPathPC}`);
+
+        // Update ROM JSON with manual path
+        try {
+          updateRomInJson(romName, "manualPath", manualPathPC);
+        } catch (jsonError) {
+          console.warn("Could not update ROM JSON:", jsonError.message);
+        }
+
+        return {
+          success: true,
+          romName: romName,
+          manualPath: manualPathPC,
+          system: consoleId,
+        };
+      } catch (error) {
+        console.error("Failed to add manual file:", error);
         return { success: false, error: error.message };
       }
     },

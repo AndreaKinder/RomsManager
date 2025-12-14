@@ -14,6 +14,8 @@ function EditRomModal({ rom, onClose, onSave }) {
   const [saveMessage, setSaveMessage] = useState(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState(null);
   const [coverMessage, setCoverMessage] = useState(null);
+  const [selectedManualFile, setSelectedManualFile] = useState(null);
+  const [manualMessage, setManualMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,6 +81,19 @@ function EditRomModal({ rom, onClose, onSave }) {
     }
   };
 
+  const handleSelectManualFile = async () => {
+    try {
+      const filePath = await window.electronAPI.selectManualPdf();
+      if (filePath) {
+        setSelectedManualFile(filePath);
+        setError(null);
+        setManualMessage(null);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.SELECT_FILE(err.message));
+    }
+  };
+
   const handleImportSave = async () => {
     if (!selectedSaveFile) {
       setError("Por favor selecciona un archivo de guardado primero");
@@ -133,6 +148,38 @@ function EditRomModal({ rom, onClose, onSave }) {
           `Carátula importada exitosamente para ${result.romName}`,
         );
         setSelectedCoverFile(null);
+      } else {
+        setError(result.error || ERROR_MESSAGES.UNKNOWN_ERROR);
+      }
+    } catch (err) {
+      setError(ERROR_MESSAGES.CONNECTION_ERROR(err.message));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImportManual = async () => {
+    if (!selectedManualFile) {
+      setError("Por favor selecciona un archivo PDF primero");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setManualMessage(null);
+
+    try {
+      const result = await window.electronAPI.addManualFromPC(
+        rom.romName,
+        rom.system,
+        selectedManualFile,
+      );
+
+      if (result.success) {
+        setManualMessage(
+          `Manual importado exitosamente para ${result.romName}`,
+        );
+        setSelectedManualFile(null);
       } else {
         setError(result.error || ERROR_MESSAGES.UNKNOWN_ERROR);
       }
@@ -266,11 +313,44 @@ function EditRomModal({ rom, onClose, onSave }) {
               )}
             </div>
 
+            <div className="form-field">
+              <label htmlFor="manualFile">Importar Manual (PDF)</label>
+              <div className="file-select-container">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleSelectManualFile}
+                  disabled={isLoading}
+                >
+                  Seleccionar archivo PDF
+                </button>
+                {selectedManualFile && (
+                  <span className="file-name-display">
+                    {getFileName(selectedManualFile)}
+                  </span>
+                )}
+              </div>
+              {selectedManualFile && (
+                <button
+                  type="button"
+                  className="btn btn-info"
+                  onClick={handleImportManual}
+                  disabled={isLoading}
+                  style={{ marginTop: "8px" }}
+                >
+                  {isLoading ? "Importando..." : "Importar Manual"}
+                </button>
+              )}
+            </div>
+
             {coverMessage && (
               <div className="success-message">{coverMessage}</div>
             )}
             {saveMessage && (
               <div className="success-message">{saveMessage}</div>
+            )}
+            {manualMessage && (
+              <div className="success-message">{manualMessage}</div>
             )}
             {error && <div className="error-message">{error}</div>}
           </div>

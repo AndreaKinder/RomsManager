@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
   selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
   selectSaveFile: () => ipcRenderer.invoke("select-save-file"),
+  selectManualPdf: () => ipcRenderer.invoke("select-manual-pdf"),
   selectFolder: () => ipcRenderer.invoke("select-folder"),
   exportToSD: (data) => ipcRenderer.invoke("export-to-sd", data),
   importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
@@ -24,6 +25,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("add-save-from-pc", romName, consoleId, saveFilePath),
   addCoverFromPC: (romName, consoleId, coverFilePath) =>
     ipcRenderer.invoke("add-cover-from-pc", romName, consoleId, coverFilePath),
+  addManualFromPC: (romName, consoleId, manualFilePath) =>
+    ipcRenderer.invoke(
+      "add-manual-from-pc",
+      romName,
+      consoleId,
+      manualFilePath,
+    ),
   editRomTitle: (romName, newTitle) =>
     ipcRenderer.invoke("edit-rom-title", romName, newTitle),
   editRomName: (romName, newRomName) =>
