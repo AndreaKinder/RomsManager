@@ -46,7 +46,7 @@
       "id": "7",
       "id_name": "ps",
       "name": "Play Station",
-      "file": [".bin", ".cue", ".iso", ".pbp"],
+      "file": [".pbp", ".bin", ".cue", ".iso"],
       "save_formats": [".mcr", ".mcd", ".srm"]
     },
     "PS1": {
@@ -91,32 +91,11 @@
       "file": [".gcm", ".iso", ".gcz"],
       "save_formats": [".raw", ".gci"]
     },
-    "Wii": {
-      "id": "14",
-      "id_name": "wii",
-      "name": "Nintendo Wii",
-      "file": [".iso", ".wbfs", ".wad"],
-      "save_formats": [".bin"]
-    },
     "3DS": {
       "id": "15",
       "id_name": "3ds",
       "name": "Nintendo 3DS",
       "file": [".3ds", ".cia"],
-      "save_formats": [".sav"]
-    },
-    "WiiU": {
-      "id": "16",
-      "id_name": "wiiu",
-      "name": "Nintendo Wii U",
-      "file": [".wud", ".wux", ".rpx"],
-      "save_formats": [".sav"]
-    },
-    "Switch": {
-      "id": "17",
-      "id_name": "switch",
-      "name": "Nintendo Switch",
-      "file": [".nsp", ".xci", ".nsz"],
       "save_formats": [".sav"]
     },
     "PSP": {
