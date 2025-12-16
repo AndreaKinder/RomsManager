@@ -39,6 +39,10 @@ export const UI_TEXT = {
   APP_TITLE: "🎮 Gestor de ROMs",
   SD_PATH_LABEL: "Ruta Galic SD:",
   SD_PATH_PLACEHOLDER: "D:/",
+  SEARCH_LABEL: "🔍 Buscar juegos:",
+  SEARCH_PLACEHOLDER: "Buscar por título...",
+  CLEAR_SEARCH: "Limpiar búsqueda",
+  NO_SEARCH_RESULTS: "No se encontraron juegos que coincidan con tu búsqueda",
   LOADING: "Cargando...",
   NO_COLLECTIONS_TITLE: "¡No se encontraron colecciones de ROMs!",
   NO_COLLECTIONS_MESSAGE:

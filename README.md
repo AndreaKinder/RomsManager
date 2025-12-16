@@ -21,6 +21,7 @@ A modern desktop application for managing retro gaming ROM collections across mu
 ✅ **Save Management**: Import, export, and manage save files for your ROMs  
 ✅ **Retro Styling**: Pixel-art font and retro visual effects for authentic gaming feel  
 ✅ **Quick Export**: One-click ROM and save file export functionality  
+✅ **Game Search**: Quickly find ROMs by searching titles with real-time filtering  
 
 ## Upcoming Features
 
@@ -92,6 +93,20 @@ npm run package
 4. All ROMs will be imported and organized by system
 
 ### Managing Your Collection
+
+#### Searching for Games
+1. Use the **🔍 Buscar juegos** search bar in the header
+2. Type any part of a game title to filter your collection
+3. Search results update in real-time as you type
+4. The footer shows the filtered count (e.g., "Mostrando: 15")
+5. Click the **✕** button to clear the search and show all ROMs
+6. Search works across all consoles simultaneously
+
+**Search Features:**
+- Case-insensitive search
+- Searches both ROM titles and file names
+- Only displays consoles with matching ROMs
+- Shows "No se encontraron juegos" message if no matches found
 
 #### Browsing ROMs
 - Click on any console header to expand/collapse the ROM list
