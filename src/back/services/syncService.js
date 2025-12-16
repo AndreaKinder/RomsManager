@@ -123,7 +123,7 @@ export async function exportRomCopy(sourcePath, dialog) {
     title: "Guardar ROM como",
     defaultPath: romName,
     filters: [
-      { name: "ROM Files", extensions: [path.extname(romName).slice(1)] },
+      { name: "ROM Files", extensions: ["*"] },
       { name: "All Files", extensions: ["*"] },
     ],
   });
