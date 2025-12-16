@@ -63,5 +63,5 @@ export const BUTTON_LABELS = {
   DELETE: "Eliminar",
 };
 
-export const DEFAULT_SD_PATH = "D:/";
+export const DEFAULT_SD_PATH = "";
 export const MAX_TITLE_LENGTH = 100;
