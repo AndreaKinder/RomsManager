@@ -163,23 +163,27 @@ function RomCard({ rom, onRomUpdated }) {
             <h3 className="rom-title">{rom.title}</h3>
           </div>
         </div>
-        {rom.savePath && (
-          <button
-            className="rom-save-indicator"
-            onClick={handleExportSaveClick}
-            title="Exportar partida guardada"
-          >
-            💾
-          </button>
-        )}
-        {rom.manualPath && (
-          <button
-            className="rom-save-indicator"
-            onClick={handleViewManualClick}
-            title="Ver manual"
-          >
-            📖
-          </button>
+        {(rom.savePath || rom.manualPath) && (
+          <div className="rom-indicators-container">
+            {rom.savePath && (
+              <button
+                className="rom-save-indicator"
+                onClick={handleExportSaveClick}
+                title="Exportar partida guardada"
+              >
+                💾
+              </button>
+            )}
+            {rom.manualPath && (
+              <button
+                className="rom-save-indicator"
+                onClick={handleViewManualClick}
+                title="Ver manual"
+              >
+                📖
+              </button>
+            )}
+          </div>
         )}
         <div className="rom-card-actions-icons">
           <button
