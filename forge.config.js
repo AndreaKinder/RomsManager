@@ -24,15 +24,17 @@ module.exports = {
       name: "@electron-forge/maker-zip",
       platforms: ["win32", "darwin", "linux"],
     },
-    {
-      name: "@electron-forge/maker-deb",
-      platforms: ["linux"],
-      config: {
-        options: {
-          icon: "./assets/icon.png",
-        },
-      },
-    },
+    // Temporary workaround: deb maker has issues on some Linux systems
+    // Use ZIP for now and create deb manually if needed
+    // {
+    //   name: "@electron-forge/maker-deb",
+    //   platforms: ["linux"],
+    //   config: {
+    //     options: {
+    //       icon: "./assets/icon.png",
+    //     },
+    //   },
+    // },
     // {
     //    name: "@electron-forge/maker-rpm",
     //      config: {
