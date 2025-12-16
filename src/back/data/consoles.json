@@ -104,6 +104,13 @@
       "name": "PlayStation Portable",
       "file": [".iso", ".cso", ".psp"],
       "save_formats": [".bin", ".sav"]
+    },
+    "NEOGEO": {
+      "id": "19",
+      "id_name": "neogeo",
+      "name": "Neo Geo",
+      "file": [".zip"],
+      "save_formats": [".zip"]
     }
   }
 }

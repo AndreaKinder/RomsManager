@@ -19,7 +19,8 @@
         "wii": "WII",
         "3ds": "3DS",
         "wiiu": "WIIU",
-        "switch": "SWITCH"
+        "switch": "SWITCH",
+        "neogeo": "NEOGEO"
       },
       "paths": {
         "roms": "Roms",
