@@ -178,7 +178,7 @@ function RomCard({ rom, onRomUpdated }) {
             onClick={handleViewManualClick}
             title="Ver manual"
           >
-            📕
+            📖
           </button>
         )}
         <div className="rom-card-actions-icons">
