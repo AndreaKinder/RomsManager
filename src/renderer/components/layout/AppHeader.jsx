@@ -43,19 +43,8 @@ function AppHeader({
         >
           {BUTTON_LABELS.ADD_ROM}
         </button>
-        <button
-          className="btn btn-success"
-          onClick={onImportFromSD}
-          disabled={isLoading}
-        >
-          {BUTTON_LABELS.IMPORT_FROM_SD}
-        </button>
-        <button
-          className="btn btn-warning"
-          onClick={onExportToSD}
-          disabled={isLoading}
-        >
-          {BUTTON_LABELS.EXPORT_TO_SD}
+        <button className="btn" onClick={onRefresh} disabled={isLoading}>
+          {BUTTON_LABELS.SETTINGS}
         </button>
         <button className="btn" onClick={onRefresh} disabled={isLoading}>
           {BUTTON_LABELS.REFRESH}

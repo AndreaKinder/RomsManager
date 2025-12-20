@@ -53,9 +53,8 @@ export const UI_TEXT = {
 
 export const BUTTON_LABELS = {
   ADD_ROM: "➕ Añadir ROM",
-  IMPORT_FROM_SD: "📥 Importar desde Galic SD",
-  EXPORT_TO_SD: "📤 Exportar a Galic SD",
   REFRESH: "🔄️ Actualizar",
+  SETTINGS: "⚙️ Configuración",
   CANCEL: "Cancelar",
   CONFIRM: "Confirmar",
   CLOSE: "Cerrar",
