@@ -16,15 +16,6 @@ function AppHeader({
     <header className="app-header">
       <h1>{UI_TEXT.APP_TITLE}</h1>
       <div className="header-inputs">
-        <div className="sd-path-input">
-          <label>{UI_TEXT.SD_PATH_LABEL}</label>
-          <input
-            type="text"
-            value={sdPath}
-            onChange={(e) => onSdPathChange(e.target.value)}
-            placeholder={UI_TEXT.SD_PATH_PLACEHOLDER}
-          />
-        </div>
         <div className="search-input">
           <label>{UI_TEXT.SEARCH_LABEL}</label>
           <input

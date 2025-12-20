@@ -105,19 +105,22 @@ body {
 }
 
 .search-input {
+  border-radius: 10px;
+  background-color: var(--primary-color);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex: 2;
   min-width: 300px;
   position: relative;
+  padding: 0 0 0 14px;
 }
 
 .search-input label {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
-  min-width: 120px;
+  min-width: 20px;
 }
 
 .search-input input {
