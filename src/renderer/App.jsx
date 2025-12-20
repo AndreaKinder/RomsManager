@@ -7,7 +7,7 @@ import EmptyState from "./components/layout/EmptyState";
 import ConsoleList from "./components/layout/ConsoleList";
 import SelectConsoleModal from "./components/roms/SelectConsoleModal";
 import { useRomOperations } from "./hooks/useRomOperations";
-import { DEFAULT_SD_PATH, ERROR_MESSAGES } from "./constants/messages";
+import { DEFAULT_SD_PATH, ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 
 function App() {
   const [consoles, setConsoles] = useState([]);
