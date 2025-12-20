@@ -37,7 +37,7 @@ export const VALIDATION_MESSAGES = {
 
 export const UI_TEXT = {
   APP_TITLE: "🎮 Gestor de ROMs",
-  SD_PATH_LABEL: "Ruta Galic SD:",
+  SD_PATH_LABEL: "Ruta a la SD:",
   SD_PATH_PLACEHOLDER: "D:/",
   SEARCH_LABEL: "🔍",
   SEARCH_PLACEHOLDER: "Buscar por título...",
@@ -46,7 +46,7 @@ export const UI_TEXT = {
   LOADING: "Cargando...",
   NO_COLLECTIONS_TITLE: "¡No se encontraron colecciones de ROMs!",
   NO_COLLECTIONS_MESSAGE:
-    'Haz clic en "Importar desde Galic SD" para importar tus ROMs desde la tarjeta SD.',
+    'Haz clic en "Importar desde la SD" para importar tus ROMs desde la tarjeta SD.',
   TOTAL_CONSOLES: "Total de Consolas:",
   TOTAL_ROMS: "Total de ROMs:",
 };
