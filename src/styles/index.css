@@ -127,7 +127,7 @@ body {
   padding: 10px 14px;
   padding-right: 36px;
   background: var(--surface-light);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--primary-color);
   border-radius: 6px;
   color: var(--text-primary);
   font-size: 14px;
