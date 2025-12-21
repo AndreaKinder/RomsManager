@@ -47,9 +47,6 @@ function AppHeader({
         <button className="btn" onClick={onOpenSettings} disabled={isLoading}>
           {BUTTON_LABELS.SETTINGS}
         </button>
-        <button className="btn" onClick={onRefresh} disabled={isLoading}>
-          {BUTTON_LABELS.REFRESH}
-        </button>
       </div>
     </header>
   );
