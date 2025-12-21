@@ -6,6 +6,7 @@ import LoadingState from "./components/layout/LoadingState";
 import EmptyState from "./components/layout/EmptyState";
 import ConsoleList from "./components/layout/ConsoleList";
 import SelectConsoleModal from "./components/roms/SelectConsoleModal";
+import SettingsModal from "./components/layout/SettingsModal";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { DEFAULT_SD_PATH, ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 
@@ -14,6 +15,7 @@ function App() {
   const [sdPath, setSdPath] = useState(DEFAULT_SD_PATH);
   const [searchQuery, setSearchQuery] = useState("");
   const [showConsoleModal, setShowConsoleModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [error, setError] = useState(null);
   const {
     isLoading,
@@ -97,6 +99,7 @@ function App() {
         onImportFromSD={() => handleImportFromSD(sdPath, loadConsoles)}
         onExportToSD={() => handleExportToSD(sdPath)}
         onRefresh={loadConsoles}
+        onOpenSettings={() => setShowSettingsModal(true)}
         isLoading={isLoading}
       />
 
@@ -131,6 +134,10 @@ function App() {
           onClose={() => setShowConsoleModal(false)}
           onSelect={handleConsoleSelected}
         />
+      )}
+
+      {showSettingsModal && (
+        <SettingsModal onClose={() => setShowSettingsModal(false)} />
       )}
     </div>
   );

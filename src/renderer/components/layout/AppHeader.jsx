@@ -10,6 +10,7 @@ function AppHeader({
   onImportFromSD,
   onExportToSD,
   onRefresh,
+  onOpenSettings,
   isLoading,
 }) {
   return (
@@ -43,7 +44,7 @@ function AppHeader({
         >
           {BUTTON_LABELS.ADD_ROM}
         </button>
-        <button className="btn" onClick={onRefresh} disabled={isLoading}>
+        <button className="btn" onClick={onOpenSettings} disabled={isLoading}>
           {BUTTON_LABELS.SETTINGS}
         </button>
         <button className="btn" onClick={onRefresh} disabled={isLoading}>

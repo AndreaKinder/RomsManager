@@ -37,8 +37,8 @@ export const VALIDATION_MESSAGES = {
 
 export const UI_TEXT = {
   APP_TITLE: "🎮 Gestor de ROMs",
-  SD_PATH_LABEL: "Ruta a la SD:",
-  SD_PATH_PLACEHOLDER: "D:/",
+  SG_PATH_LABEL: "Ruta a la Disco para Copias de Seguridad:",
+  SG_PATH_PLACEHOLDER: "D:/",
   SEARCH_LABEL: "🔍",
   SEARCH_PLACEHOLDER: "Buscar por título...",
   CLEAR_SEARCH: "Limpiar búsqueda",
@@ -55,6 +55,7 @@ export const BUTTON_LABELS = {
   ADD_ROM: "➕ Añadir ROM",
   REFRESH: "🔄️ Actualizar",
   SETTINGS: "⚙️ Configuración",
+  SYNC_DATA: "Copia de Seguridad",
   CANCEL: "Cancelar",
   CONFIRM: "Confirmar",
   CLOSE: "Cerrar",
