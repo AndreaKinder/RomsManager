@@ -644,6 +644,8 @@ body {
 
 .modal-body {
   padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .form-field {
@@ -879,6 +881,227 @@ body {
 
 .btn-danger:hover:not(:disabled) {
   background: #dc2626;
+}
+
+.btn-toggle {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.btn-toggle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-color), #818cf8);
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.btn-toggle.active::before {
+  opacity: 1;
+}
+
+.btn-toggle.active {
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Collection Input Container */
+.collection-input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.collection-input-container input {
+  flex: 1;
+}
+
+.collection-input-container .btn {
+  white-space: nowrap;
+  padding: 10px 16px;
+}
+
+/* Collections List */
+.collections-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.collection-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.collection-tag:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.collection-remove-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.collection-remove-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.2);
+}
+
+.collection-remove-btn:active {
+  transform: scale(0.9);
+}
+
+.collection-remove-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form Hint */
+.form-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Field Hint */
+.field-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Collections Selector */
+.collections-selector {
+  margin-top: 12px;
+}
+
+.collections-selector-label {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.collections-selector .collections-list {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.collection-tag.selected {
+  background: var(--success-color);
+  border: 2px solid var(--success-color);
+}
+
+.collection-tag:not(.selected) {
+  background: var(--surface-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.collection-tag:not(.selected):hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+}
+
+.collection-check {
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+/* Selected Collections Display */
+.selected-collections-display {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.selected-collections-display .collections-list {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+/* Success Message */
+.success-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--success-color);
+  border-radius: 6px;
+  color: var(--success-color);
+  font-size: 14px;
+}
+
+/* Collections Select */
+.collections-select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  min-height: 120px;
+  transition: all 0.2s;
+}
+
+.collections-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.collections-select option {
+  padding: 8px;
+  background: var(--surface-light);
+  color: var(--text-primary);
+}
+
+.collections-select option:checked {
+  background: var(--primary-color);
+  color: white;
 }
 
 /* Manual Viewer Modal */

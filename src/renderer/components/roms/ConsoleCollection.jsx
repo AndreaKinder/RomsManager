@@ -15,7 +15,11 @@ const icons = {
   generic: require("../../../assets/icons/systems/generic-system.png"),
 };
 
-function ConsoleCollection({ console, onRomUpdated }) {
+function ConsoleCollection({
+  console,
+  onRomUpdated,
+  isCustomCollection = false,
+}) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   // Handle both array and object formats for roms
@@ -29,6 +33,16 @@ function ConsoleCollection({ console, onRomUpdated }) {
     return icons[iconName] || icons.generic;
   };
 
+  // Get the display name
+  const displayName = isCustomCollection
+    ? console.collectionName
+    : console.consoleName || console.consoleId;
+
+  // Get the icon for custom collections (use generic)
+  const displayIcon = isCustomCollection
+    ? icons.generic
+    : getConsoleIcon(console.consoleId);
+
   return (
     <div className="console-collection">
       <div
@@ -37,13 +51,9 @@ function ConsoleCollection({ console, onRomUpdated }) {
       >
         <h2>
           <span className="chevron">{isExpanded ? "▼" : "▶"}</span>
-          <img
-            src={getConsoleIcon(console.consoleId)}
-            alt={console.consoleName || console.consoleId}
-            className="console-icon"
-          />
-          {console.consoleName || console.consoleId}
-          <span className="rom-count">({console.romCount} ROMs)</span>
+          <img src={displayIcon} alt={displayName} className="console-icon" />
+          {displayName}
+          <span className="rom-count">({romsArray.length} ROMs)</span>
         </h2>
       </div>
 

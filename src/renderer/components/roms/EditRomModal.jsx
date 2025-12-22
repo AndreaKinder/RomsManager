@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   VALIDATION_MESSAGES,
   ERROR_MESSAGES,
@@ -16,6 +16,54 @@ function EditRomModal({ rom, onClose, onSave }) {
   const [coverMessage, setCoverMessage] = useState(null);
   const [selectedManualFile, setSelectedManualFile] = useState(null);
   const [manualMessage, setManualMessage] = useState(null);
+  const [selectedCollections, setSelectedCollections] = useState(
+    rom.collections || [],
+  );
+  const [availableCollections, setAvailableCollections] = useState([]);
+
+  useEffect(() => {
+    const loadCollections = async () => {
+      try {
+        const saved = localStorage.getItem("customCollections");
+        const localCollections = saved ? JSON.parse(saved) : [];
+
+        const allRoms = await window.electronAPI.getAllRoms();
+        const collectionsFromRoms = new Set();
+
+        Object.keys(allRoms).forEach((consoleId) => {
+          const roms = allRoms[consoleId];
+          roms.forEach((rom) => {
+            if (rom.collections && Array.isArray(rom.collections)) {
+              rom.collections.forEach((collectionName) => {
+                collectionsFromRoms.add(collectionName);
+              });
+            }
+          });
+        });
+
+        const allUniqueCollections = [
+          ...new Set([...localCollections, ...Array.from(collectionsFromRoms)]),
+        ];
+
+        setAvailableCollections(allUniqueCollections);
+      } catch (error) {
+        console.error("Error loading collections:", error);
+        const saved = localStorage.getItem("customCollections");
+        const localCollections = saved ? JSON.parse(saved) : [];
+        setAvailableCollections(localCollections);
+      }
+    };
+
+    loadCollections();
+  }, []);
+
+  const handleSelectChange = (e) => {
+    const selectedOptions = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value,
+    );
+    setSelectedCollections(selectedOptions);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,10 +88,16 @@ function EditRomModal({ rom, onClose, onSave }) {
 
       if (result.success) {
         const fileExtension = rom.romName.split(".").pop();
-        await window.electronAPI.editRomName(
-          rom.romName,
-          `${title}.${fileExtension}`,
+        const newRomName = `${title}.${fileExtension}`;
+
+        await window.electronAPI.editRomName(rom.romName, newRomName);
+
+        // Actualizar colecciones
+        await window.electronAPI.updateRomCollections(
+          newRomName,
+          selectedCollections,
         );
+
         onSave();
       } else {
         setError(result.error || ERROR_MESSAGES.UPDATE_ROM("desconocido"));
@@ -251,6 +305,40 @@ function EditRomModal({ rom, onClose, onSave }) {
               <small className="field-hint">
                 {title.length}/{MAX_TITLE_LENGTH} caracteres
               </small>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="collections">Colecciones Personalizadas</label>
+
+              {availableCollections.length > 0 ? (
+                <>
+                  <select
+                    id="collections"
+                    multiple
+                    value={selectedCollections}
+                    onChange={handleSelectChange}
+                    disabled={isLoading}
+                    className="collections-select"
+                    size="5"
+                  >
+                    {availableCollections.map((collection) => (
+                      <option key={collection} value={collection}>
+                        {collection}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="form-hint">
+                    Mantén presionado Ctrl (Cmd en Mac) para seleccionar
+                    múltiples colecciones. Las colecciones se gestionan desde
+                    Configuración ⚙️.
+                  </p>
+                </>
+              ) : (
+                <p className="form-hint">
+                  No hay colecciones disponibles. Añade colecciones desde
+                  Configuración ⚙️.
+                </p>
+              )}
             </div>
 
             <div className="form-field">

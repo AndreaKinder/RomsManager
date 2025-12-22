@@ -61,6 +61,8 @@ export const BUTTON_LABELS = {
   CLOSE: "Cerrar",
   SAVE: "Guardar",
   DELETE: "Eliminar",
+  CUSTOM_COLLECTION_SELECTED: "Colecciónes Personalizadas",
+  SYSTEM_COLLECTION_SELECTED: "Consolas",
 };
 
 export const DEFAULT_SD_PATH = "";

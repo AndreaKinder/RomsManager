@@ -7,6 +7,8 @@ function AppHeader({
   onAddRom,
   onOpenSettings,
   isLoading,
+  onOpenCustomCollectionSelect,
+  onOpenCustomCollectionSelected = false,
 }) {
   return (
     <header className="app-header">
@@ -41,6 +43,16 @@ function AppHeader({
         </button>
         <button className="btn" onClick={onOpenSettings} disabled={isLoading}>
           {BUTTON_LABELS.SETTINGS}
+        </button>
+
+        <button
+          className={`btn btn-toggle ${onOpenCustomCollectionSelected ? "active" : ""}`}
+          onClick={onOpenCustomCollectionSelect}
+          disabled={isLoading}
+        >
+          {onOpenCustomCollectionSelected
+            ? BUTTON_LABELS.CUSTOM_COLLECTION_SELECTED
+            : BUTTON_LABELS.SYSTEM_COLLECTION_SELECTED}
         </button>
       </div>
     </header>

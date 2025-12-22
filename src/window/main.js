@@ -550,6 +550,21 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle(
+    "update-rom-collections",
+    async (event, romName, collections) => {
+      try {
+        const { updateRomCollections } =
+          await import("../back/services/utils/getJsonUtils.js");
+        const result = updateRomCollections(romName, collections);
+        return { success: true, data: result };
+      } catch (error) {
+        console.error("Failed to update ROM collections:", error);
+        return { success: false, error: error.message };
+      }
+    },
+  );
+
   ipcMain.handle("export-rom-copy", async (event, sourcePath) => {
     try {
       const filePath = await syncService.exportRomCopy(sourcePath, dialog);

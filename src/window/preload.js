@@ -37,6 +37,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   editRomName: (romName, newRomName) =>
     ipcRenderer.invoke("edit-rom-name", romName, newRomName),
   deleteRom: (romName) => ipcRenderer.invoke("delete-rom", romName),
+  updateRomCollections: (romName, collections) =>
+    ipcRenderer.invoke("update-rom-collections", romName, collections),
   exportRomCopy: (sourcePath) =>
     ipcRenderer.invoke("export-rom-copy", sourcePath),
   exportSaveCopy: (sourcePath) =>

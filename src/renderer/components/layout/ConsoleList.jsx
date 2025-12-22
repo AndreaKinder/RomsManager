@@ -1,14 +1,19 @@
 import React from "react";
 import ConsoleCollection from "../roms/ConsoleCollection";
 
-function ConsoleList({ consoles, onRomUpdated }) {
+function ConsoleList({ consoles, onRomUpdated, isCustomCollection = false }) {
   return (
     <div className="consoles-container">
-      {consoles.map((console) => (
+      {consoles.map((console, index) => (
         <ConsoleCollection
-          key={console.consoleId}
+          key={
+            isCustomCollection
+              ? console.collectionName || `collection-${index}`
+              : console.consoleId
+          }
           console={console}
           onRomUpdated={onRomUpdated}
+          isCustomCollection={isCustomCollection}
         />
       ))}
     </div>
