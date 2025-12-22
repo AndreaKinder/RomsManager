@@ -640,6 +640,15 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("get-all-custom-collections", async () => {
+    try {
+      return uiDataService.getAllCustomCollections();
+    } catch (error) {
+      console.error("Failed to get all custom collections:", error);
+      return [];
+    }
+  });
+
   createWindow();
 
   app.on("activate", () => {
