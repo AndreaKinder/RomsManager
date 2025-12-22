@@ -640,12 +640,21 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("get-all-custom-collections", async () => {
+  ipcMain.handle("get-all-custom-collections", async (allObjectRoms) => {
     try {
-      return uiDataService.getAllCustomCollections();
+      return uiDataService.getAllCustomCollections(allObjectRoms);
     } catch (error) {
       console.error("Failed to get all custom collections:", error);
       return [];
+    }
+  });
+
+  ipcMain.handle("get-collection-object", async (collectionName) => {
+    try {
+      return uiDataService.getCollectionObject(collectionName);
+    } catch (error) {
+      console.error("Failed to get collection object:", error);
+      return null;
     }
   });
 
