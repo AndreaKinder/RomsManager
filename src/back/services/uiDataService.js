@@ -127,3 +127,33 @@ export function getAllRoms() {
 
   return allRoms;
 }
+
+function extractCustomCollectionsFromRom(romObject) {
+  const collections = romObject.collections || [];
+  return collections;
+}
+
+function getRomForCustomCollection(romsObjectList, collection) {
+  const romsCollection = [];
+  for (const romObject of romsObjectList) {
+    if (collection === romObject.collection) {
+      romsCollection.push(romObject);
+    }
+  }
+  return romsCollection;
+}
+
+function createCollectionObject(roms, collection) {
+  const collectionName = collection;
+  return { collectionName, roms: getRomForCustomCollection(roms, collection) };
+}
+
+export function getCollectionObject(allObjectRoms) {
+  const customCollections = {};
+  const collections = extractCustomCollectionsFromRom(allObjectRoms);
+  collections.forEach((collection) => {
+    const collectionObject = createCollectionObject(allObjectRoms, collection);
+    customCollections[collection] = collectionObject;
+  });
+  return customCollections;
+}
