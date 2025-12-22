@@ -48,6 +48,7 @@ export const UI_TEXT = {
   NO_COLLECTIONS_MESSAGE:
     'Haz clic en "Importar desde la SD" para importar tus ROMs desde la tarjeta SD.',
   TOTAL_CONSOLES: "Total de Consolas:",
+  TOTAL_COLLECTIONS: "Total de Colecciones:",
   TOTAL_ROMS: "Total de ROMs:",
 };
 
