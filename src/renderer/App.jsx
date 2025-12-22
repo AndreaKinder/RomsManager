@@ -14,17 +14,11 @@ function App() {
   const [consoles, setConsoles] = useState([]);
   const [customCollections, setCustomCollections] = useState([]);
   const [isCustomCollectionView, setIsCustomCollectionView] = useState(false);
-  const [sdPath, setSdPath] = useState(DEFAULT_SD_PATH);
   const [searchQuery, setSearchQuery] = useState("");
   const [showConsoleModal, setShowConsoleModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [error, setError] = useState(null);
-  const {
-    isLoading,
-    handleImportFromSD,
-    handleExportToSD,
-    handleAddRomFromPC,
-  } = useRomOperations();
+  const { isLoading, handleAddRomFromPC } = useRomOperations();
 
   const loadConsoles = useCallback(async () => {
     try {
@@ -166,6 +160,9 @@ function App() {
   const totalConsoleCount = isCustomCollectionView
     ? customCollections.length
     : consoles.length;
+  const totalCollectionCount = isCustomCollectionView
+    ? customCollections.length
+    : consoles.length;
 
   const handleConsoleSelected = async (selectedConsole, romFilePath) => {
     setShowConsoleModal(false);
@@ -237,6 +234,8 @@ function App() {
       </main>
 
       <AppFooter
+        customCollectionSelected={isCustomCollectionView}
+        totalCollections={totalCollectionCount}
         totalConsoles={totalConsoleCount}
         totalRoms={totalRoms}
         filteredRomsCount={searchQuery ? filteredRomsCount : null}
