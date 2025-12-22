@@ -3,13 +3,27 @@ import { UI_TEXT } from "../../constants/messages";
 
 const APP_VERSION = "0.2.0-alpha";
 
-function AppFooter({ totalConsoles, totalRoms, filteredRomsCount }) {
+function AppFooter({
+  totalCollections,
+  totalConsoles,
+  totalRoms,
+  filteredRomsCount,
+  customCollectionSelected,
+}) {
   return (
     <footer className="app-footer">
       <p>
-        {UI_TEXT.TOTAL_COLLECTIONS} {totalCollections} |{" "}
-        {UI_TEXT.TOTAL_CONSOLES} {totalConsoles} | {UI_TEXT.TOTAL_ROMS}{" "}
-        {totalRoms}
+        {customCollectionSelected && (
+          <>
+            {UI_TEXT.TOTAL_COLLECTIONS} {totalCollections} |{" "}
+          </>
+        )}
+        {!customCollectionSelected && (
+          <>
+            {UI_TEXT.TOTAL_CONSOLES} {totalConsoles} |{" "}
+          </>
+        )}
+        {UI_TEXT.TOTAL_ROMS} {totalRoms}{" "}
         {filteredRomsCount !== null && filteredRomsCount !== totalRoms && (
           <span className="filtered-count">
             {" "}
