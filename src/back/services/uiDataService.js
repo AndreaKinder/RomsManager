@@ -157,3 +157,9 @@ export function getCollectionObject(allObjectRoms) {
   });
   return customCollections;
 }
+
+export function getAllCollections(allObjectRoms) {
+  const customCollections = getCollectionObject(allObjectRoms);
+  const allCollections = Object.values(customCollections);
+  return allCollections;
+}
