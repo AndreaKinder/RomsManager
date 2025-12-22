@@ -44,7 +44,7 @@ function readExistingRomsData(jsonFilePath) {
   return JSON.parse(fileContent);
 }
 
-function addRomToCollection(romsData, romObject) {
+function addRomToSystemCollection(romsData, romObject) {
   romsData[romObject.romName] = {
     romName: romObject.romName,
     system: romObject.system,
@@ -66,7 +66,7 @@ function writeRomsDataToFile(jsonFilePath, romsData) {
 export function persistRomToJson(romObject) {
   const jsonFilePath = buildJsonFilePath(romObject.system);
   const romsData = readExistingRomsData(jsonFilePath);
-  const updatedRomsData = addRomToCollection(romsData, romObject);
+  const updatedRomsData = addRomToSystemCollection(romsData, romObject);
 
   writeRomsDataToFile(jsonFilePath, updatedRomsData);
 
