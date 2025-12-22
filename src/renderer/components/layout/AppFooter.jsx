@@ -7,6 +7,7 @@ function AppFooter({ totalConsoles, totalRoms, filteredRomsCount }) {
   return (
     <footer className="app-footer">
       <p>
+        {UI_TEXT.TOTAL_COLLECTIONS} {totalCollections} |{" "}
         {UI_TEXT.TOTAL_CONSOLES} {totalConsoles} | {UI_TEXT.TOTAL_ROMS}{" "}
         {totalRoms}
         {filteredRomsCount !== null && filteredRomsCount !== totalRoms && (
