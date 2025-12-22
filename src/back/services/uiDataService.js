@@ -128,3 +128,18 @@ export function getAllRoms() {
 
   return allRoms;
 }
+
+export function fixRomCollection(rom) {
+  if (!rom.collections) {
+    return rom;
+  }
+
+  const fixedCollections = rom.collections.map((collection) => {
+    if (!collection.id) {
+      return { ...collection, id: uuidv4() };
+    }
+    return collection;
+  });
+
+  return { ...rom, collections: fixedCollections };
+}
