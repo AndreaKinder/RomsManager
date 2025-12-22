@@ -52,6 +52,7 @@ function addRomToCollection(romsData, romObject) {
     romPath: romObject.romPath,
     savePath: romObject.savePath || null,
     coverPath: romObject.coverPath || null,
+    collections: romObject.collections || [] || null,
   };
 
   return romsData;
