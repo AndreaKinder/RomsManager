@@ -178,6 +178,33 @@ export function deleteRomFromJson(romName) {
   throw new Error(`ROM "${romName}" not found in any system`);
 }
 
+export function updateRomCollections(romName, collections) {
+  const baseDir = getPathSystemJsonSystemsPC();
+  const jsonFiles = fs
+    .readdirSync(baseDir)
+    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
+
+  for (const jsonFile of jsonFiles) {
+    const jsonFilePath = path.join(baseDir, jsonFile);
+    const romsData = readExistingRomsData(jsonFilePath);
+
+    if (romsData[romName]) {
+      // Update collections field
+      romsData[romName].collections = Array.isArray(collections)
+        ? collections
+        : [];
+      writeRomsDataToFile(jsonFilePath, romsData);
+      return {
+        success: true,
+        romName,
+        collections: romsData[romName].collections,
+      };
+    }
+  }
+
+  throw new Error(`ROM "${romName}" not found in any system`);
+}
+
 // Deprecated aliases for backward compatibility
 export const getRegisterRomTemplate = createRomTemplate;
 export const getWriteRomSystemJsonPC = persistRomToJson;
