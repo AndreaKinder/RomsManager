@@ -158,7 +158,7 @@ export function getCollectionObject(allObjectRoms) {
   return customCollections;
 }
 
-export function getAllCollections(allObjectRoms) {
+export function getAllCustomCollections(allObjectRoms) {
   const customCollections = getCollectionObject(allObjectRoms);
   const allCollections = Object.values(customCollections);
   return allCollections;
