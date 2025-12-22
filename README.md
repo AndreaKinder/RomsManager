@@ -1,6 +1,6 @@
 # 🎮 ROM Manager
 
-A modern desktop application for managing retro gaming ROM collections across multiple console systems.
+Una aplicación de escritorio moderna para gestionar colecciones de ROMs de juegos retro en múltiples sistemas de consola.
 
 ![App Screen](./screenshots/app-screenshot.png)
 
@@ -8,134 +8,134 @@ A modern desktop application for managing retro gaming ROM collections across mu
 ![React](https://img.shields.io/badge/React-19-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Features
+## Características
 
-✅ **Multi-Console Support**: Manage ROMs for 16+ retro gaming systems  
-✅ **SD Card Import**: Import ROMs directly from SD cards or external drives  
-✅ **Smart Detection**: Automatic system detection based on file extensions  
-✅ **Organized Storage**: ROMs organized by console system with JSON metadata  
-✅ **Modern UI**: Clean, dark-themed interface with retro gaming aesthetics  
-✅ **File Management**: Add individual ROMs or bulk import entire collections  
-✅ **ROM Editing**: Edit ROM titles and metadata with inline editor  
-✅ **Cover Art Support**: Display custom cover images for each ROM  
-✅ **Save Management**: Import, export, and manage save files for your ROMs  
-✅ **Retro Styling**: Pixel-art font and retro visual effects for authentic gaming feel  
-✅ **Quick Export**: One-click ROM and save file export functionality  
-✅ **Game Search**: Quickly find ROMs by searching titles with real-time filtering  
-✅ **PDF Manual Support**: Import and view game manuals in PDF format  
+✅ **Soporte Multi-Consola**: Gestiona ROMs para más de 16 sistemas de juegos retro  
+✅ **Importación desde Tarjeta SD**: Importa ROMs directamente desde tarjetas SD o discos externos  
+✅ **Detección Inteligente**: Detección automática del sistema basada en extensiones de archivo  
+✅ **Almacenamiento Organizado**: ROMs organizadas por sistema de consola con metadatos JSON  
+✅ **Interfaz Moderna**: Interfaz limpia con tema oscuro y estética de juegos retro  
+✅ **Gestión de Archivos**: Añade ROMs individuales o importa colecciones completas en masa  
+✅ **Edición de ROMs**: Edita títulos y metadatos de ROMs con editor en línea  
+✅ **Soporte de Carátulas**: Muestra imágenes de carátula personalizadas para cada ROM  
+✅ **Gestión de Partidas**: Importa, exporta y gestiona archivos de guardado para tus ROMs  
+✅ **Estilo Retro**: Fuente pixel-art y efectos visuales retro para una experiencia auténtica  
+✅ **Exportación Rápida**: Funcionalidad de exportación de ROMs y archivos de guardado con un clic  
+✅ **Búsqueda de Juegos**: Encuentra ROMs rápidamente buscando títulos con filtrado en tiempo real  
+✅ **Soporte de Manuales PDF**: Importa y visualiza manuales de juegos en formato PDF  
 
-## Upcoming Features
+## Próximas Características
 
-🔜 **Gallery View**: Browse your ROM collection with visual grid layouts  
-🔜 **Extended Metadata**: Track description, languages, release year, and publisher  
-🔜 **Player Info**: Record number of players for each game  
-🔜 **Game Ratings**: Personal rating system and difficulty scores  
-🔜 **Game Notes**: Add personal notes and comments for each ROM  
+🔜 **Vista de Galería**: Navega tu colección de ROMs con diseños de cuadrícula visual  
+🔜 **Metadatos Extendidos**: Rastrea descripción, idiomas, año de lanzamiento y editorial  
+🔜 **Información de Jugadores**: Registra el número de jugadores para cada juego  
+🔜 **Valoraciones de Juegos**: Sistema de valoración personal y puntuaciones de dificultad  
+🔜 **Notas de Juegos**: Añade notas personales y comentarios para cada ROM  
 
-## Screenshots
+## Capturas de Pantalla
 
-### Main Interface
-- View all your ROM collections organized by console
-- Expandable/collapsible console sections
-- ROM count badges for each system
+### Interfaz Principal
+- Visualiza todas tus colecciones de ROMs organizadas por consola
+- Secciones de consola expandibles/colapsables
+- Insignias con el contador de ROMs para cada sistema
 
-### Features
-- **Add ROM**: Select and import individual ROM files
-- **Import from SD**: Bulk import ROMs from SD card or external drive
-- **Refresh**: Reload ROM collections
+### Características
+- **Añadir ROM**: Selecciona e importa archivos ROM individuales
+- **Importar desde SD**: Importación masiva de ROMs desde tarjeta SD o disco externo
+- **Actualizar**: Recarga las colecciones de ROMs
 
-## Installation
+## Instalación
 
-### Prerequisites
+### Requisitos Previos
 
 - Node.js 18+ 
-- npm or yarn
+- npm o yarn
 
-### Setup
+### Configuración
 
 ```bash
-# Clone the repository
+# Clonar el repositorio
 git clone https://github.com/yourusername/RomsManager.git
 cd RomsManager
 
-# Install dependencies
+# Instalar dependencias
 npm install
 
-# Start development server
+# Iniciar servidor de desarrollo
 npm start
 
-# Build for production
+# Compilar para producción
 npm run package
 ```
 
-## Usage
+## Uso
 
-### First Time Setup
+### Configuración Inicial
 
-1. **Launch the application**
-2. **Configure SD Path**: Enter your SD card drive letter (e.g., `D:/`, `E:/`)
-3. **Import ROMs**: Click "📥 Import from SD" to import your ROM collection
+1. **Inicia la aplicación**
+2. **Configura la Ruta SD**: Introduce la letra de unidad de tu tarjeta SD (ej., `D:/`, `E:/`)
+3. **Importa ROMs**: Haz clic en "📥 Importar desde SD" para importar tu colección de ROMs
 
-### Adding Individual ROMs
+### Añadir ROMs Individuales
 
-1. Click **"➕ Add ROM"**
-2. Browse and select a ROM file from anywhere on your PC
-3. The ROM will be automatically:
-   - Copied to the appropriate system folder
-   - Registered in the system's JSON metadata
-   - Displayed in the UI
+1. Haz clic en **"➕ Añadir ROM"**
+2. Navega y selecciona un archivo ROM desde cualquier lugar de tu PC
+3. La ROM será automáticamente:
+   - Copiada a la carpeta del sistema apropiado
+   - Registrada en los metadatos JSON del sistema
+   - Mostrada en la interfaz
 
-### Importing from SD Card
+### Importar desde Tarjeta SD
 
-1. Insert your SD card
-2. Set the correct drive letter in the **SD Path** input
-3. Click **"📥 Import from SD"**
-4. All ROMs will be imported and organized by system
+1. Inserta tu tarjeta SD
+2. Establece la letra de unidad correcta en el campo **Ruta SD**
+3. Haz clic en **"📥 Importar desde SD"**
+4. Todas las ROMs serán importadas y organizadas por sistema
 
-### Managing Your Collection
+### Gestionar tu Colección
 
-#### Searching for Games
-1. Use the **🔍 Buscar juegos** search bar in the header
-2. Type any part of a game title to filter your collection
-3. Search results update in real-time as you type
-4. The footer shows the filtered count (e.g., "Mostrando: 15")
-5. Click the **✕** button to clear the search and show all ROMs
-6. Search works across all consoles simultaneously
+#### Buscar Juegos
+1. Usa la barra de búsqueda **🔍 Buscar juegos** en el encabezado
+2. Escribe cualquier parte del título de un juego para filtrar tu colección
+3. Los resultados de búsqueda se actualizan en tiempo real mientras escribes
+4. El pie de página muestra el contador filtrado (ej., "Mostrando: 15")
+5. Haz clic en el botón **✕** para limpiar la búsqueda y mostrar todas las ROMs
+6. La búsqueda funciona en todas las consolas simultáneamente
 
-**Search Features:**
-- Case-insensitive search
-- Searches both ROM titles and file names
-- Only displays consoles with matching ROMs
-- Shows "No se encontraron juegos" message if no matches found
+**Características de Búsqueda:**
+- Búsqueda sin distinción entre mayúsculas y minúsculas
+- Busca tanto en títulos de ROM como en nombres de archivo
+- Solo muestra consolas con ROMs coincidentes
+- Muestra el mensaje "No se encontraron juegos" si no hay coincidencias
 
-#### Browsing ROMs
-- Click on any console header to expand/collapse the ROM list
-- Each ROM card displays:
-  - ROM title with retro pixel-art font
-  - Custom cover art (if available)
-  - Save file indicator (💾) if a save exists
-  - Action buttons for edit, delete, and export
+#### Navegar ROMs
+- Haz clic en cualquier encabezado de consola para expandir/colapsar la lista de ROMs
+- Cada tarjeta de ROM muestra:
+  - Título de la ROM con fuente pixel-art retro
+  - Carátula personalizada (si está disponible)
+  - Indicador de archivo de guardado (💾) si existe una partida
+  - Botones de acción para editar, eliminar y exportar
 
-#### Editing ROMs
-1. Click the **✏️ Edit** button on any ROM card
-2. Modify the ROM title
-3. Select a cover image (PNG, JPG, GIF, WebP)
-4. Import a save file if available
-5. Click **Save** to apply changes
+#### Editar ROMs
+1. Haz clic en el botón **✏️ Editar** en cualquier tarjeta de ROM
+2. Modifica el título de la ROM
+3. Selecciona una imagen de carátula (PNG, JPG, GIF, WebP)
+4. Importa un archivo de guardado si está disponible
+5. Haz clic en **Guardar** para aplicar los cambios
 
-#### Managing Save Files
-- **View Save Status**: ROMs with save files show a 💾 icon
-- **Export Save**: Click the 💾 icon to export the save file
-- **Import Save**: Use the Edit modal to import save files from your PC
+#### Gestionar Archivos de Guardado
+- **Ver Estado de Guardado**: Las ROMs con archivos de guardado muestran un icono 💾
+- **Exportar Guardado**: Haz clic en el icono 💾 para exportar el archivo de guardado
+- **Importar Guardado**: Usa el modal de Edición para importar archivos de guardado desde tu PC
 
-#### Exporting ROMs
-- Click the **⬇️ Download** button on any ROM card
-- Choose export location
-- ROM file is copied to your selected directory
+#### Exportar ROMs
+- Haz clic en el botón **⬇️ Descargar** en cualquier tarjeta de ROM
+- Elige la ubicación de exportación
+- El archivo ROM se copia al directorio seleccionado
 
-## Supported Systems
+## Sistemas Soportados
 
-| Console | Extensions |
+| Consola | Extensiones |
 |---------|-----------|
 | NES | `.nes` |
 | SNES/SFC | `.smc`, `.sfc` |
@@ -153,57 +153,57 @@ npm run package
 | Wii U | `.wud`, `.wux`, `.rpx` |
 | Nintendo Switch | `.nsp`, `.xci`, `.nsz` |
 
-## Project Structure
+## Estructura del Proyecto
 
 ```
 RomsManager/
 ├── src/
-│   ├── back/                    # Backend services
+│   ├── back/                    # Servicios de backend
 │   │   ├── data/
-│   │   │   └── consoles.json    # Console definitions
+│   │   │   └── consoles.json    # Definiciones de consolas
 │   │   └── services/
-│   │       ├── syncService.js   # Import/export logic
-│   │       └── uiDataService.js # Data aggregation
-│   ├── renderer/                # React frontend
+│   │       ├── syncService.js   # Lógica de importación/exportación
+│   │       └── uiDataService.js # Agregación de datos
+│   ├── renderer/                # Frontend React
 │   │   ├── assets/
-│   │   │   └── fonts/           # Retro gaming fonts
+│   │   │   └── fonts/           # Fuentes de juegos retro
 │   │   ├── components/
 │   │   │   └── roms/
-│   │   │       ├── RomCard.jsx  # ROM display component
-│   │   │       └── EditRomModal.jsx # ROM editing modal
+│   │   │       ├── RomCard.jsx  # Componente de visualización de ROM
+│   │   │       └── EditRomModal.jsx # Modal de edición de ROM
 │   │   └── App.jsx
 │   ├── window/
-│   │   ├── main.js             # Electron main process
-│   │   └── preload.js          # IPC bridge
+│   │   ├── main.js             # Proceso principal de Electron
+│   │   └── preload.js          # Puente IPC
 │   └── styles/
-│       └── index.css           # Global styles with retro theme
+│       └── index.css           # Estilos globales con tema retro
 ├── docs/
-│   └── ARCHITECTURE.md         # Detailed architecture docs
+│   └── ARCHITECTURE.md         # Documentación detallada de arquitectura
 └── README.md
 ```
 
-## Storage Locations
+## Ubicaciones de Almacenamiento
 
-### PC Storage
+### Almacenamiento en PC
 
-ROMs are stored in:
+Las ROMs se almacenan en:
 ```
-C:/Users/{user}/Roms/
-├── Json/           # Metadata for each system (title, paths, etc.)
-├── Covers/         # Cover art images for ROMs
-├── Saves/          # Save files organized by console
-├── gb/             # Game Boy ROMs
-├── gba/            # Game Boy Advance ROMs
-├── ps/             # PlayStation 1 ROMs
+C:/Users/{usuario}/Roms/
+├── Json/           # Metadatos para cada sistema (título, rutas, etc.)
+├── Covers/         # Imágenes de carátula para ROMs
+├── Saves/          # Archivos de guardado organizados por consola
+├── gb/             # ROMs de Game Boy
+├── gba/            # ROMs de Game Boy Advance
+├── ps/             # ROMs de PlayStation 1
 └── ...
 ```
 
-#### Metadata Structure (JSON)
-Each console has a JSON file storing ROM metadata:
+#### Estructura de Metadatos (JSON)
+Cada consola tiene un archivo JSON almacenando metadatos de ROM:
 ```json
 {
   "romName.gba": {
-    "title": "Game Title",
+    "title": "Título del Juego",
     "romName": "romName.gba",
     "romPath": "C:/Users/.../Roms/gba/romName.gba",
     "coverPath": "C:/Users/.../Roms/Covers/gba/romName.png",
@@ -212,120 +212,120 @@ Each console has a JSON file storing ROM metadata:
 }
 ```
 
-### SD Card Structure
+### Estructura de Tarjeta SD
 
-Expected SD card structure:
+Estructura esperada de la tarjeta SD:
 ```
-{SD_DRIVE}/Roms/
-├── GB/             # Uppercase directory names
+{UNIDAD_SD}/Roms/
+├── GB/             # Nombres de directorio en MAYÚSCULAS
 ├── GBA/
 ├── PS/
 └── ...
 ```
 
-**Important**: SD card directories must use **UPPERCASE** names (e.g., `GB`, `PS`, `GBA`).
+**Importante**: Los directorios de la tarjeta SD deben usar nombres en **MAYÚSCULAS** (ej., `GB`, `PS`, `GBA`).
 
-## Development
+## Desarrollo
 
 ### Scripts
 
 ```bash
-npm start          # Start development mode
-npm run package    # Build distributable
-npm run make       # Create installer
-npm test           # Run tests
-npm run lint       # Lint code
+npm start          # Iniciar modo desarrollo
+npm run package    # Compilar distribuible
+npm run make       # Crear instalador
+npm test           # Ejecutar pruebas
+npm run lint       # Linter de código
 ```
 
-### Tech Stack
+### Stack Tecnológico
 
-- **Electron 39**: Desktop app framework
-- **React 19**: UI library
-- **Webpack**: Module bundler
-- **Electron Forge**: Build tooling
-- **Better-SQLite3**: Database for ROM metadata
-- **xml2js**: XML parsing for game metadata
-- **Press Start 2P Font**: Retro pixel-art typography
-- **ES Modules**: Modern JavaScript modules
+- **Electron 39**: Framework de aplicaciones de escritorio
+- **React 19**: Biblioteca de interfaz de usuario
+- **Webpack**: Empaquetador de módulos
+- **Electron Forge**: Herramientas de compilación
+- **Better-SQLite3**: Base de datos para metadatos de ROM
+- **xml2js**: Análisis XML para metadatos de juegos
+- **Fuente Press Start 2P**: Tipografía pixel-art retro
+- **Módulos ES**: Módulos JavaScript modernos
 
-## Configuration
+## Configuración
 
-### Customizing Storage Paths
+### Personalizar Rutas de Almacenamiento
 
-Edit `src/back/services/utils/getPaths.js`:
+Edita `src/back/services/utils/getPaths.js`:
 
 ```javascript
 export function getRomPathPC(consoleId, romFileName) {
-  return `C:/Your/Custom/Path/Roms/${consoleId}/${romFileName}`;
+  return `C:/Tu/Ruta/Personalizada/Roms/${consoleId}/${romFileName}`;
 }
 ```
 
-### Adding New Console Systems
+### Añadir Nuevos Sistemas de Consola
 
-Edit `src/back/data/consoles.json`:
+Edita `src/back/data/consoles.json`:
 
 ```json
 {
-  "NewConsole": {
+  "NuevaConsola": {
     "id": "17",
-    "id_name": "newconsole",
-    "name": "New Console Name",
+    "id_name": "nuevaconsola",
+    "name": "Nombre de Nueva Consola",
     "file": [".ext1", ".ext2"]
   }
 }
 ```
 
-## Troubleshooting
+## Solución de Problemas
 
-### ROMs Not Importing
+### Las ROMs No Se Importan
 
-1. **Check SD Path**: Ensure the drive letter is correct
-2. **Directory Names**: SD directories must be UPPERCASE
-3. **File Extensions**: Verify extensions match supported formats
-4. **Permissions**: Ensure read/write permissions for storage directories
+1. **Verifica la Ruta SD**: Asegúrate de que la letra de unidad sea correcta
+2. **Nombres de Directorio**: Los directorios SD deben estar en MAYÚSCULAS
+3. **Extensiones de Archivo**: Verifica que las extensiones coincidan con los formatos soportados
+4. **Permisos**: Asegúrate de tener permisos de lectura/escritura para los directorios de almacenamiento
 
-### System Not Detected
+### Sistema No Detectado
 
-1. **File Extension**: Check if the ROM extension is supported
-2. **Console Definitions**: Verify system exists in `consoles.json`
-3. **Extension Format**: Extensions must include the dot (e.g., `.gb` not `gb`)
+1. **Extensión de Archivo**: Verifica si la extensión de la ROM está soportada
+2. **Definiciones de Consola**: Verifica que el sistema existe en `consoles.json`
+3. **Formato de Extensión**: Las extensiones deben incluir el punto (ej., `.gb` no `gb`)
 
-### Cover Images Not Displaying
+### Las Imágenes de Carátula No Se Muestran
 
-1. **File Format**: Ensure cover is PNG, JPG, GIF, or WebP
-2. **File Permissions**: Check read permissions on cover files
-3. **Path Validation**: Verify cover path is correctly stored in JSON metadata
+1. **Formato de Archivo**: Asegúrate de que la carátula sea PNG, JPG, GIF o WebP
+2. **Permisos de Archivo**: Verifica los permisos de lectura en los archivos de carátula
+3. **Validación de Ruta**: Verifica que la ruta de la carátula esté correctamente almacenada en los metadatos JSON
 
-### Save Files Not Loading
+### Los Archivos de Guardado No Se Cargan
 
-1. **Save Path**: Ensure save file exists at the specified path
-2. **File Extension**: Common extensions: `.sav`, `.srm`, `.dat`, `.state`
-3. **Import Process**: Use the Edit modal to properly import save files
+1. **Ruta de Guardado**: Asegúrate de que el archivo de guardado existe en la ruta especificada
+2. **Extensión de Archivo**: Extensiones comunes: `.sav`, `.srm`, `.dat`, `.state`
+3. **Proceso de Importación**: Usa el modal de Edición para importar correctamente los archivos de guardado
 
-## Contributing
+## Contribuir
 
-Contributions are welcome! Please:
+¡Las contribuciones son bienvenidas! Por favor:
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+1. Haz un fork del repositorio
+2. Crea una rama de característica
+3. Haz commit de tus cambios
+4. Haz push a la rama
+5. Abre un Pull Request
 
-## License
+## Licencia
 
-MIT License - See LICENSE file for details
+Licencia MIT - Ver archivo LICENSE para detalles
 
-## Credits
+## Créditos
 
-- Built with [Electron](https://www.electronjs.org/)
-- UI powered by [React](https://react.dev/)
-- Bundled with [Electron Forge](https://www.electronforge.io/)
+- Construido con [Electron](https://www.electronjs.org/)
+- Interfaz potenciada por [React](https://react.dev/)
+- Empaquetado con [Electron Forge](https://www.electronforge.io/)
 
-## Support
+## Soporte
 
-For issues, questions, or feature requests, please open an issue on GitHub.
+Para problemas, preguntas o solicitudes de características, por favor abre un issue en GitHub.
 
 ---
 
-**Made with ❤️ for retro gaming enthusiasts**
+**Hecho con ❤️ para entusiastas de los juegos retro**
