@@ -120,26 +120,10 @@ export function getAllRoms() {
     const jsonPath = path.join(systemPath, jsonFile);
     const roms = parseRomsFromJsonFile(jsonPath);
     if (roms.length > 0) {
-      // Fix cover paths for all ROMs
       const fixedRoms = roms.map(fixCoverPath);
       allRoms[consoleId] = fixedRoms;
     }
   });
 
   return allRoms;
-}
-
-export function fixRomCollection(rom) {
-  if (!rom.collections) {
-    return rom;
-  }
-
-  const fixedCollections = rom.collections.map((collection) => {
-    if (!collection.id) {
-      return { ...collection, id: uuidv4() };
-    }
-    return collection;
-  });
-
-  return { ...rom, collections: fixedCollections };
 }
