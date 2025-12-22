@@ -2,14 +2,9 @@ import React from "react";
 import { UI_TEXT, BUTTON_LABELS } from "../../constants/messages";
 
 function AppHeader({
-  sdPath,
-  onSdPathChange,
   searchQuery,
   onSearchChange,
   onAddRom,
-  onImportFromSD,
-  onExportToSD,
-  onRefresh,
   onOpenSettings,
   isLoading,
 }) {
