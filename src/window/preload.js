@@ -41,4 +41,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("export-rom-copy", sourcePath),
   exportSaveCopy: (sourcePath) =>
     ipcRenderer.invoke("export-save-copy", sourcePath),
+  getCollectionObject: (allObjectRoms) =>
+    ipcRenderer.invoke("get-collection-object", allObjectRoms),
+  getAllCustomCollections: (allObjectRoms) =>
+    ipcRenderer.invoke("get-all-custom-collections", allObjectRoms),
 });
