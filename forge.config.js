@@ -6,43 +6,89 @@ module.exports = {
     asar: true,
     icon: "./assets/icon",
     executableName: "romsmanager",
+    name: "ROM Manager",
+    appBundleId: "com.andreakinder.romsmanager",
   },
   rebuildConfig: {},
   makers: [
-    // Squirrel requires Wine/Mono on Linux - disabled for cross-platform builds
-    // Uncomment when building on Windows directly
-    // {
-    //   name: "@electron-forge/maker-squirrel",
-    //   platforms: ["win32"],
-    //   config: {
-    //     iconUrl:
-    //       "https://raw.githubusercontent.com/andreakinder/RomsManager/main/assets/icon.ico",
-    //     setupIcon: "./assets/icon.ico",
-    //   },
-    // },
+    // Windows installer (Squirrel.Windows)
+    {
+      name: "@electron-forge/maker-squirrel",
+      platforms: ["win32"],
+      config: {
+        name: "romsmanager",
+        authors: "andreakinder",
+        description: "A desktop application for managing retro game ROMs",
+        iconUrl:
+          "https://raw.githubusercontent.com/andreakinder/RomsManager/main/assets/icon.ico",
+        setupIcon: "./assets/icon.ico",
+        loadingGif: "./assets/icon.png",
+        noMsi: true,
+      },
+    },
+    // Windows portable (ZIP)
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["win32", "darwin", "linux"],
+      platforms: ["win32"],
+      config: {
+        name: "romsmanager-portable",
+      },
     },
-    // Temporary workaround: deb maker has issues on some Linux systems
-    // Use ZIP for now and create deb manually if needed
-    // {
-    //   name: "@electron-forge/maker-deb",
-    //   platforms: ["linux"],
-    //   config: {
-    //     options: {
-    //       icon: "./assets/icon.png",
-    //     },
-    //   },
-    // },
-    // {
-    //    name: "@electron-forge/maker-rpm",
-    //      config: {
-    // options: {
-    //  icon: "./assets/icon.png",
-    // },
-    //  },
-    //   },
+    // Linux - AppImage (works on all distros including Arch)
+    {
+      name: "@reforged/maker-appimage",
+      platforms: ["linux"],
+      config: {
+        options: {
+          bin: "romsmanager",
+          name: "ROM Manager",
+          productName: "ROM Manager",
+          genericName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          categories: ["Utility", "Game"],
+          icon: "./assets/icon.png",
+          homepage: "https://github.com/andreakinder/RomsManager",
+        },
+      },
+    },
+    // Linux - Debian/Ubuntu (.deb)
+    {
+      name: "@electron-forge/maker-deb",
+      platforms: ["linux"],
+      config: {
+        options: {
+          bin: "romsmanager",
+          name: "romsmanager",
+          productName: "ROM Manager",
+          genericName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          icon: "./assets/icon.png",
+          maintainer: "andreakinder <andvillart@gmail.com>",
+          homepage: "https://github.com/andreakinder/RomsManager",
+          section: "utils",
+          categories: ["Utility", "Game"],
+          mimeType: ["x-scheme-handler/romsmanager"],
+        },
+      },
+    },
+    // Linux - RPM (Fedora, RedHat, openSUSE, etc.)
+    {
+      name: "@electron-forge/maker-rpm",
+      platforms: ["linux"],
+      config: {
+        options: {
+          bin: "romsmanager",
+          name: "romsmanager",
+          productName: "ROM Manager",
+          genericName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          icon: "./assets/icon.png",
+          homepage: "https://github.com/andreakinder/RomsManager",
+          license: "MIT",
+          categories: ["Utility", "Game"],
+        },
+      },
+    },
   ],
   plugins: [
     {
@@ -79,5 +125,27 @@ module.exports = {
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
+  ],
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "andreakinder",
+          name: "RomsManager",
+        },
+        prerelease: false,
+        draft: true,
+        // Genera release notes automáticamente desde los commits
+        generateReleaseNotes: true,
+        // Lista de archivos a publicar (por defecto todos los archivos generados)
+        // Los siguientes se generarán automáticamente:
+        // - romsmanager-{version} Setup.exe (Windows installer)
+        // - romsmanager-portable-win32-x64-{version}.zip (Windows portable)
+        // - romsmanager-{version}.AppImage (Linux AppImage para Arch y otras distros)
+        // - romsmanager_{version}_amd64.deb (Debian/Ubuntu)
+        // - romsmanager-{version}.x86_64.rpm (RPM para Fedora/RedHat/openSUSE)
+      },
+    },
   ],
 };
