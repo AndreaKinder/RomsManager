@@ -12,6 +12,7 @@ const icons = {
   ps: require("../../../assets/icons/systems/ps.png"),
   ps1: require("../../../assets/icons/systems/ps1.png"),
   sega_cd: require("../../../assets/icons/systems/sega_cd.png"),
+  psp: require("../../../assets/icons/systems/generic-system.png"),
   generic: require("../../../assets/icons/systems/generic-system.png"),
 };
 
