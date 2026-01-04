@@ -18,15 +18,14 @@ function createRomObject(templateData) {
   };
 }
 
-function extractRomMetadata(romFinalPath) {
+function extractRomMetadata(romFinalPath, system) {
   const romName = path.basename(romFinalPath);
-  const system = systemRomDecider(romName);
   const romTitle = romName.split(FILE_EXTENSION_SEPARATOR)[FIRST_ELEMENT];
   return [romName, system, romTitle, romFinalPath];
 }
 
-export function createRomTemplate(romFinalPath) {
-  const templateData = [...extractRomMetadata(romFinalPath)];
+export function createRomTemplate(romFinalPath, system) {
+  const templateData = [...extractRomMetadata(romFinalPath, system)];
   return createRomObject(templateData);
 }
 

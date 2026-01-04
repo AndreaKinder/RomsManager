@@ -204,7 +204,7 @@ app.whenReady().then(async () => {
         fs.copyFileSync(romFilePath, romPathPC);
 
         // Register ROM
-        const romTemplate = createRomTemplate(romPathPC);
+        const romTemplate = createRomTemplate(romPathPC, system);
         persistRomToJson(romTemplate);
 
         return {

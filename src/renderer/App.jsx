@@ -8,7 +8,7 @@ import ConsoleList from "./components/layout/ConsoleList";
 import SelectConsoleModal from "./components/roms/SelectConsoleModal";
 import SettingsModal from "./components/layout/SettingsModal";
 import { useRomOperations } from "./hooks/useRomOperations";
-import { DEFAULT_SD_PATH, ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
+import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 
 function App() {
   const [consoles, setConsoles] = useState([]);
