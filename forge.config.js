@@ -51,6 +51,7 @@ module.exports = {
         },
       },
     },
+    /*
     // Linux - Debian/Ubuntu (.deb)
     {
       name: "@electron-forge/maker-deb",
@@ -71,6 +72,8 @@ module.exports = {
         },
       },
     },
+    */
+    /*
     // Linux - RPM (Fedora, RedHat, openSUSE, etc.)
     {
       name: "@electron-forge/maker-rpm",
@@ -89,6 +92,7 @@ module.exports = {
         },
       },
     },
+    */
   ],
   plugins: [
     {
