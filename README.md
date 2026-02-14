@@ -55,7 +55,7 @@ Una aplicación de escritorio moderna para gestionar colecciones de ROMs de jueg
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/yourusername/RomsManager.git
+git clone https://github.com/AndreaKinder/RomsManager.git
 cd RomsManager
 
 # Instalar dependencias
