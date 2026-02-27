@@ -1,7 +1,7 @@
-import { FusesPlugin } from "@electron-forge/plugin-fuses";
-import { FuseV1Options, FuseVersion } from "@electron/fuses";
+const { FusesPlugin } = require("@electron-forge/plugin-fuses");
+const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
-export default {
+module.exports = {
   packagerConfig: {
     asar: true,
     icon: "./assets/icon",
@@ -27,10 +27,8 @@ export default {
     },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["win32"],
-      config: {
-        name: "romsmanager-portable",
-      },
+      platforms: ["win32", "darwin"],
+      config: {},
     },
     {
       name: "@reforged/maker-appimage",
@@ -46,6 +44,43 @@ export default {
           icon: "./assets/icon.png",
           homepage: "https://github.com/andreakinder/RomsManager",
         },
+      },
+    },
+    {
+      name: "@electron-forge/maker-deb",
+      platforms: ["linux"],
+      config: {
+        options: {
+          name: "romsmanager",
+          productName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          icon: "./assets/icon.png",
+          maintainer: "andreakinder",
+          homepage: "https://github.com/andreakinder/RomsManager",
+          categories: ["Utility", "Game"],
+        },
+      },
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      platforms: ["linux"],
+      config: {
+        options: {
+          name: "romsmanager",
+          productName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          icon: "./assets/icon.png",
+          homepage: "https://github.com/andreakinder/RomsManager",
+          categories: ["Utility", "Game"],
+        },
+      },
+    },
+    {
+      name: "@electron-forge/maker-dmg",
+      platforms: ["darwin"],
+      config: {
+        name: "ROM Manager",
+        format: "ULFO",
       },
     },
   ],
