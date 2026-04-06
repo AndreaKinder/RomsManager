@@ -1,7 +1,16 @@
 import fs from "fs";
 import path from "path";
+import { createRequire } from "module";
 import { getPathSystemJsonSystemsPC } from "./utils/getPaths.js";
 import logger from "./utils/logger.js";
+
+const require = createRequire(import.meta.url);
+const consolesData = require("../data/consoles.json");
+
+const consoleNameMap = Object.values(consolesData.consoles).reduce(
+  (map, c) => ({ ...map, [c.id_name]: c.name }),
+  {},
+);
 
 const FILE_EXTENSION_SEPARATOR = ".";
 const FIRST_ELEMENT = 0;
@@ -49,7 +58,7 @@ function parseRomsFromJsonFile(jsonFilePath) {
 function buildConsoleData(consoleId, roms) {
   return {
     consoleId,
-    consoleName: consoleId.toUpperCase(),
+    consoleName: consoleNameMap[consoleId] || consoleId.toUpperCase(),
     romCount: roms.length,
     roms: roms,
   };

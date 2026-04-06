@@ -87,7 +87,7 @@
     "GC": {
       "id": "13",
       "id_name": "gc",
-      "name": "Nintendo GameCube",
+      "name": "Nintendo Game Cube",
       "file": [".gcm", ".iso", ".gcz"],
       "save_formats": [".raw", ".gci"]
     },
