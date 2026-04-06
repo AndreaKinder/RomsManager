@@ -1,7 +1,6 @@
 import React from "react";
 import { UI_TEXT } from "../../constants/messages";
-
-const APP_VERSION = "0.2.0-alpha";
+import { version as APP_VERSION } from "../../../../package.json";
 
 function AppFooter({
   totalCollections,
