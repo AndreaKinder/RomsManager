@@ -12,20 +12,6 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     {
-      name: "@electron-forge/maker-squirrel",
-      platforms: ["win32"],
-      config: {
-        name: "romsmanager",
-        authors: "andreakinder",
-        description: "A desktop application for managing retro game ROMs",
-        iconUrl:
-          "https://raw.githubusercontent.com/andreakinder/RomsManager/main/assets/icon.ico",
-        setupIcon: "./assets/icon.ico",
-        loadingGif: "./assets/icon.png",
-        noMsi: true,
-      },
-    },
-    {
       name: "@electron-forge/maker-zip",
       platforms: ["win32", "darwin"],
       config: {},
@@ -44,44 +30,6 @@ module.exports = {
           icon: "./assets/icon.png",
           homepage: "https://github.com/andreakinder/RomsManager",
         },
-      },
-    },
-    {
-      name: "@electron-forge/maker-deb",
-      platforms: ["linux"],
-      config: {
-        options: {
-          name: "romsmanager",
-          productName: "ROM Manager",
-          description: "A desktop application for managing retro game ROMs",
-          icon: "./assets/icon.png",
-          maintainer: "andreakinder",
-          homepage: "https://github.com/andreakinder/RomsManager",
-          categories: ["Utility", "Game"],
-        },
-      },
-    },
-    {
-      name: "@electron-forge/maker-rpm",
-      platforms: ["linux"],
-      config: {
-        options: {
-          name: "romsmanager",
-          productName: "ROM Manager",
-          description: "A desktop application for managing retro game ROMs",
-          icon: "./assets/icon.png",
-          homepage: "https://github.com/andreakinder/RomsManager",
-          categories: ["Utility", "Game"],
-        },
-      },
-    },
-    {
-      name: "@electron-forge/maker-dmg",
-      platforms: ["darwin"],
-      config: {
-        name: "ROM Manager",
-        format: "ULFO",
-        icon: "./assets/icon.icns",
       },
     },
   ],
@@ -129,15 +77,7 @@ module.exports = {
         },
         prerelease: false,
         draft: true,
-        // Genera release notes automáticamente desde los commits
         generateReleaseNotes: true,
-        // Lista de archivos a publicar (por defecto todos los archivos generados)
-        // Los siguientes se generarán automáticamente:
-        // - romsmanager-{version} Setup.exe (Windows installer)
-        // - romsmanager-portable-win32-x64-{version}.zip (Windows portable)
-        // - romsmanager-{version}.AppImage (Linux AppImage para Arch y otras distros)
-        // - romsmanager_{version}_amd64.deb (Debian/Ubuntu)
-        // - romsmanager-{version}.x86_64.rpm (RPM para Fedora/RedHat/openSUSE)
       },
     },
   ],
