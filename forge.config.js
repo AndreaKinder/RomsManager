@@ -81,6 +81,7 @@ module.exports = {
       config: {
         name: "ROM Manager",
         format: "ULFO",
+        icon: "./assets/icon.icns",
       },
     },
   ],
