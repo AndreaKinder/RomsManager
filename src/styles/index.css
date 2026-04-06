@@ -863,6 +863,16 @@ body {
   color: white;
 }
 
+.rom-icon-btn.btn-play {
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.rom-icon-btn.btn-play:hover:not(:disabled) {
+  background: var(--success-color);
+  color: white;
+}
+
 .rom-icon-btn.btn-delete {
   border-color: var(--danger-color);
   color: var(--danger-color);

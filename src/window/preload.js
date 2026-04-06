@@ -48,6 +48,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getAllCustomCollections: (allObjectRoms) =>
     ipcRenderer.invoke("get-all-custom-collections", allObjectRoms),
   closeApp: () => ipcRenderer.invoke("close-app"),
+  getEmulators: () => ipcRenderer.invoke("get-emulators"),
+  getEmulatorForConsole: (consoleId) =>
+    ipcRenderer.invoke("get-emulator-for-console", consoleId),
+  setEmulator: (consoleId, emulatorPath) =>
+    ipcRenderer.invoke("set-emulator", consoleId, emulatorPath),
+  removeEmulator: (consoleId) =>
+    ipcRenderer.invoke("remove-emulator", consoleId),
+  selectEmulatorFile: () => ipcRenderer.invoke("select-emulator-file"),
+  launchRom: (emulatorPath, romPath) =>
+    ipcRenderer.invoke("launch-rom", emulatorPath, romPath),
   getRomsBasePath: () => ipcRenderer.invoke("get-roms-base-path"),
   hasRomsBasePath: () => ipcRenderer.invoke("has-roms-base-path"),
   romsPathExists: () => ipcRenderer.invoke("roms-path-exists"),

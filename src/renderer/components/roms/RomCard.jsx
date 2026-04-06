@@ -102,6 +102,30 @@ function RomCard({ rom, onRomUpdated }) {
     setIsManualModalOpen(false);
   }, []);
 
+  const handleLaunchClick = async (e) => {
+    e.stopPropagation();
+
+    const emulatorPath = await window.electronAPI.getEmulatorForConsole(
+      rom.system,
+    );
+
+    if (!emulatorPath) {
+      alert(
+        `No hay emulador configurado para ${rom.system?.toUpperCase() || "esta consola"}.\n\nConfigurá uno en Ajustes ⚙️.`,
+      );
+      return;
+    }
+
+    const result = await window.electronAPI.launchRom(
+      emulatorPath,
+      rom.romPath,
+    );
+
+    if (!result.success) {
+      alert(`Error al lanzar la ROM: ${result.error}`);
+    }
+  };
+
   const handleSave = async () => {
     setIsModalOpen(false);
     if (onRomUpdated) {
@@ -186,6 +210,23 @@ function RomCard({ rom, onRomUpdated }) {
           </div>
         )}
         <div className="rom-card-actions-icons">
+          <button
+            className="rom-icon-btn btn-play"
+            onClick={handleLaunchClick}
+            disabled={isDeleting}
+            title="Lanzar ROM"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="none"
+            >
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          </button>
           <button
             className="rom-icon-btn btn-delete"
             onClick={handleDeleteClick}

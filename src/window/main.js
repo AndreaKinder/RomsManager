@@ -74,6 +74,63 @@ app.whenReady().then(async () => {
 
   ipcMain.handle("close-app", () => app.quit());
 
+  ipcMain.handle("get-emulators", () => configService.getEmulators());
+
+  ipcMain.handle("get-emulator-for-console", (event, consoleId) =>
+    configService.getEmulatorForConsole(consoleId),
+  );
+
+  ipcMain.handle("set-emulator", (event, consoleId, emulatorPath) => {
+    configService.setEmulator(consoleId, emulatorPath);
+    return { success: true };
+  });
+
+  ipcMain.handle("remove-emulator", (event, consoleId) => {
+    configService.removeEmulator(consoleId);
+    return { success: true };
+  });
+
+  ipcMain.handle("select-emulator-file", async () => {
+    const filters =
+      process.platform === "win32"
+        ? [
+            { name: "Ejecutables", extensions: ["exe"] },
+            { name: "Todos los archivos", extensions: ["*"] },
+          ]
+        : [{ name: "Todos los archivos", extensions: ["*"] }];
+
+    const result = await dialog.showOpenDialog({
+      properties: ["openFile"],
+      title: "Seleccionar emulador",
+      filters,
+    });
+    return result.canceled ? null : result.filePaths[0];
+  });
+
+  ipcMain.handle("launch-rom", async (event, emulatorPath, romPath) => {
+    try {
+      const { spawn } = require("child_process");
+
+      let child;
+      if (process.platform === "darwin" && emulatorPath.endsWith(".app")) {
+        child = spawn("open", ["-a", emulatorPath, "--args", romPath], {
+          detached: true,
+          stdio: "ignore",
+        });
+      } else {
+        child = spawn(emulatorPath, [romPath], {
+          detached: true,
+          stdio: "ignore",
+        });
+      }
+      child.unref();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to launch ROM:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle("get-roms-base-path", () => configService.getRomsBasePath());
 
   ipcMain.handle("has-roms-base-path", () => configService.hasRomsBasePath());

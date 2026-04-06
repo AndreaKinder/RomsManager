@@ -7,6 +7,12 @@ function SettingsModal({ onClose }) {
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Emulators state
+  const [emulators, setEmulators] = useState({});
+  const [availableConsoles, setAvailableConsoles] = useState([]);
+  const [newEmulatorConsole, setNewEmulatorConsole] = useState("");
+  const [newEmulatorPath, setNewEmulatorPath] = useState("");
+
   useEffect(() => {
     const loadCollections = async () => {
       try {
@@ -40,7 +46,22 @@ function SettingsModal({ onClose }) {
       }
     };
 
+    const loadEmulators = async () => {
+      try {
+        const [emus, consoles] = await Promise.all([
+          window.electronAPI.getEmulators(),
+          window.electronAPI.getAvailableConsoles(),
+        ]);
+        setEmulators(emus);
+        setAvailableConsoles(consoles);
+        if (consoles.length > 0) setNewEmulatorConsole(consoles[0].id);
+      } catch (error) {
+        console.error("Error loading emulators:", error);
+      }
+    };
+
     loadCollections();
+    loadEmulators();
   }, []);
 
   const handleBackdropClick = (e) => {
@@ -108,13 +129,8 @@ function SettingsModal({ onClose }) {
     setIsLoading(true);
 
     try {
-      // Aquí implementarás la lógica para crear la copia de seguridad
-      // Por ejemplo: await window.api.createBackup(diskPath);
       console.log("Creando copia de seguridad en:", diskPath);
-
-      // Simulación de proceso (remover en producción)
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       alert("¡Copia de seguridad creada exitosamente!");
       onClose();
     } catch (error) {
@@ -124,6 +140,51 @@ function SettingsModal({ onClose }) {
       setIsLoading(false);
     }
   };
+
+  // Emulator handlers
+  const handleSelectEmulatorFile = async () => {
+    const filePath = await window.electronAPI.selectEmulatorFile();
+    if (filePath) setNewEmulatorPath(filePath);
+  };
+
+  const handleAddEmulator = async () => {
+    if (!newEmulatorConsole) {
+      alert("Seleccioná una consola");
+      return;
+    }
+    if (!newEmulatorPath.trim()) {
+      alert("Seleccioná el ejecutable del emulador");
+      return;
+    }
+
+    await window.electronAPI.setEmulator(newEmulatorConsole, newEmulatorPath);
+    setEmulators((prev) => ({ ...prev, [newEmulatorConsole]: newEmulatorPath }));
+    setNewEmulatorPath("");
+  };
+
+  const handleRemoveEmulator = async (consoleId) => {
+    await window.electronAPI.removeEmulator(consoleId);
+    setEmulators((prev) => {
+      const next = { ...prev };
+      delete next[consoleId];
+      return next;
+    });
+  };
+
+  const getConsoleName = (consoleId) => {
+    const found = availableConsoles.find((c) => c.id === consoleId);
+    return found ? found.name : consoleId.toUpperCase();
+  };
+
+  const getFileName = (filePath) => {
+    if (!filePath) return "";
+    return filePath.split(/[\\/]/).pop();
+  };
+
+  const configuredConsoleIds = Object.keys(emulators);
+  const unconfiuredConsoles = availableConsoles.filter(
+    (c) => !emulators[c.id],
+  );
 
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
@@ -150,6 +211,7 @@ function SettingsModal({ onClose }) {
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
+            {/* Backup */}
             <div className="form-field">
               <label htmlFor="diskPath">{UI_TEXT.SG_PATH_LABEL}</label>
               <div className="collection-input-container">
@@ -171,6 +233,90 @@ function SettingsModal({ onClose }) {
               </div>
             </div>
 
+            {/* Emulators */}
+            <div className="form-field">
+              <label>Emuladores</label>
+
+              {configuredConsoleIds.length > 0 && (
+                <div className="collections-list" style={{ marginBottom: 12 }}>
+                  {configuredConsoleIds.map((consoleId) => (
+                    <div key={consoleId} className="collection-tag" style={{ justifyContent: "space-between", gap: 8 }}>
+                      <span style={{ fontWeight: 600, minWidth: 60 }}>
+                        {getConsoleName(consoleId)}
+                      </span>
+                      <span
+                        style={{
+                          color: "var(--text-secondary)",
+                          fontSize: 12,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          flex: 1,
+                        }}
+                        title={emulators[consoleId]}
+                      >
+                        {getFileName(emulators[consoleId])}
+                      </span>
+                      <button
+                        type="button"
+                        className="collection-remove-btn"
+                        onClick={() => handleRemoveEmulator(consoleId)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="collection-input-container" style={{ flexWrap: "wrap", gap: 8 }}>
+                <select
+                  value={newEmulatorConsole}
+                  onChange={(e) => setNewEmulatorConsole(e.target.value)}
+                  disabled={isLoading}
+                  style={{ flex: "0 0 auto" }}
+                >
+                  {availableConsoles.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <div style={{ display: "flex", gap: 8, flex: 1 }}>
+                  <input
+                    type="text"
+                    value={newEmulatorPath ? getFileName(newEmulatorPath) : ""}
+                    readOnly
+                    placeholder="Ningún emulador seleccionado"
+                    style={{ cursor: "default", flex: 1 }}
+                    title={newEmulatorPath}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleSelectEmulatorFile}
+                    disabled={isLoading}
+                  >
+                    Explorar
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleAddEmulator}
+                  disabled={isLoading || !newEmulatorPath}
+                >
+                  ➕ Añadir
+                </button>
+              </div>
+
+              <p className="form-hint" style={{ marginTop: 8 }}>
+                Asigná un emulador a cada consola. La ROM se pasa como primer
+                argumento al ejecutable.
+              </p>
+            </div>
+
+            {/* Collections */}
             <div className="form-field">
               <label htmlFor="newCollection">Colecciones Personalizadas</label>
               <div className="collection-input-container">
