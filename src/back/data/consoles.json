@@ -111,6 +111,13 @@
       "name": "Neo Geo",
       "file": [".zip"],
       "save_formats": [".zip"]
+    },
+    "Switch": {
+      "id": "20",
+      "id_name": "switch",
+      "name": "Nintendo Switch",
+      "file": [".nsp", ".xci", ".nca", ".nro"],
+      "save_formats": [".bin"]
     }
   }
 }
