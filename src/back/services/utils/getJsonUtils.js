@@ -58,6 +58,7 @@ function addRomToCollection(romsData, romObject) {
 }
 
 function writeRomsDataToFile(jsonFilePath, romsData) {
+  fs.mkdirSync(path.dirname(jsonFilePath), { recursive: true });
   const jsonContent = JSON.stringify(romsData, null, JSON_INDENT_SPACES);
   fs.writeFileSync(jsonFilePath, jsonContent, FILE_ENCODING);
 }

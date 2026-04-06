@@ -12,6 +12,13 @@ function getConfigPath() {
   return path.join(os.homedir(), CONFIG_DIR, CONFIG_FILE);
 }
 
+export function getDatabasePath() {
+  if (process.platform === "win32") {
+    return path.join(process.env.APPDATA, "romsmanager", "database");
+  }
+  return path.join(os.homedir(), CONFIG_DIR, "database");
+}
+
 function readConfig() {
   const configPath = getConfigPath();
   if (!fs.existsSync(configPath)) return {};
@@ -40,4 +47,27 @@ export function setRomsBasePath(basePath) {
 
 export function hasRomsBasePath() {
   return getRomsBasePath() !== null;
+}
+
+export function getEmulators() {
+  return readConfig().emulators || {};
+}
+
+export function getEmulatorForConsole(consoleId) {
+  return getEmulators()[consoleId] || null;
+}
+
+export function setEmulator(consoleId, emulatorPath) {
+  const config = readConfig();
+  if (!config.emulators) config.emulators = {};
+  config.emulators[consoleId] = emulatorPath;
+  writeConfig(config);
+}
+
+export function removeEmulator(consoleId) {
+  const config = readConfig();
+  if (config.emulators) {
+    delete config.emulators[consoleId];
+    writeConfig(config);
+  }
 }

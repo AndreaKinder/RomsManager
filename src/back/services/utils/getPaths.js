@@ -1,4 +1,4 @@
-import { getRomsBasePath } from "../configService.js";
+import { getRomsBasePath, getDatabasePath } from "../configService.js";
 
 function getBaseRomsPath() {
   const configured = getRomsBasePath();
@@ -24,7 +24,7 @@ export function getRomPathPC(consoleId, romFileName) {
 }
 
 export function getPathSystemJsonSystemsPC() {
-  return `${getBaseRomsPath()}/Json`;
+  return getDatabasePath();
 }
 
 export function getSavePathPC(consoleId, romFileName) {
