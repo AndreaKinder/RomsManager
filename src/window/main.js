@@ -11,6 +11,7 @@ import path from "node:path";
 import url from "url";
 import * as uiDataService from "../back/services/uiDataService.js";
 import * as syncService from "../back/services/syncService.js";
+import * as configService from "../back/services/configService.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -69,6 +70,32 @@ app.whenReady().then(async () => {
 
     // Ensure we are using file protocol correctly
     return net.fetch(url.pathToFileURL(normalizedPath).toString());
+  });
+
+  ipcMain.handle("close-app", () => app.quit());
+
+  ipcMain.handle("get-roms-base-path", () => configService.getRomsBasePath());
+
+  ipcMain.handle("has-roms-base-path", () => configService.hasRomsBasePath());
+
+  ipcMain.handle("roms-path-exists", () => {
+    const fs = require("fs");
+    const basePath = configService.getRomsBasePath();
+    if (!basePath) return false;
+    return fs.existsSync(basePath);
+  });
+
+  ipcMain.handle("set-roms-base-path", (event, basePath) => {
+    configService.setRomsBasePath(basePath);
+    return { success: true };
+  });
+
+  ipcMain.handle("select-roms-folder", async () => {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+      title: "Seleccionar carpeta de ROMs",
+    });
+    return result.canceled ? null : result.filePaths[0];
   });
 
   ipcMain.handle("select-rom-file", async () => {

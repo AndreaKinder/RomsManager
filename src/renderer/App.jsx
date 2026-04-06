@@ -7,6 +7,8 @@ import EmptyState from "./components/layout/EmptyState";
 import ConsoleList from "./components/layout/ConsoleList";
 import SelectConsoleModal from "./components/roms/SelectConsoleModal";
 import SettingsModal from "./components/layout/SettingsModal";
+import FirstRunModal from "./components/layout/FirstRunModal";
+import PathMissingModal from "./components/layout/PathMissingModal";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 
@@ -17,8 +19,35 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showConsoleModal, setShowConsoleModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showFirstRunModal, setShowFirstRunModal] = useState(false);
+  const [showPathMissingModal, setShowPathMissingModal] = useState(false);
+  const [missingPath, setMissingPath] = useState("");
+  const [isCheckingFirstRun, setIsCheckingFirstRun] = useState(true);
   const [error, setError] = useState(null);
   const { isLoading, handleAddRomFromPC } = useRomOperations();
+
+  useEffect(() => {
+    (async () => {
+      const hasPath = await window.electronAPI.hasRomsBasePath();
+      if (!hasPath) {
+        setShowFirstRunModal(true);
+      } else {
+        const exists = await window.electronAPI.romsPathExists();
+        if (!exists) {
+          const currentPath = await window.electronAPI.getRomsBasePath();
+          setMissingPath(currentPath);
+          setShowPathMissingModal(true);
+        }
+      }
+      setIsCheckingFirstRun(false);
+    })();
+  }, []);
+
+  const handleFirstRunComplete = useCallback(() => {
+    setShowFirstRunModal(false);
+    loadConsoles();
+    loadCustomCollections();
+  }, []);
 
   const loadConsoles = useCallback(async () => {
     try {
@@ -80,9 +109,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    loadConsoles();
-    loadCustomCollections();
-  }, [loadConsoles, loadCustomCollections]);
+    if (!isCheckingFirstRun && !showFirstRunModal) {
+      loadConsoles();
+      loadCustomCollections();
+    }
+  }, [isCheckingFirstRun, showFirstRunModal, loadConsoles, loadCustomCollections]);
 
   // Filter consoles and ROMs based on search query
   const filteredConsoles = React.useMemo(() => {
@@ -168,6 +199,25 @@ function App() {
     setShowConsoleModal(false);
     await handleAddRomFromPC(selectedConsole, romFilePath, loadConsoles);
   };
+
+  if (isCheckingFirstRun) return null;
+
+  if (showFirstRunModal) {
+    return <FirstRunModal onComplete={handleFirstRunComplete} />;
+  }
+
+  if (showPathMissingModal) {
+    return (
+      <PathMissingModal
+        missingPath={missingPath}
+        onClose={() => window.electronAPI.closeApp()}
+        onChangeRoute={() => {
+          setShowPathMissingModal(false);
+          setShowFirstRunModal(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app-container">

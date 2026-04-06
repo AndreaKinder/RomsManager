@@ -47,4 +47,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("get-collection-object", allObjectRoms),
   getAllCustomCollections: (allObjectRoms) =>
     ipcRenderer.invoke("get-all-custom-collections", allObjectRoms),
+  closeApp: () => ipcRenderer.invoke("close-app"),
+  getRomsBasePath: () => ipcRenderer.invoke("get-roms-base-path"),
+  hasRomsBasePath: () => ipcRenderer.invoke("has-roms-base-path"),
+  romsPathExists: () => ipcRenderer.invoke("roms-path-exists"),
+  setRomsBasePath: (basePath) =>
+    ipcRenderer.invoke("set-roms-base-path", basePath),
+  selectRomsFolder: () => ipcRenderer.invoke("select-roms-folder"),
 });
