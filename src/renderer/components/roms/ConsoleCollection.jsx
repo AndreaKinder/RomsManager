@@ -13,6 +13,13 @@ const icons = {
   ps1: require("../../../assets/icons/systems/ps1.png"),
   sega_cd: require("../../../assets/icons/systems/sega_cd.png"),
   psp: require("../../../assets/icons/systems/psp.png"),
+  n64: require("../../../assets/icons/systems/n64.svg"),
+  nds: require("../../../assets/icons/systems/nds.svg"),
+  ps2: require("../../../assets/icons/systems/ps2.svg"),
+  gc: require("../../../assets/icons/systems/gc.svg"),
+  "3ds": require("../../../assets/icons/systems/3ds.svg"),
+  neogeo: require("../../../assets/icons/systems/neogeo.svg"),
+  switch: require("../../../assets/icons/systems/switch.svg"),
   generic: require("../../../assets/icons/systems/generic-system.png"),
 };
 

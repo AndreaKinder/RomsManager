@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#1a1a2e"/>
+  <!-- Top screen housing -->
+  <rect x="8" y="4" width="48" height="28" rx="5" fill="#cc0000"/>
+  <!-- Top screen -->
+  <rect x="12" y="7" width="40" height="22" rx="2" fill="#1a1a2e"/>
+  <rect x="13" y="8" width="38" height="20" rx="1" fill="#ff6b9d" opacity="0.6"/>
+  <!-- Camera dot -->
+  <circle cx="32" cy="6" r="1.5" fill="#1a1a2e"/>
+  <!-- Hinge -->
+  <rect x="8" y="32" width="48" height="3" rx="1" fill="#888"/>
+  <!-- Bottom housing (wider / trapezoidal feel) -->
+  <rect x="6" y="35" width="52" height="25" rx="5" fill="#cc0000"/>
+  <!-- Bottom touch screen -->
+  <rect x="16" y="38" width="32" height="18" rx="2" fill="#1a1a2e"/>
+  <rect x="17" y="39" width="30" height="16" rx="1" fill="#4fc3f7" opacity="0.6"/>
+  <!-- Circle pad hint -->
+  <circle cx="11" cy="41" r="3" fill="#990000"/>
+  <!-- ABXY hint -->
+  <circle cx="53" cy="41" r="3" fill="#990000"/>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#1a1a2e"/>
+  <!-- N64 trident shape -->
+  <g fill="#e8003a">
+    <!-- Left prong -->
+    <rect x="8" y="10" width="10" height="30" rx="3"/>
+    <!-- Center prong -->
+    <rect x="27" y="10" width="10" height="22" rx="3"/>
+    <!-- Right prong -->
+    <rect x="46" y="10" width="10" height="30" rx="3"/>
+    <!-- Base connector -->
+    <rect x="8" y="36" width="48" height="10" rx="3"/>
+    <!-- Bottom handle -->
+    <rect x="22" y="44" width="20" height="10" rx="3"/>
+  </g>
+</svg>
