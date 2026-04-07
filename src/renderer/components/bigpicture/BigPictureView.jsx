@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import "../../../styles/bigpicture.css";
 
 // Gamepad button indices
 const GAMEPAD_MAP = {
-  0: "select",   // A / Cross
-  9: "escape",   // Start
-  12: "up",      // D-pad up
-  13: "down",    // D-pad down
-  14: "left",    // D-pad left
-  15: "right",   // D-pad right
+  0: "select", // A / Cross
+  9: "escape", // Start
+  12: "up", // D-pad up
+  13: "down", // D-pad down
+  14: "left", // D-pad left
+  15: "right", // D-pad right
 };
 
 const GAMEPAD_REPEAT_MS = 180;
@@ -79,7 +85,11 @@ function BigPictureView({ consoles, onExit }) {
   useEffect(() => {
     const el = cardRefsArray.current[focusedIdx];
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
     }
   }, [focusedIdx]);
 
@@ -140,21 +150,24 @@ function BigPictureView({ consoles, onExit }) {
   }, []);
 
   // ── Select (launch) ROM by index ───────────────────────────────────────────
-  const launchRomByIdx = useCallback(async (idx) => {
-    const rom = flatRoms[idx];
-    if (!rom) return;
+  const launchRomByIdx = useCallback(
+    async (idx) => {
+      const rom = flatRoms[idx];
+      if (!rom) return;
 
-    const emulatorPath = await window.electronAPI.getEmulatorForConsole(
-      rom._consoleId,
-    );
-    if (!emulatorPath) {
-      alert(
-        `No emulator configured for ${rom._consoleName?.toUpperCase() || rom._consoleId}.\n\nSet one up in Settings ⚙️.`,
+      const emulatorPath = await window.electronAPI.getEmulatorForConsole(
+        rom._consoleId,
       );
-      return;
-    }
-    await window.electronAPI.launchRom(emulatorPath, rom.romPath);
-  }, [flatRoms]);
+      if (!emulatorPath) {
+        alert(
+          `No emulator configured for ${rom._consoleName?.toUpperCase() || rom._consoleId}.\n\nSet one up in Settings ⚙️.`,
+        );
+        return;
+      }
+      await window.electronAPI.launchRom(emulatorPath, rom.romPath);
+    },
+    [flatRoms],
+  );
 
   const selectFocused = useCallback(() => {
     launchRomByIdx(focusedIdx);
@@ -234,7 +247,7 @@ function BigPictureView({ consoles, onExit }) {
       <div className="bp-header">
         <span className="bp-logo">Big Picture</span>
         <button className="bp-exit-btn" onClick={onExit} tabIndex={-1}>
-          ✕ Exit
+          Exit
         </button>
       </div>
 

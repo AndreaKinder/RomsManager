@@ -49,13 +49,6 @@
       "file": [".pbp", ".bin", ".cue", ".iso"],
       "save_formats": [".mcr", ".mcd", ".srm"]
     },
-    "PS1": {
-      "id": "8",
-      "id_name": "ps1",
-      "name": "Play Station 1",
-      "file": [".bin", ".cue", ".iso", ".pbp"],
-      "save_formats": [".mcr", ".mcd", ".srm"]
-    },
     "N64": {
       "id": "9",
       "id_name": "n64",
