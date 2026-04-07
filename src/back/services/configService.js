@@ -12,6 +12,7 @@ function getConfigPath() {
   return path.join(os.homedir(), CONFIG_DIR, CONFIG_FILE);
 }
 
+
 export function getDatabasePath() {
   if (process.platform === "win32") {
     return path.join(process.env.APPDATA, "romsmanager", "database");

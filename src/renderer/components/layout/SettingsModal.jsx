@@ -3,6 +3,7 @@ import { BUTTON_LABELS, UI_TEXT } from "../../constants/messages";
 
 function SettingsModal({ onClose }) {
   const [diskPath, setDiskPath] = useState("");
+  const [showBackupMenu, setShowBackupMenu] = useState(false);
   const [newCollection, setNewCollection] = useState("");
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -118,27 +119,51 @@ function SettingsModal({ onClose }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleExport = async () => {
     if (!diskPath.trim()) {
       alert("Por favor ingresa una ruta válida");
       return;
     }
-
+    setShowBackupMenu(false);
     setIsLoading(true);
-
     try {
-      console.log("Creando copia de seguridad en:", diskPath);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("¡Copia de seguridad creada exitosamente!");
-      onClose();
+      const result = await window.electronAPI.exportBackup(diskPath.trim());
+      if (result.success) {
+        alert(`¡Copia de seguridad exportada exitosamente!\n\n${result.outputPath}`);
+        onClose();
+      } else {
+        alert("Error al exportar la copia de seguridad: " + result.error);
+      }
     } catch (error) {
-      console.error("Error al crear copia de seguridad:", error);
-      alert("Error al crear la copia de seguridad: " + error.message);
+      console.error("Error al exportar copia de seguridad:", error);
+      alert("Error al exportar la copia de seguridad: " + error.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleImport = async () => {
+    setShowBackupMenu(false);
+    setIsLoading(true);
+    try {
+      const result = await window.electronAPI.importBackup(diskPath.trim() || undefined);
+      if (result.canceled) return;
+      if (result.success) {
+        alert("¡Copia de seguridad importada exitosamente!");
+        onClose();
+      } else {
+        alert("Error al importar la copia de seguridad: " + result.error);
+      }
+    } catch (error) {
+      console.error("Error al importar copia de seguridad:", error);
+      alert("Error al importar la copia de seguridad: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
   };
 
   // Emulator handlers
@@ -223,13 +248,66 @@ function SettingsModal({ onClose }) {
                   placeholder={UI_TEXT.SG_PATH_PLACEHOLDER}
                   disabled={isLoading}
                 />
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={isLoading || !diskPath.trim()}
-                >
-                  {isLoading ? "Guardando..." : BUTTON_LABELS.SYNC_DATA}
-                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={isLoading}
+                    onClick={() => setShowBackupMenu((prev) => !prev)}
+                  >
+                    {isLoading ? "Procesando..." : BUTTON_LABELS.SYNC_DATA}
+                  </button>
+                  {showBackupMenu && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: "calc(100% + 4px)",
+                        background: "var(--bg-secondary, #2a2a2a)",
+                        border: "1px solid var(--border-color, #444)",
+                        borderRadius: 6,
+                        overflow: "hidden",
+                        zIndex: 100,
+                        minWidth: 130,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          padding: "8px 16px",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "inherit",
+                        }}
+                        disabled={!diskPath.trim()}
+                        onClick={handleExport}
+                      >
+                        Exportar
+                      </button>
+                      <button
+                        type="button"
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          padding: "8px 16px",
+                          textAlign: "left",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "inherit",
+                        }}
+                        onClick={handleImport}
+                      >
+                        Importar
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

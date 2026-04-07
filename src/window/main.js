@@ -12,6 +12,7 @@ import url from "url";
 import * as uiDataService from "../back/services/uiDataService.js";
 import * as syncService from "../back/services/syncService.js";
 import * as configService from "../back/services/configService.js";
+import * as backupService from "../back/services/backupService.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -787,6 +788,33 @@ app.whenReady().then(async () => {
     } catch (error) {
       console.error("Failed to get collection object:", error);
       return null;
+    }
+  });
+
+  ipcMain.handle("export-backup", async (event, destinationPath) => {
+    try {
+      const outputPath = backupService.exportBackup(destinationPath);
+      return { success: true, outputPath };
+    } catch (error) {
+      console.error("Failed to export backup:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("import-backup", async (event, startingDir) => {
+    try {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        title: "Seleccionar copia de seguridad",
+        defaultPath: startingDir,
+        filters: [{ name: "ZIP", extensions: ["zip"] }],
+        properties: ["openFile"],
+      });
+      if (canceled || !filePaths.length) return { success: false, canceled: true };
+      backupService.importBackup(filePaths[0]);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to import backup:", error);
+      return { success: false, error: error.message };
     }
   });
 

@@ -60,6 +60,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   selectEmulatorFile: () => ipcRenderer.invoke("select-emulator-file"),
   launchRom: (emulatorPath, romPath) =>
     ipcRenderer.invoke("launch-rom", emulatorPath, romPath),
+  exportBackup: (destinationPath) =>
+    ipcRenderer.invoke("export-backup", destinationPath),
+  importBackup: (startingDir) =>
+    ipcRenderer.invoke("import-backup", startingDir),
   getRomsBasePath: () => ipcRenderer.invoke("get-roms-base-path"),
   hasRomsBasePath: () => ipcRenderer.invoke("has-roms-base-path"),
   romsPathExists: () => ipcRenderer.invoke("roms-path-exists"),
