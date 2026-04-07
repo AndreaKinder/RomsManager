@@ -48,6 +48,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getAllCustomCollections: (allObjectRoms) =>
     ipcRenderer.invoke("get-all-custom-collections", allObjectRoms),
   closeApp: () => ipcRenderer.invoke("close-app"),
+  enterBigPicture: () => ipcRenderer.invoke("enter-big-picture"),
+  exitBigPicture: () => ipcRenderer.invoke("exit-big-picture"),
   getEmulators: () => ipcRenderer.invoke("get-emulators"),
   getEmulatorForConsole: (consoleId) =>
     ipcRenderer.invoke("get-emulator-for-console", consoleId),

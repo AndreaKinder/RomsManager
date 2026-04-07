@@ -9,6 +9,7 @@ import SelectConsoleModal from "./components/roms/SelectConsoleModal";
 import SettingsModal from "./components/layout/SettingsModal";
 import FirstRunModal from "./components/layout/FirstRunModal";
 import PathMissingModal from "./components/layout/PathMissingModal";
+import BigPictureView from "./components/bigpicture/BigPictureView";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 
@@ -24,6 +25,7 @@ function App() {
   const [missingPath, setMissingPath] = useState("");
   const [isCheckingFirstRun, setIsCheckingFirstRun] = useState(true);
   const [error, setError] = useState(null);
+  const [isBigPictureMode, setIsBigPictureMode] = useState(false);
   const { isLoading, handleAddRomFromPC } = useRomOperations();
 
   useEffect(() => {
@@ -114,6 +116,16 @@ function App() {
       loadCustomCollections();
     }
   }, [isCheckingFirstRun, showFirstRunModal, loadConsoles, loadCustomCollections]);
+
+  const enterBigPicture = useCallback(async () => {
+    await window.electronAPI.enterBigPicture();
+    setIsBigPictureMode(true);
+  }, []);
+
+  const exitBigPicture = useCallback(async () => {
+    await window.electronAPI.exitBigPicture();
+    setIsBigPictureMode(false);
+  }, []);
 
   // Filter consoles and ROMs based on search query
   const filteredConsoles = React.useMemo(() => {
@@ -219,6 +231,11 @@ function App() {
     );
   }
 
+  if (isBigPictureMode) {
+    const bpConsoles = isCustomCollectionView ? customCollections : consoles;
+    return <BigPictureView consoles={bpConsoles} onExit={exitBigPicture} />;
+  }
+
   return (
     <div className="app-container">
       <AppHeader
@@ -226,6 +243,7 @@ function App() {
         onSearchChange={setSearchQuery}
         onAddRom={() => setShowConsoleModal(true)}
         onOpenSettings={() => setShowSettingsModal(true)}
+        onEnterBigPicture={enterBigPicture}
         isLoading={isLoading}
         onOpenCustomCollectionSelect={() =>
           setIsCustomCollectionView(!isCustomCollectionView)

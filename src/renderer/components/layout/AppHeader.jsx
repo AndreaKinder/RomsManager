@@ -6,6 +6,7 @@ function AppHeader({
   onSearchChange,
   onAddRom,
   onOpenSettings,
+  onEnterBigPicture,
   isLoading,
   onOpenCustomCollectionSelect,
   onOpenCustomCollectionSelected = false,
@@ -43,6 +44,14 @@ function AppHeader({
         </button>
         <button className="btn" onClick={onOpenSettings} disabled={isLoading}>
           {BUTTON_LABELS.SETTINGS}
+        </button>
+        <button
+          className="btn btn-bigpicture"
+          onClick={onEnterBigPicture}
+          disabled={isLoading}
+          title="Big Picture mode (TV / gamepad)"
+        >
+          🖥 Big Picture
         </button>
 
         <button

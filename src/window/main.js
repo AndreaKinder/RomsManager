@@ -24,8 +24,10 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+let mainWindow = null;
+
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     icon: path.join(__dirname, "../../assets/icon.png"),
@@ -73,6 +75,18 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.handle("close-app", () => app.quit());
+
+  ipcMain.handle("enter-big-picture", () => {
+    if (mainWindow) {
+      mainWindow.setFullScreen(true);
+    }
+  });
+
+  ipcMain.handle("exit-big-picture", () => {
+    if (mainWindow) {
+      mainWindow.setFullScreen(false);
+    }
+  });
 
   ipcMain.handle("get-emulators", () => configService.getEmulators());
 
