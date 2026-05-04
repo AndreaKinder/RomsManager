@@ -2,14 +2,19 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags:
       - "v*.*.*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -27,24 +32,77 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install FUSE (Linux - required for AppImage)
+      - name: Install Linux Dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y fuse libfuse2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fuse libfuse2 libfuse2t64
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Make
+      - name: Build Application
         run: npm run make
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload to Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          files: out/make/**/*
-          draft: false
-          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
-          generate_release_notes: true
+          name: artifacts-${{ matrix.os }}
+          path: out/make/**/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Display Artifacts
+        run: ls -R artifacts
+
+      - name: Determine Release Tag
+        id: tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
+          IS_PRERELEASE: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        run: |
+          if [ "$IS_TAG" == "true" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
+            echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            DATE=$(date +%Y%m%d-%H%M%S)
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            TAG="v${VERSION}-build-${DATE}-${SHORT_SHA}"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+            git tag -a "$TAG" -m "Automated build from main - ${DATE}"
+            git push origin "$TAG"
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag.outputs.tag }}
+          artifacts: "artifacts/**/*"
+          allowUpdates: true
+          generateReleaseNotes: true
+          prerelease: ${{ steps.tag.outputs.is_prerelease == 'true' }}
+          draft: false
+          token: ${{ secrets.GITHUB_TOKEN }}
