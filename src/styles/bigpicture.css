@@ -21,7 +21,8 @@
   justify-content: space-between;
   padding: 0 40px;
   height: 64px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+  background: #000;
+  border-bottom: 2px solid #333;
   flex-shrink: 0;
   z-index: 10;
 }
@@ -37,13 +38,13 @@
 
 .bp-exit-btn {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   color: #ccc;
   font-size: 13px;
   padding: 8px 18px;
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: none;
   letter-spacing: 0.05em;
 }
 
@@ -72,7 +73,7 @@
 
 .bp-scroll-area::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 /* ── Console section ────────────────────────────────────────────────────── */
@@ -90,7 +91,7 @@
   color: #e0e0e0;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
   letter-spacing: 0.03em;
 }
 
@@ -106,7 +107,7 @@
   color: rgba(255, 255, 255, 0.35);
   background: rgba(255, 255, 255, 0.07);
   padding: 2px 10px;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 /* ── ROM card grid ──────────────────────────────────────────────────────── */
@@ -122,15 +123,12 @@
 .bp-card {
   position: relative;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
   cursor: pointer;
   outline: none;
   border: 3px solid transparent;
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+  transition: none;
   background: #1a1a1a;
   aspect-ratio: 3 / 4;
   display: flex;
@@ -140,15 +138,13 @@
 .bp-card:hover {
   transform: scale(1.04);
   border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 6px 6px 0px rgba(0,0,0,1);
 }
 
 .bp-card.focused {
   transform: scale(1.08);
   border-color: #ffffff;
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.3),
-    0 12px 40px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 0 4px #fff, 8px 8px 0px #000;
   z-index: 2;
 }
 
@@ -169,7 +165,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e1e2e 0%, #12121a 100%);
+  background: #1a1a1a;
+  background-image: radial-gradient(#333 1px, transparent 1px);
+  background-size: 8px 8px;
 }
 
 .bp-card-placeholder-icon {
@@ -185,7 +183,7 @@
   font-weight: 600;
   color: #e8e8e8;
   line-height: 1.35;
-  background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.85) 100%);
+  background: #000;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -194,5 +192,5 @@
 
 .bp-card.focused .bp-card-title {
   color: #ffffff;
-  background: linear-gradient(to top, #1a1a1a 0%, rgba(20, 20, 20, 0.95) 100%);
+  background: #8b5cf6;
 }

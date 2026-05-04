@@ -11,11 +11,32 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
+    // Windows: Squirrel installer (.exe Setup)
+    {
+      name: "@electron-forge/maker-squirrel",
+      platforms: ["win32"],
+      config: {
+        name: "romsmanager",
+        setupExe: "ROM-Manager-Setup.exe",
+        setupIcon: "./assets/icon.ico",
+      },
+    },
+    // macOS: DMG + ZIP fallback
+    {
+      name: "@electron-forge/maker-dmg",
+      platforms: ["darwin"],
+      config: {
+        name: "ROM Manager",
+        icon: "./assets/icon.icns",
+        overwrite: true,
+      },
+    },
     {
       name: "@electron-forge/maker-zip",
-      platforms: ["win32", "darwin"],
+      platforms: ["darwin", "win32"],
       config: {},
     },
+    // Linux: AppImage
     {
       name: "@reforged/maker-appimage",
       platforms: ["linux"],

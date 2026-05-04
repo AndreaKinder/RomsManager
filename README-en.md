@@ -1,331 +1,146 @@
-# 🎮 ROM Manager
+# ROM Manager
 
-A modern desktop application for managing retro gaming ROM collections across multiple console systems.
-
-![App Screen](./screenshots/app-screenshot.png)
-
-![ROM Manager](https://img.shields.io/badge/Electron-App-blue)
-![React](https://img.shields.io/badge/React-19-61dafb)
-![License](https://img.shields.io/badge/license-MIT-green)
+A desktop application for managing retro game ROM collections with SD card sync, Big Picture TV mode, and gamepad support.
 
 ## Features
 
-✅ **Multi-Console Support**: Manage ROMs for 16+ retro gaming systems  
-✅ **SD Card Import**: Import ROMs directly from SD cards or external drives  
-✅ **Smart Detection**: Automatic system detection based on file extensions  
-✅ **Organized Storage**: ROMs organized by console system with JSON metadata  
-✅ **Modern UI**: Clean, dark-themed interface with retro gaming aesthetics  
-✅ **File Management**: Add individual ROMs or bulk import entire collections  
-✅ **ROM Editing**: Edit ROM titles and metadata with inline editor  
-✅ **Cover Art Support**: Display custom cover images for each ROM  
-✅ **Save Management**: Import, export, and manage save files for your ROMs  
-✅ **Retro Styling**: Pixel-art font and retro visual effects for authentic gaming feel  
-✅ **Quick Export**: One-click ROM and save file export functionality  
-✅ **Game Search**: Quickly find ROMs by searching titles with real-time filtering  
-✅ **PDF Manual Support**: Import and view game manuals in PDF format  
+- **Multi-Console Support**: 18+ systems from NES to Nintendo Switch
+- **SD Card Sync**: Bidirectional import/export between PC and SD card
+- **Big Picture Mode**: Fullscreen TV interface with gamepad and keyboard navigation
+- **Gamepad Support**: Native controller support via Web Gamepad API
+- **Custom Collections**: Organize ROMs with custom tags across consoles
+- **Direct Launch**: Configure emulators per console and launch ROMs from the app
+- **Backup & Restore**: ZIP export/import of your entire library
+- **Retro Aesthetic**: Dark pixel-art UI with hard shadows and scanlines
 
-## Upcoming Features
+## Tech Stack
 
-🔜 **Gallery View**: Browse your ROM collection with visual grid layouts  
-🔜 **Extended Metadata**: Track description, languages, release year, and publisher  
-🔜 **Player Info**: Record number of players for each game  
-🔜 **Game Ratings**: Personal rating system and difficulty scores  
-🔜 **Game Notes**: Add personal notes and comments for each ROM  
-
-## Screenshots
-
-### Main Interface
-- View all your ROM collections organized by console
-- Expandable/collapsible console sections
-- ROM count badges for each system
-
-### Features
-- **Add ROM**: Select and import individual ROM files
-- **Import from SD**: Bulk import ROMs from SD card or external drive
-- **Refresh**: Reload ROM collections
+- **Electron** + **React 19**
+- **Webpack** (via Electron Forge)
+- **Custom Retro CSS** + [nes.css](https://nostalgic-css.github.io/NES.css/)
+- **Jest** for testing
+- **JSON-based** filesystem registry
 
 ## Installation
 
-### Prerequisites
+### Requirements
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/RomsManager.git
+git clone https://github.com/andreakinder/RomsManager.git
 cd RomsManager
-
-# Install dependencies
 npm install
-
-# Start development server
-npm start
-
-# Build for production
-npm run package
+npm run verify-build  # optional but recommended
 ```
 
-## Usage
+## Running
 
-### First Time Setup
+### Development
 
-1. **Launch the application**
-2. **Configure SD Path**: Enter your SD card drive letter (e.g., `D:/`, `E:/`)
-3. **Import ROMs**: Click "📥 Import from SD" to import your ROM collection
+```bash
+npm start
+```
 
-### Adding Individual ROMs
+### Testing
 
-1. Click **"➕ Add ROM"**
-2. Browse and select a ROM file from anywhere on your PC
-3. The ROM will be automatically:
-   - Copied to the appropriate system folder
-   - Registered in the system's JSON metadata
-   - Displayed in the UI
+```bash
+npm test
+npm run test:watch
+npm run test:coverage
+```
 
-### Importing from SD Card
+### Build & Distribution
 
-1. Insert your SD card
-2. Set the correct drive letter in the **SD Path** input
-3. Click **"📥 Import from SD"**
-4. All ROMs will be imported and organized by system
-
-### Managing Your Collection
-
-#### Searching for Games
-1. Use the **🔍 Buscar juegos** search bar in the header
-2. Type any part of a game title to filter your collection
-3. Search results update in real-time as you type
-4. The footer shows the filtered count (e.g., "Mostrando: 15")
-5. Click the **✕** button to clear the search and show all ROMs
-6. Search works across all consoles simultaneously
-
-**Search Features:**
-- Case-insensitive search
-- Searches both ROM titles and file names
-- Only displays consoles with matching ROMs
-- Shows "No se encontraron juegos" message if no matches found
-
-#### Browsing ROMs
-- Click on any console header to expand/collapse the ROM list
-- Each ROM card displays:
-  - ROM title with retro pixel-art font
-  - Custom cover art (if available)
-  - Save file indicator (💾) if a save exists
-  - Action buttons for edit, delete, and export
-
-#### Editing ROMs
-1. Click the **✏️ Edit** button on any ROM card
-2. Modify the ROM title
-3. Select a cover image (PNG, JPG, GIF, WebP)
-4. Import a save file if available
-5. Click **Save** to apply changes
-
-#### Managing Save Files
-- **View Save Status**: ROMs with save files show a 💾 icon
-- **Export Save**: Click the 💾 icon to export the save file
-- **Import Save**: Use the Edit modal to import save files from your PC
-
-#### Exporting ROMs
-- Click the **⬇️ Download** button on any ROM card
-- Choose export location
-- ROM file is copied to your selected directory
-
-## Supported Systems
-
-| Console | Extensions |
-|---------|-----------|
-| NES | `.nes` |
-| SNES/SFC | `.smc`, `.sfc` |
-| Sega Genesis | `.md`, `.gen`, `.sms` |
-| Game Boy | `.gb` |
-| Game Boy Color | `.gbc` |
-| Game Boy Advance | `.gba` |
-| Nintendo 64 | `.z64`, `.v64`, `.n64` |
-| Nintendo DS | `.nds` |
-| PlayStation 1 | `.bin`, `.cue`, `.iso`, `.pbp` |
-| PlayStation 2 | `.bin`, `.cue`, `.iso` |
-| GameCube | `.gcm`, `.iso`, `.gcz` |
-| Wii | `.iso`, `.wbfs`, `.wad` |
-| Nintendo 3DS | `.3ds`, `.cia` |
-| Wii U | `.wud`, `.wux`, `.rpx` |
-| Nintendo Switch | `.nsp`, `.xci`, `.nsz` |
+```bash
+npm run package    # Package for current platform
+npm run make       # Generate distributables (DMG, AppImage, etc.)
+npm run publish    # Publish release
+```
 
 ## Project Structure
 
 ```
 RomsManager/
 ├── src/
-│   ├── back/                    # Backend services
-│   │   ├── data/
-│   │   │   └── consoles.json    # Console definitions
-│   │   └── services/
-│   │       ├── syncService.js   # Import/export logic
-│   │       └── uiDataService.js # Data aggregation
-│   ├── renderer/                # React frontend
-│   │   ├── assets/
-│   │   │   └── fonts/           # Retro gaming fonts
-│   │   ├── components/
-│   │   │   └── roms/
-│   │   │       ├── RomCard.jsx  # ROM display component
-│   │   │       └── EditRomModal.jsx # ROM editing modal
-│   │   └── App.jsx
-│   ├── window/
-│   │   ├── main.js             # Electron main process
-│   │   └── preload.js          # IPC bridge
-│   └── styles/
-│       └── index.css           # Global styles with retro theme
-├── docs/
-│   └── ARCHITECTURE.md         # Detailed architecture docs
-└── README.md
+│   ├── back/               # Main process services (Node.js)
+│   ├── renderer/           # React frontend
+│   ├── styles/             # Global CSS (retro dark theme + Big Picture)
+│   └── window/             # Electron main & preload
+├── docs/                   # Project documentation
+├── .opencode/              # OpenCode agent ecosystem
+├── AGENTS.md               # Root orchestrator for AI agents
+├── CHANGELOG.md
+└── package.json
 ```
 
-## Storage Locations
+## Architecture
 
-### PC Storage
+ROM Manager uses a **classic Electron architecture** with strict process separation:
 
-ROMs are stored in:
-```
-C:/Users/{user}/Roms/
-├── Json/           # Metadata for each system (title, paths, etc.)
-├── Covers/         # Cover art images for ROMs
-├── Saves/          # Save files organized by console
-├── gb/             # Game Boy ROMs
-├── gba/            # Game Boy Advance ROMs
-├── ps/             # PlayStation 1 ROMs
-└── ...
-```
+- **Main Process** (`src/window/main.js`): Node.js with full system access, IPC handlers, emulator spawning, native dialogs.
+- **Renderer Process** (`src/renderer/App.jsx`): Isolated React app communicating via `contextBridge` preload script.
+- **Data Layer**: JSON files per console stored in `~/.config/romsmanager/database/` (Linux/macOS) or `%APPDATA%\romsmanager\database\` (Windows).
 
-#### Metadata Structure (JSON)
-Each console has a JSON file storing ROM metadata:
-```json
-{
-  "romName.gba": {
-    "title": "Game Title",
-    "romName": "romName.gba",
-    "romPath": "C:/Users/.../Roms/gba/romName.gba",
-    "coverPath": "C:/Users/.../Roms/Covers/gba/romName.png",
-    "savePath": "C:/Users/.../Roms/Saves/gba/romName.sav"
-  }
-}
-```
+See [`docs/architecture.md`](docs/architecture.md) for detailed architecture documentation.
 
-### SD Card Structure
+## Big Picture Mode
 
-Expected SD card structure:
-```
-{SD_DRIVE}/Roms/
-├── GB/             # Uppercase directory names
-├── GBA/
-├── PS/
-└── ...
-```
+A fullscreen TV-optimized view with spatial navigation and gamepad support:
 
-**Important**: SD card directories must use **UPPERCASE** names (e.g., `GB`, `PS`, `GBA`).
+- **Spatial LRUD Navigation**: Directional movement respects visual grid layout
+- **Gamepad Polling**: 60fps `requestAnimationFrame` loop with rising-edge detection and hold-repeat
+- **Keyboard**: Arrow keys + Enter + Escape
+- **Auto-hide Cursor**: Mouse hides after 3 seconds of inactivity
 
-## Development
+See [`docs/big-picture-mode.md`](docs/big-picture-mode.md) for complete documentation.
 
-### Scripts
+## Retro Design
 
-```bash
-npm start          # Start development mode
-npm run package    # Build distributable
-npm run make       # Create installer
-npm test           # Run tests
-npm run lint       # Lint code
-```
+- Zero border-radius everywhere
+- Hard box shadows (`4px 4px 0px #000`)
+- No CSS transitions for instant arcade-like feedback
+- Press Start 2P pixel font for headings
+- Scanline background pattern
+- Dark palette: `#121212` background, `#8b5cf6` accent
 
-### Tech Stack
+See [`docs/retro-design.md`](docs/retro-design.md) for design decisions.
 
-- **Electron 39**: Desktop app framework
-- **React 19**: UI library
-- **Webpack**: Module bundler
-- **Electron Forge**: Build tooling
-- **Better-SQLite3**: Database for ROM metadata
-- **xml2js**: XML parsing for game metadata
-- **Press Start 2P Font**: Retro pixel-art typography
-- **ES Modules**: Modern JavaScript modules
+## Supported Systems
 
-## Configuration
+| Console | Extensions |
+|---------|-----------|
+| NES | `.nes` |
+| SNES | `.smc`, `.sfc` |
+| Sega Genesis | `.md`, `.gen`, `.sms` |
+| Game Boy | `.gb` |
+| Game Boy Color | `.gbc` |
+| Game Boy Advance | `.gba` |
+| Nintendo 64 | `.z64`, `.v64`, `.n64` |
+| Nintendo DS | `.nds` |
+| PlayStation | `.pbp`, `.bin`, `.cue`, `.iso` |
+| PlayStation 2 | `.bin`, `.cue`, `.iso` |
+| PSP | `.iso`, `.cso`, `.psp` |
+| GameCube | `.gcm`, `.iso`, `.gcz` |
+| Nintendo 3DS | `.3ds`, `.cia` |
+| Nintendo Switch | `.nsp`, `.xci`, `.nca`, `.nro` |
+| Neo Geo | `.zip` |
+| Sega CD | `.ccd`, `.cue`, `.iso` |
 
-### Customizing Storage Paths
+## Documentation
 
-Edit `src/back/services/utils/getPaths.js`:
-
-```javascript
-export function getRomPathPC(consoleId, romFileName) {
-  return `C:/Your/Custom/Path/Roms/${consoleId}/${romFileName}`;
-}
-```
-
-### Adding New Console Systems
-
-Edit `src/back/data/consoles.json`:
-
-```json
-{
-  "NewConsole": {
-    "id": "17",
-    "id_name": "newconsole",
-    "name": "New Console Name",
-    "file": [".ext1", ".ext2"]
-  }
-}
-```
-
-## Troubleshooting
-
-### ROMs Not Importing
-
-1. **Check SD Path**: Ensure the drive letter is correct
-2. **Directory Names**: SD directories must be UPPERCASE
-3. **File Extensions**: Verify extensions match supported formats
-4. **Permissions**: Ensure read/write permissions for storage directories
-
-### System Not Detected
-
-1. **File Extension**: Check if the ROM extension is supported
-2. **Console Definitions**: Verify system exists in `consoles.json`
-3. **Extension Format**: Extensions must include the dot (e.g., `.gb` not `gb`)
-
-### Cover Images Not Displaying
-
-1. **File Format**: Ensure cover is PNG, JPG, GIF, or WebP
-2. **File Permissions**: Check read permissions on cover files
-3. **Path Validation**: Verify cover path is correctly stored in JSON metadata
-
-### Save Files Not Loading
-
-1. **Save Path**: Ensure save file exists at the specified path
-2. **File Extension**: Common extensions: `.sav`, `.srm`, `.dat`, `.state`
-3. **Import Process**: Use the Edit modal to properly import save files
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+- [`docs/architecture.md`](docs/architecture.md) — System architecture
+- [`docs/big-picture-mode.md`](docs/big-picture-mode.md) — Big Picture mode & gamepad
+- [`docs/components.md`](docs/components.md) — Key React components
+- [`docs/hooks-and-utils.md`](docs/hooks-and-utils.md) — Hooks & backend services
+- [`docs/retro-design.md`](docs/retro-design.md) — Retro design decisions
+- [`docs/conventions.md`](docs/conventions.md) — Code conventions
+- [`docs/standard-commits.md`](docs/standard-commits.md) — Commit standards
+- [`AGENTS.md`](AGENTS.md) — AI agent ecosystem
 
 ## License
 
-MIT License - See LICENSE file for details
-
-## Credits
-
-- Built with [Electron](https://www.electronjs.org/)
-- UI powered by [React](https://react.dev/)
-- Bundled with [Electron Forge](https://www.electronforge.io/)
-
-## Support
-
-For issues, questions, or feature requests, please open an issue on GitHub.
-
----
-
-**Made with ❤️ for retro gaming enthusiasts**
+[MIT](LICENSE)

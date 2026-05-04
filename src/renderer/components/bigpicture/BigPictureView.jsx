@@ -10,6 +10,7 @@ import "../../../styles/bigpicture.css";
 // Gamepad button indices
 const GAMEPAD_MAP = {
   0: "select", // A / Cross
+  1: "back",   // B / Circle
   9: "escape", // Start
   12: "up", // D-pad up
   13: "down", // D-pad down
@@ -36,9 +37,14 @@ function getDocCenter(el) {
 
 function BigPictureView({ consoles, onExit }) {
   const [focusedIdx, setFocusedIdx] = useState(0);
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [launchError, setLaunchError] = useState(null);
+  
   const cardRefsArray = useRef([]);
   const cursorTimerRef = useRef(null);
-  const gamepadTimestamps = useRef({});
+  
+  const gamepadState = useRef({}); // [padIndex][buttonIdx] = { wasPressed, ts }
+  
   const containerRef = useRef(null);
 
   // Flatten all ROMs into a single ordered array matching card render order
@@ -59,15 +65,27 @@ function BigPictureView({ consoles, onExit }) {
     return result;
   }, [consoles]);
 
-  // Reset card refs array length before each render pass
-  cardRefsArray.current = [];
+  // Clamp focusedIdx if flatRoms shrinks
+  useEffect(() => {
+    setFocusedIdx(prev => {
+      if (flatRoms.length === 0) return 0;
+      return prev >= flatRoms.length ? flatRoms.length - 1 : prev;
+    });
+    // Shrink refs array if needed to avoid stale refs
+    if (cardRefsArray.current.length > flatRoms.length) {
+      cardRefsArray.current.length = flatRoms.length;
+    }
+  }, [flatRoms.length]);
 
   // ── Cursor hide ────────────────────────────────────────────────────────────
   const resetCursorTimer = useCallback(() => {
-    document.body.style.cursor = "default";
+    if (!containerRef.current) return;
+    containerRef.current.style.cursor = "default";
     clearTimeout(cursorTimerRef.current);
     cursorTimerRef.current = setTimeout(() => {
-      document.body.style.cursor = "none";
+      if (containerRef.current) {
+        containerRef.current.style.cursor = "none";
+      }
     }, 3000);
   }, []);
 
@@ -77,7 +95,9 @@ function BigPictureView({ consoles, onExit }) {
     return () => {
       document.removeEventListener("mousemove", resetCursorTimer);
       clearTimeout(cursorTimerRef.current);
-      document.body.style.cursor = "default";
+      if (containerRef.current) {
+        containerRef.current.style.cursor = "default";
+      }
     };
   }, [resetCursorTimer]);
 
@@ -86,7 +106,7 @@ function BigPictureView({ consoles, onExit }) {
     const el = cardRefsArray.current[focusedIdx];
     if (el) {
       el.scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto", // Snappy for gamepad
         block: "nearest",
         inline: "nearest",
       });
@@ -152,31 +172,58 @@ function BigPictureView({ consoles, onExit }) {
   // ── Select (launch) ROM by index ───────────────────────────────────────────
   const launchRomByIdx = useCallback(
     async (idx) => {
+      if (isLaunching || launchError) return;
       const rom = flatRoms[idx];
       if (!rom) return;
 
-      const emulatorPath = await window.electronAPI.getEmulatorForConsole(
-        rom._consoleId,
-      );
-      if (!emulatorPath) {
-        alert(
-          `No emulator configured for ${rom._consoleName?.toUpperCase() || rom._consoleId}.\n\nSet one up in Settings ⚙️.`,
+      setIsLaunching(true);
+      try {
+        const emulatorPath = await window.electronAPI.getEmulatorForConsole(
+          rom._consoleId,
         );
-        return;
+        if (!emulatorPath) {
+          setLaunchError(
+            `No hay emulador configurado para ${rom._consoleName?.toUpperCase() || rom._consoleId}.\n\nConfiguralo en Settings ⚙️.`
+          );
+          return;
+        }
+        await window.electronAPI.launchRom(emulatorPath, rom.romPath);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLaunching(false);
       }
-      await window.electronAPI.launchRom(emulatorPath, rom.romPath);
     },
-    [flatRoms],
+    [flatRoms, isLaunching, launchError],
   );
 
   const selectFocused = useCallback(() => {
     launchRomByIdx(focusedIdx);
   }, [launchRomByIdx, focusedIdx]);
 
+  // Refs for current callbacks to avoid re-mounting event listeners / poll loops
+  const stateRefs = useRef({ moveFocus, selectFocused, onExit, isLaunching, launchError, setLaunchError });
+  useEffect(() => {
+    stateRefs.current = { moveFocus, selectFocused, onExit, isLaunching, launchError, setLaunchError };
+  });
+
   // ── Keyboard navigation ────────────────────────────────────────────────────
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Ignore if outside
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      
+      const { moveFocus, selectFocused, onExit, launchError, setLaunchError } = stateRefs.current;
       resetCursorTimer();
+      
+      if (launchError) {
+        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") {
+          e.preventDefault();
+          setLaunchError(null);
+        }
+        return; // lock inputs
+      }
+
       switch (e.key) {
         case "ArrowRight":
           e.preventDefault();
@@ -208,26 +255,68 @@ function BigPictureView({ consoles, onExit }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [moveFocus, selectFocused, onExit, resetCursorTimer]);
+  }, [resetCursorTimer]);
 
   // ── Gamepad polling ────────────────────────────────────────────────────────
   useEffect(() => {
     let rafId;
 
     const poll = (timestamp) => {
+      const { moveFocus, selectFocused, onExit, isLaunching, launchError, setLaunchError } = stateRefs.current;
       const gamepads = navigator.getGamepads();
+      
+      // Deduplicate actions in the same frame
+      const actionsThisFrame = new Set();
+
       for (const gp of gamepads) {
         if (!gp) continue;
-        for (const [idx, action] of Object.entries(GAMEPAD_MAP)) {
-          const pressed = gp.buttons[Number(idx)]?.pressed;
-          const lastTs = gamepadTimestamps.current[idx] || 0;
-          if (pressed && timestamp - lastTs > GAMEPAD_REPEAT_MS) {
-            gamepadTimestamps.current[idx] = timestamp;
-            if (action === "select") selectFocused();
-            else if (action === "escape") onExit();
-            else moveFocus(action);
+        
+        if (!gamepadState.current[gp.index]) {
+          gamepadState.current[gp.index] = {};
+        }
+        const state = gamepadState.current[gp.index];
+
+        for (const [btnIdx, action] of Object.entries(GAMEPAD_MAP)) {
+          const pressed = gp.buttons[Number(btnIdx)]?.pressed;
+          if (!state[btnIdx]) state[btnIdx] = { wasPressed: false, ts: 0 };
+          
+          const btnState = state[btnIdx];
+
+          if (pressed && !btnState.wasPressed) {
+            // Rising edge (just pressed)
+            btnState.wasPressed = true;
+            btnState.ts = timestamp;
+            
+            if (launchError) {
+              if (action === "select" || action === "back" || action === "escape") {
+                setLaunchError(null);
+              }
+              continue;
+            }
+            if (isLaunching) continue;
+
+            if (!actionsThisFrame.has(action)) {
+              actionsThisFrame.add(action);
+              if (action === "select") selectFocused();
+              else if (action === "escape" || action === "back") onExit();
+              else moveFocus(action);
+            }
+            
+          } else if (pressed && btnState.wasPressed && timestamp - btnState.ts > GAMEPAD_REPEAT_MS) {
+            // Hold repeat
+            btnState.ts = timestamp;
+            
+            if (launchError || isLaunching) continue;
+            
+            // Only repeat directional movements
+            if (["up", "down", "left", "right"].includes(action) && !actionsThisFrame.has(action)) {
+              actionsThisFrame.add(action);
+              moveFocus(action);
+            }
           } else if (!pressed) {
-            gamepadTimestamps.current[idx] = 0;
+            // Release
+            btnState.wasPressed = false;
+            btnState.ts = 0;
           }
         }
       }
@@ -235,8 +324,17 @@ function BigPictureView({ consoles, onExit }) {
     };
 
     rafId = requestAnimationFrame(poll);
-    return () => cancelAnimationFrame(rafId);
-  }, [moveFocus, selectFocused, onExit]);
+    
+    const onGamepadConnected = (e) => {
+      console.log("Gamepad connected:", e.gamepad.id);
+    };
+    window.addEventListener("gamepadconnected", onGamepadConnected);
+    
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("gamepadconnected", onGamepadConnected);
+    };
+  }, []);
 
   // ── Render ─────────────────────────────────────────────────────────────────
   let globalCardIdx = 0;
@@ -277,9 +375,9 @@ function BigPictureView({ consoles, onExit }) {
 
                   return (
                     <div
-                      key={rom.romName}
+                      key={rom.romPath || cardIdx}
                       ref={(el) => {
-                        if (el) cardRefsArray.current[cardIdx] = el;
+                        cardRefsArray.current[cardIdx] = el;
                       }}
                       className={`bp-card${isFocused ? " focused" : ""}`}
                       onClick={() => {
@@ -309,6 +407,22 @@ function BigPictureView({ consoles, onExit }) {
           );
         })}
       </div>
+
+      {/* Error Modal */}
+      {launchError && (
+        <div className="modal-backdrop" style={{ zIndex: 10000 }}>
+          <div className="modal-content" style={{ maxWidth: 400, textAlign: "center" }}>
+            <div className="modal-body" style={{ padding: "30px 20px" }}>
+              <p style={{ whiteSpace: "pre-wrap", margin: 0, fontSize: "14px" }}>{launchError}</p>
+            </div>
+            <div className="modal-footer" style={{ justifyContent: "center" }}>
+              <button className="btn btn-primary" onClick={() => setLaunchError(null)}>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
