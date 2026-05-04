@@ -60,12 +60,14 @@
     "node-loader": "^2.1.0",
     "style-loader": "^3.3.4"
   },
+  "optionalDependencies": {
+    "appdmg": "^0.6.6",
+    "electron-installer-dmg": "^5.0.1"
+  },
   "dependencies": {
     "adm-zip": "^0.5.10",
-    "appdmg": "^0.6.6",
     "axios": "^1.13.2",
     "better-sqlite3": "^12.5.0",
-    "electron-installer-dmg": "^5.0.1",
     "electron-squirrel-startup": "^1.0.1",
     "nes.css": "^2.2.1",
     "path": "^0.12.7",
