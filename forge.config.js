@@ -36,9 +36,25 @@ module.exports = {
       platforms: ["darwin", "win32"],
       config: {},
     },
-    // Linux: AppImage
+    // Linux: DEB and RPM
     {
-      name: "@reforged/maker-appimage",
+      name: "@electron-forge/maker-deb",
+      platforms: ["linux"],
+      config: {
+        options: {
+          bin: "romsmanager",
+          name: "ROM Manager",
+          productName: "ROM Manager",
+          genericName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          categories: ["Utility", "Game"],
+          icon: "./assets/icon.png",
+          homepage: "https://github.com/andreakinder/RomsManager",
+        },
+      },
+    },
+    {
+      name: "@electron-forge/maker-rpm",
       platforms: ["linux"],
       config: {
         options: {
