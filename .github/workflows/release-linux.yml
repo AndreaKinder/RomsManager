@@ -63,5 +63,6 @@ jobs:
           files: |
             out/make/deb/**/*.deb
             out/make/rpm/**/*.rpm
+            out/make/**/*.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

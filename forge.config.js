@@ -87,6 +87,22 @@ module.exports = {
         },
       },
     },
+    {
+      name: "@reforged/maker-appimage",
+      platforms: ["linux"],
+      config: {
+        options: {
+          bin: "romsmanager",
+          name: "ROM Manager",
+          productName: "ROM Manager",
+          genericName: "ROM Manager",
+          description: "A desktop application for managing retro game ROMs",
+          categories: ["Utility", "Game"],
+          icon: "./assets/icon.png",
+          homepage: "https://github.com/andreakinder/RomsManager",
+        },
+      },
+    },
   ],
   plugins: [
     {
