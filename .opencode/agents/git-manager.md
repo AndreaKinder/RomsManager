@@ -1,0 +1,1 @@
+/Users/andrea/.dotfiles/editors/opencode/agents/git-manager.md
