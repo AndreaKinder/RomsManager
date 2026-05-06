@@ -28,7 +28,22 @@ ROM Manager es una aplicación de escritorio construida con **Electron** y **Rea
 - **Base de datos**: JSON files (filesystem-based registry)
 - **Empaquetado**: Electron Forge (DMG, ZIP, AppImage, DEB, RPM, Squirrel)
 
-## 📦 Instalación
+## 💿 Descargar e Instalar
+
+### macOS
+
+```bash
+brew tap andreakinder/tap
+brew install --cask romsmanager
+```
+
+### Windows y Linux
+
+Descargá el instalador desde [GitHub Releases](https://github.com/andreakinder/RomsManager/releases).
+
+---
+
+## 📦 Desarrollo
 
 ### Requisitos previos
 
