@@ -8,6 +8,20 @@ module.exports = {
     executableName: "romsmanager",
     name: "ROM Manager",
     appBundleId: "com.andreakinder.romsmanager",
+    osxSign: {
+      identity: process.env.APPLE_SIGNING_IDENTITY || undefined,
+      "hardened-runtime": true,
+      entitlements: "entitlements.plist",
+      "entitlements-inherit": "entitlements.plist",
+      "signature-flags": "library",
+    },
+    osxNotarize: process.env.APPLE_NOTARIZATION_PASSWORD
+      ? {
+          appleId: process.env.APPLE_ID,
+          appleIdPassword: process.env.APPLE_NOTARIZATION_PASSWORD,
+          teamId: process.env.APPLE_TEAM_ID,
+        }
+      : undefined,
   },
   rebuildConfig: {},
   makers: [
