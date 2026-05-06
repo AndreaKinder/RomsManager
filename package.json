@@ -51,6 +51,7 @@
     "css-loader": "^6.11.0",
     "electron": "^39.2.4",
     "electron-builder": "^26.0.12",
+    "electron-installer-dmg": "^5.0.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
