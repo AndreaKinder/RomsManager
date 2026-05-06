@@ -1,6 +1,7 @@
 cask "romsmanager" do
   version "0.5.0-alpha"
   sha256 :no_check
+  disable_quarantine!
 
   url "https://github.com/andreakinder/RomsManager/releases/download/v#{version}/ROM.Manager.dmg",
       verified: "github.com/andreakinder/RomsManager/"
