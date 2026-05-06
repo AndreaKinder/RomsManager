@@ -94,3 +94,5 @@ out/
 
 # IA
 AGENTS.md
+.opencode/
+.agents/

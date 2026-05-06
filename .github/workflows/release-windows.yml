@@ -63,6 +63,5 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             out/make/squirrel.windows/**/*.exe
-            out/make/zip/win32/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

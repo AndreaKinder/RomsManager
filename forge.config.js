@@ -29,7 +29,6 @@ module.exports = {
   },
   rebuildConfig: {},
   makers: [
-    // Windows: Squirrel installer (.exe Setup)
     {
       name: "@electron-forge/maker-squirrel",
       platforms: ["win32"],
@@ -37,54 +36,6 @@ module.exports = {
         name: "romsmanager",
         setupExe: "ROM-Manager-Setup.exe",
         setupIcon: "./assets/icon.ico",
-      },
-    },
-    // macOS: DMG + ZIP fallback
-    {
-      name: "@electron-forge/maker-dmg",
-      platforms: ["darwin"],
-      config: {
-        name: "ROM Manager",
-        icon: "./assets/icon.icns",
-        overwrite: true,
-      },
-    },
-    {
-      name: "@electron-forge/maker-zip",
-      platforms: ["darwin", "win32"],
-      config: {},
-    },
-    // Linux: DEB and RPM
-    {
-      name: "@electron-forge/maker-deb",
-      platforms: ["linux"],
-      config: {
-        options: {
-          bin: "romsmanager",
-          name: "ROM Manager",
-          productName: "ROM Manager",
-          genericName: "ROM Manager",
-          description: "A desktop application for managing retro game ROMs",
-          categories: ["Utility", "Game"],
-          icon: "./assets/icon.png",
-          homepage: "https://github.com/andreakinder/RomsManager",
-        },
-      },
-    },
-    {
-      name: "@electron-forge/maker-rpm",
-      platforms: ["linux"],
-      config: {
-        options: {
-          bin: "romsmanager",
-          name: "ROM Manager",
-          productName: "ROM Manager",
-          genericName: "ROM Manager",
-          description: "A desktop application for managing retro game ROMs",
-          categories: ["Utility", "Game"],
-          icon: "./assets/icon.png",
-          homepage: "https://github.com/andreakinder/RomsManager",
-        },
       },
     },
     {

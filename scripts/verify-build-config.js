@@ -71,11 +71,10 @@ if (githubToken) {
 console.log('\n📋 Formatos de salida esperados:');
 console.log('  Windows:');
 console.log(`    - romsmanager-${packageJson.version} Setup.exe`);
-console.log(`    - romsmanager-portable-win32-x64-${packageJson.version}.zip`);
+console.log('  macOS:');
+console.log('    - ROM Manager.app');
 console.log('  Linux:');
 console.log(`    - romsmanager-${packageJson.version}.AppImage`);
-console.log(`    - romsmanager_${packageJson.version}_amd64.deb`);
-console.log(`    - romsmanager-${packageJson.version}.x86_64.rpm`);
 
 console.log('\n✅ Configuración verificada correctamente');
 console.log('\n💡 Comandos disponibles:');
