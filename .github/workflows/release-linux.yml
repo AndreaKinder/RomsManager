@@ -1,0 +1,67 @@
+name: Release Linux
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "assets/**"
+      - "forge.config.js"
+      - "webpack.*.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".babelrc"
+      - "patches/**"
+      - ".github/workflows/release-linux.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}-linux
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential python3 rpm-build
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Verify build config
+        run: npm run verify-build
+
+      - name: Build Linux artifacts
+        run: npx --no-install electron-forge make --platform linux --arch x64
+        timeout-minutes: 30
+
+      - name: Read package version
+        id: version
+        run: echo "version=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Create/update draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          draft: true
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            out/make/deb/**/*.deb
+            out/make/rpm/**/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

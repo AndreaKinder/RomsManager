@@ -1,0 +1,68 @@
+name: Release Windows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "assets/**"
+      - "forge.config.js"
+      - "webpack.*.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".babelrc"
+      - "patches/**"
+      - ".github/workflows/release-windows.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}-windows
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Verify build config
+        run: npm run verify-build
+
+      - name: Build Windows artifacts
+        run: npx --no-install electron-forge make --platform win32 --arch x64
+        timeout-minutes: 30
+
+      - name: Read package version
+        id: version
+        run: |
+          $v = (node -p "require('./package.json').version").Trim()
+          echo "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Create/update draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          draft: true
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            out/make/squirrel.windows/**/*.exe
+            out/make/zip/win32/**/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
