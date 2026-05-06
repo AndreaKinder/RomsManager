@@ -818,6 +818,49 @@ app.whenReady().then(async () => {
     }
   });
 
+  ipcMain.handle("get-scraper-config", () => configService.getScraperConfig());
+  
+  ipcMain.handle("set-scraper-config", (event, config) => {
+    configService.setScraperConfig(config);
+    return { success: true };
+  });
+
+  ipcMain.handle("scrape-search", async (event, query, consoleId, provider) => {
+    try {
+      const { searchGame } = await import("../back/services/scrapers/index.js");
+      const results = await searchGame(consoleId, query, provider);
+      return { success: true, results };
+    } catch (error) {
+      console.error("Scrape search error:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("scrape-apply", async (event, romName, consoleId, gameData) => {
+    try {
+      const { downloadCover } = await import("../back/services/scrapers/index.js");
+      const { updateRomInJson } = await import("../back/services/utils/getJsonUtils.js");
+      
+      let coverPathPC = null;
+      if (gameData.coverUrl) {
+        // Download cover image
+        const extension = path.extname(new URL(gameData.coverUrl).pathname) || ".jpg";
+        coverPathPC = await downloadCover(gameData.coverUrl, consoleId, romName, extension);
+        updateRomInJson(romName, "coverPath", coverPathPC);
+      }
+
+      if (gameData.title) updateRomInJson(romName, "title", gameData.title);
+      if (gameData.description) updateRomInJson(romName, "description", gameData.description);
+      if (gameData.developer) updateRomInJson(romName, "developer", gameData.developer);
+      if (gameData.releaseDate) updateRomInJson(romName, "releaseDate", gameData.releaseDate);
+
+      return { success: true, coverPath: coverPathPC };
+    } catch (error) {
+      console.error("Scrape apply error:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
   createWindow();
 
   app.on("activate", () => {

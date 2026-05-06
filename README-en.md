@@ -5,6 +5,7 @@ A desktop application for managing retro game ROM collections with SD card sync,
 ## Features
 
 - **Multi-Console Support**: 18+ systems from NES to Nintendo Switch
+- **Metadata Scraping**: Integration with ScreenScraper and TheGamesDB to automatically download covers, titles, and descriptions.
 - **SD Card Sync**: Bidirectional import/export between PC and SD card
 - **Big Picture Mode**: Fullscreen TV interface with gamepad and keyboard navigation
 - **Gamepad Support**: Native controller support via Web Gamepad API

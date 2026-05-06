@@ -72,3 +72,20 @@ export function removeEmulator(consoleId) {
     writeConfig(config);
   }
 }
+
+export function getScraperConfig() {
+  return readConfig().scraper || {
+    defaultScraper: "screenscraper",
+    credentials: {
+      screenscraper: { developerId: "", developerPassword: "", userId: "", userPassword: "" },
+      thegamesdb: { apiKey: "" },
+      igdb: { clientId: "", clientSecret: "" }
+    }
+  };
+}
+
+export function setScraperConfig(scraperConfig) {
+  const config = readConfig();
+  config.scraper = scraperConfig;
+  writeConfig(config);
+}

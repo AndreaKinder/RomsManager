@@ -14,6 +14,16 @@ function SettingsModal({ onClose }) {
   const [newEmulatorConsole, setNewEmulatorConsole] = useState("");
   const [newEmulatorPath, setNewEmulatorPath] = useState("");
 
+  // Scraper state
+  const [scraperConfig, setScraperConfig] = useState({
+    defaultScraper: "screenscraper",
+    credentials: {
+      screenscraper: { developerId: "", developerPassword: "" },
+      thegamesdb: { apiKey: "" },
+      igdb: { clientId: "", clientSecret: "" }
+    }
+  });
+
   useEffect(() => {
     const loadCollections = async () => {
       try {
@@ -61,8 +71,20 @@ function SettingsModal({ onClose }) {
       }
     };
 
+    const loadScraperConfig = async () => {
+      try {
+        if (window.electronAPI.getScraperConfig) {
+          const config = await window.electronAPI.getScraperConfig();
+          setScraperConfig(config);
+        }
+      } catch (error) {
+        console.error("Error loading scraper config:", error);
+      }
+    };
+
     loadCollections();
     loadEmulators();
+    loadScraperConfig();
   }, []);
 
   const handleBackdropClick = (e) => {
@@ -194,6 +216,20 @@ function SettingsModal({ onClose }) {
       delete next[consoleId];
       return next;
     });
+  };
+
+  const handleScraperConfigChange = async (field, value, subfield = null) => {
+    const newConfig = { ...scraperConfig };
+    if (subfield) {
+      if (!newConfig.credentials[field]) newConfig.credentials[field] = {};
+      newConfig.credentials[field][subfield] = value;
+    } else {
+      newConfig[field] = value;
+    }
+    setScraperConfig(newConfig);
+    if (window.electronAPI.setScraperConfig) {
+      await window.electronAPI.setScraperConfig(newConfig);
+    }
   };
 
   const getConsoleName = (consoleId) => {
@@ -392,6 +428,67 @@ function SettingsModal({ onClose }) {
                 Asigná un emulador a cada consola. La ROM se pasa como primer
                 argumento al ejecutable.
               </p>
+            </div>
+
+            {/* Scraper Config */}
+            <div className="form-field">
+              <label>Configuración de Scraper</label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ minWidth: "150px" }}>Proveedor por defecto:</span>
+                  <select 
+                    value={scraperConfig.defaultScraper}
+                    onChange={(e) => handleScraperConfigChange("defaultScraper", e.target.value)}
+                    style={{ flex: 1 }}
+                  >
+                    <option value="screenscraper">ScreenScraper (Recomendado)</option>
+                    <option value="thegamesdb">TheGamesDB</option>
+                  </select>
+                </div>
+
+                {scraperConfig.defaultScraper === "screenscraper" && (
+                  <div style={{ padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "4px" }}>
+                    <p style={{ fontSize: "12px", marginBottom: "8px", color: "var(--text-secondary)" }}>
+                      ScreenScraper permite uso anónimo básico, pero si ingresas tus credenciales evitarás bloqueos.
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                      <span style={{ minWidth: "140px", fontSize: "12px" }}>Dev ID (Opcional):</span>
+                      <input 
+                        type="text" 
+                        value={scraperConfig.credentials?.screenscraper?.developerId || ""}
+                        onChange={(e) => handleScraperConfigChange("screenscraper", e.target.value, "developerId")}
+                        style={{ flex: 1, padding: "4px" }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span style={{ minWidth: "140px", fontSize: "12px" }}>Dev Pwd (Opcional):</span>
+                      <input 
+                        type="password" 
+                        value={scraperConfig.credentials?.screenscraper?.developerPassword || ""}
+                        onChange={(e) => handleScraperConfigChange("screenscraper", e.target.value, "developerPassword")}
+                        style={{ flex: 1, padding: "4px" }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {scraperConfig.defaultScraper === "thegamesdb" && (
+                  <div style={{ padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "4px" }}>
+                    <p style={{ fontSize: "12px", marginBottom: "8px", color: "var(--text-secondary)" }}>
+                      TheGamesDB requiere una API Key para funcionar correctamente.
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span style={{ minWidth: "140px", fontSize: "12px" }}>API Key:</span>
+                      <input 
+                        type="text" 
+                        value={scraperConfig.credentials?.thegamesdb?.apiKey || ""}
+                        onChange={(e) => handleScraperConfigChange("thegamesdb", e.target.value, "apiKey")}
+                        style={{ flex: 1, padding: "4px" }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Collections */}

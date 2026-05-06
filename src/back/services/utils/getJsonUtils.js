@@ -52,6 +52,9 @@ function addRomToCollection(romsData, romObject) {
     savePath: romObject.savePath || null,
     coverPath: romObject.coverPath || null,
     collections: romObject.collections || [],
+    description: romObject.description || "",
+    developer: romObject.developer || "",
+    releaseDate: romObject.releaseDate || ""
   };
 
   return romsData;

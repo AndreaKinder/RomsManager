@@ -70,4 +70,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setRomsBasePath: (basePath) =>
     ipcRenderer.invoke("set-roms-base-path", basePath),
   selectRomsFolder: () => ipcRenderer.invoke("select-roms-folder"),
+  getScraperConfig: () => ipcRenderer.invoke("get-scraper-config"),
+  setScraperConfig: (config) => ipcRenderer.invoke("set-scraper-config", config),
+  scrapeSearch: (query, consoleId, provider) => ipcRenderer.invoke("scrape-search", query, consoleId, provider),
+  scrapeApply: (romName, consoleId, gameData) => ipcRenderer.invoke("scrape-apply", romName, consoleId, gameData),
 });

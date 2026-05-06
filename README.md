@@ -9,6 +9,7 @@ ROM Manager es una aplicación de escritorio construida con **Electron** y **Rea
 ## 🎮 Características Principales
 
 - **Gestión de ROMs**: Importar, exportar, editar metadatos, carátulas, manuales y partidas guardadas.
+- **Scraping de Metadatos**: Integración con ScreenScraper y TheGamesDB para descargar automáticamente carátulas, títulos y descripciones de tus juegos.
 - **Soporte multi-consola**: NES, SNES, Genesis, GB, GBC, GBA, N64, NDS, PS1, PS2, PSP, GameCube, 3DS, Switch, Neo Geo, Sega CD, y más.
 - **Sincronización SD**: Importar ROMs desde tarjeta SD al PC y exportar del PC a la SD.
 - **Modo Big Picture**: Interfaz fullscreen tipo "Steam Big Picture" para navegar con gamepad o teclado desde el sillón.

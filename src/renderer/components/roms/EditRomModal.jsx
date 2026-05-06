@@ -20,6 +20,10 @@ function EditRomModal({ rom, onClose, onSave }) {
     rom.collections || [],
   );
   const [availableCollections, setAvailableCollections] = useState([]);
+  const [scrapeResults, setScrapeResults] = useState([]);
+  const [isScraping, setIsScraping] = useState(false);
+  const [showScrapeResults, setShowScrapeResults] = useState(false);
+  const [scraperProvider, setScraperProvider] = useState("screenscraper");
 
   useEffect(() => {
     const loadCollections = async () => {
@@ -54,7 +58,19 @@ function EditRomModal({ rom, onClose, onSave }) {
       }
     };
 
+    const loadScraperConfig = async () => {
+      try {
+        if (window.electronAPI.getScraperConfig) {
+          const config = await window.electronAPI.getScraperConfig();
+          setScraperProvider(config.defaultScraper || "screenscraper");
+        }
+      } catch (error) {
+        console.error("Error loading scraper config:", error);
+      }
+    };
+
     loadCollections();
+    loadScraperConfig();
   }, []);
 
   const handleSelectChange = (e) => {
@@ -63,6 +79,57 @@ function EditRomModal({ rom, onClose, onSave }) {
       (option) => option.value,
     );
     setSelectedCollections(selectedOptions);
+  };
+
+  const handleScrapeSearch = async () => {
+    if (!title.trim()) {
+      setError("Ingresa un título para buscar");
+      return;
+    }
+
+    setIsScraping(true);
+    setError(null);
+    setScrapeResults([]);
+    setShowScrapeResults(true);
+
+    try {
+      const response = await window.electronAPI.scrapeSearch(title, rom.system, scraperProvider);
+      if (response.success) {
+        setScrapeResults(response.results || []);
+        if (response.results?.length === 0) {
+          setError("No se encontraron resultados");
+        }
+      } else {
+        setError(response.error || "Error al buscar metadatos");
+      }
+    } catch (err) {
+      setError("Error de conexión al buscar: " + err.message);
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
+  const handleScrapeApply = async (gameData) => {
+    setIsLoading(true);
+    setError(null);
+    setShowScrapeResults(false);
+
+    try {
+      const response = await window.electronAPI.scrapeApply(rom.romName, rom.system, gameData);
+      
+      if (response.success) {
+        setCoverMessage(`Metadatos y carátula aplicados exitosamente.`);
+        if (gameData.title) setTitle(gameData.title);
+        // Podríamos también actualizar localmente rom.description, etc si los mostramos, 
+        // pero principalmente disparamos onSave() al final de guardar todo de todas formas.
+      } else {
+        setError(response.error || "Error al aplicar los metadatos");
+      }
+    } catch (err) {
+      setError("Error de conexión al aplicar: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -293,18 +360,114 @@ function EditRomModal({ rom, onClose, onSave }) {
 
             <div className="form-field">
               <label htmlFor="title">Título *</label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ingresa el título de la ROM"
-                maxLength={MAX_TITLE_LENGTH}
-                autoFocus
-              />
-              <small className="field-hint">
-                {title.length}/{MAX_TITLE_LENGTH} caracteres
-              </small>
+              <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Ingresa el título de la ROM"
+                    maxLength={MAX_TITLE_LENGTH}
+                    autoFocus
+                  />
+                  <small className="field-hint">
+                    {title.length}/{MAX_TITLE_LENGTH} caracteres
+                  </small>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleScrapeSearch}
+                  disabled={isLoading || isScraping || !title.trim()}
+                  title="Buscar Metadatos"
+                >
+                  🔍 Buscar
+                </button>
+              </div>
+
+              {showScrapeResults && (
+                <div style={{ 
+                  marginTop: "10px", 
+                  padding: "10px", 
+                  background: "var(--bg-secondary, #2a2a2a)", 
+                  border: "1px solid var(--border-color, #444)", 
+                  borderRadius: "6px",
+                  maxHeight: "300px",
+                  overflowY: "auto"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                    <span style={{ fontWeight: "bold" }}>Resultados de la búsqueda:</span>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <select 
+                        value={scraperProvider}
+                        onChange={(e) => setScraperProvider(e.target.value)}
+                        style={{ padding: "2px 4px", fontSize: "12px" }}
+                        disabled={isScraping}
+                      >
+                        <option value="screenscraper">ScreenScraper</option>
+                        <option value="thegamesdb">TheGamesDB</option>
+                      </select>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowScrapeResults(false)}
+                        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "16px" }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  {isScraping ? (
+                    <div style={{ textAlign: "center", padding: "20px" }}>Buscando...</div>
+                  ) : scrapeResults.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "20px", color: "var(--text-secondary)" }}>
+                      No se encontraron resultados
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      {scrapeResults.map((result) => (
+                        <div 
+                          key={result.id} 
+                          style={{ 
+                            display: "flex", 
+                            gap: "10px", 
+                            padding: "8px", 
+                            background: "rgba(0,0,0,0.2)", 
+                            borderRadius: "4px",
+                            alignItems: "center"
+                          }}
+                        >
+                          <div style={{ width: "50px", height: "70px", backgroundColor: "#000", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                            {result.coverUrl ? (
+                              <img src={result.coverUrl} alt="Cover" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                            ) : (
+                              <span style={{ fontSize: "10px", color: "#666" }}>No img</span>
+                            )}
+                          </div>
+                          <div style={{ flex: 1, overflow: "hidden" }}>
+                            <div style={{ fontWeight: "bold", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{result.title}</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                              {result.developer && <span>{result.developer}</span>}
+                              {result.developer && result.releaseDate && <span> • </span>}
+                              {result.releaseDate && <span>{result.releaseDate}</span>}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => handleScrapeApply(result)}
+                            disabled={isLoading}
+                            style={{ padding: "4px 8px", fontSize: "12px" }}
+                          >
+                            Aplicar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="form-field">
