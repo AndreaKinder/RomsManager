@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Homebrew Cask distribution for macOS (`brew install --cask romsmanager`)
+- Automated cask update on tagged releases via GitHub Actions
+- Multi-provider metadata scraping (ScreenScraper + TheGamesDB)
+
+### Fixed
+- macOS Gatekeeper "damaged app" warning resolved via Homebrew distribution
+
 ## [0.2.0-alpha] - 2025-12-02
 
 ### Added

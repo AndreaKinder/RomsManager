@@ -90,6 +90,8 @@ npm run test:coverage
 
 ### Build y distribución
 
+El release se automatiza via GitHub Actions. Al pushear un tag (`v0.5.0`, etc.), el workflow compila para las tres plataformas, crea el release en GitHub y actualiza automáticamente el Homebrew Cask con el SHA256 del DMG.
+
 ```bash
 # Empaquetar para la plataforma actual
 npm run package

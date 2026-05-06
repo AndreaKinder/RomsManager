@@ -22,7 +22,22 @@ A desktop application for managing retro game ROM collections with SD card sync,
 - **Jest** for testing
 - **JSON-based** filesystem registry
 
-## Installation
+## 💿 Download & Install
+
+### macOS
+
+```bash
+brew tap andreakinder/tap
+brew install --cask romsmanager
+```
+
+### Windows & Linux
+
+Download the installer from [GitHub Releases](https://github.com/andreakinder/RomsManager/releases).
+
+---
+
+## Development
 
 ### Requirements
 
