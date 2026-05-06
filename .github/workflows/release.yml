@@ -126,9 +126,10 @@ jobs:
           CASK_FILE="homebrew-tap/Casks/romsmanager.rb"
 
           sed -i "s/version \".*\"/version \"$VERSION\"/" "$CASK_FILE"
-          sed -i "s/sha256 :no_check/sha256 \"$SHA256\"/" "$CASK_FILE"
+          sed -i "s/sha256 .*/sha256 \"$SHA256\"/" "$CASK_FILE"
 
           # Commit updated cask to RomsManager (source repo)
+          git checkout main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
