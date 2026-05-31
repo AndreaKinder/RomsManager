@@ -78,7 +78,7 @@ npm run package
 
 ### Añadir ROMs Individuales
 
-1. Haz clic en **"➕ Añadir ROM"**
+1. Haz clic en **"Añadir ROM"**
 2. Navega y selecciona un archivo ROM desde cualquier lugar de tu PC
 3. La ROM será automáticamente:
    - Copiada a la carpeta del sistema apropiado

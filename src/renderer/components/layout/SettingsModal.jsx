@@ -130,7 +130,9 @@ function SettingsModal({ onClose }) {
     try {
       const result = await window.electronAPI.exportBackup(diskPath.trim());
       if (result.success) {
-        alert(`¡Copia de seguridad exportada exitosamente!\n\n${result.outputPath}`);
+        alert(
+          `¡Copia de seguridad exportada exitosamente!\n\n${result.outputPath}`,
+        );
         onClose();
       } else {
         alert("Error al exportar la copia de seguridad: " + result.error);
@@ -147,7 +149,9 @@ function SettingsModal({ onClose }) {
     setShowBackupMenu(false);
     setIsLoading(true);
     try {
-      const result = await window.electronAPI.importBackup(diskPath.trim() || undefined);
+      const result = await window.electronAPI.importBackup(
+        diskPath.trim() || undefined,
+      );
       if (result.canceled) return;
       if (result.success) {
         alert("¡Copia de seguridad importada exitosamente!");
@@ -184,7 +188,10 @@ function SettingsModal({ onClose }) {
     }
 
     await window.electronAPI.setEmulator(newEmulatorConsole, newEmulatorPath);
-    setEmulators((prev) => ({ ...prev, [newEmulatorConsole]: newEmulatorPath }));
+    setEmulators((prev) => ({
+      ...prev,
+      [newEmulatorConsole]: newEmulatorPath,
+    }));
     setNewEmulatorPath("");
   };
 
@@ -208,9 +215,7 @@ function SettingsModal({ onClose }) {
   };
 
   const configuredConsoleIds = Object.keys(emulators);
-  const unconfiuredConsoles = availableConsoles.filter(
-    (c) => !emulators[c.id],
-  );
+  const unconfiuredConsoles = availableConsoles.filter((c) => !emulators[c.id]);
 
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
@@ -306,7 +311,11 @@ function SettingsModal({ onClose }) {
               {configuredConsoleIds.length > 0 && (
                 <div className="collections-list" style={{ marginBottom: 12 }}>
                   {configuredConsoleIds.map((consoleId) => (
-                    <div key={consoleId} className="collection-tag" style={{ justifyContent: "space-between", gap: 8 }}>
+                    <div
+                      key={consoleId}
+                      className="collection-tag"
+                      style={{ justifyContent: "space-between", gap: 8 }}
+                    >
                       <span style={{ fontWeight: 600, minWidth: 60 }}>
                         {getConsoleName(consoleId)}
                       </span>
@@ -335,7 +344,10 @@ function SettingsModal({ onClose }) {
                 </div>
               )}
 
-              <div className="collection-input-container" style={{ flexWrap: "wrap", gap: 8 }}>
+              <div
+                className="collection-input-container"
+                style={{ flexWrap: "wrap", gap: 8 }}
+              >
                 <select
                   value={newEmulatorConsole}
                   onChange={(e) => setNewEmulatorConsole(e.target.value)}
@@ -372,7 +384,7 @@ function SettingsModal({ onClose }) {
                   onClick={handleAddEmulator}
                   disabled={isLoading || !newEmulatorPath}
                 >
-                  ➕ Añadir
+                  Añadir
                 </button>
               </div>
 
@@ -401,7 +413,7 @@ function SettingsModal({ onClose }) {
                   onClick={handleAddCollection}
                   disabled={isLoading || !newCollection.trim()}
                 >
-                  ➕ Añadir
+                  Añadir
                 </button>
               </div>
 
