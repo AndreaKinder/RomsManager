@@ -1557,26 +1557,26 @@ html.maximized .app-window-mac {
   box-shadow: none !important;
 }
 
-/* Región de arrastre interactiva para la barra de título (AppHeader) */
-html[data-os="macos"] .app-header,
-html[data-os="windows"] .app-header {
+/* Región de arrastre interactiva para la barra de título */
+html[data-os="macos"] header,
+html[data-os="windows"] header {
   -webkit-app-region: drag !important;
 }
 
 /* Márgenes de seguridad para evitar solapamiento de botones de control nativos */
-html[data-os="macos"] .app-header {
-  padding-left: 80px !important; /* Margen para traffic lights de macOS */
+html[data-os="macos"] header {
+  padding-left: 80px !important;
 }
 
-html[data-os="windows"] .app-header {
-  padding-right: 140px !important; /* Margen para Windows Control Overlay */
+html[data-os="windows"] header {
+  padding-right: 140px !important;
 }
 
 /* Evitar que elementos interactivos de la cabecera capturen el drag del ratón */
-.app-header input,
-.app-header button,
-.app-header a,
-.app-header select,
+header input,
+header button,
+header a,
+header select,
 .no-drag {
   -webkit-app-region: no-drag !important;
 }
