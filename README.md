@@ -1,238 +1,331 @@
-# ROM Manager
+# 🎮 ROM Manager
 
-> Gestor de ROMs retro con interfaz de escritorio, sincronización con tarjeta SD, y modo Big Picture con soporte de gamepad.
+Una aplicación de escritorio moderna para gestionar colecciones de ROMs de juegos retro en múltiples sistemas de consola.
 
-## 🇪🇸 Descripción
+![App Screen](./screenshots/app-screenshot.png)
 
-ROM Manager es una aplicación de escritorio construida con **Electron** y **React** para organizar, visualizar y lanzar ROMs de consolas retro. Soporta 18+ sistemas (desde NES hasta Nintendo Switch), sincronización bidireccional con tarjetas SD, copias de seguridad ZIP, y un modo Big Picture optimizado para televisores y control de gamepad.
+![ROM Manager](https://img.shields.io/badge/Electron-App-blue)
+![React](https://img.shields.io/badge/React-19-61dafb)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🎮 Características Principales
+## Características
 
-- **Gestión de ROMs**: Importar, exportar, editar metadatos, carátulas, manuales y partidas guardadas.
-- **Scraping de Metadatos**: Integración con ScreenScraper y TheGamesDB para descargar automáticamente carátulas, títulos y descripciones de tus juegos.
-- **Soporte multi-consola**: NES, SNES, Genesis, GB, GBC, GBA, N64, NDS, PS1, PS2, PSP, GameCube, 3DS, Switch, Neo Geo, Sega CD, y más.
-- **Sincronización SD**: Importar ROMs desde tarjeta SD al PC y exportar del PC a la SD.
-- **Modo Big Picture**: Interfaz fullscreen tipo "Steam Big Picture" para navegar con gamepad o teclado desde el sillón.
-- **Colecciones personalizadas**: Agrupar ROMs por etiquetas personalizadas (`collections`) independientemente de la consola.
-- **Lanzamiento directo**: Configurar emuladores por consola y lanzar ROMs directamente desde la app.
-- **Copias de seguridad**: Exportar/importar backups ZIP de toda la biblioteca.
-- **Estética retro**: UI oscura con tipografía pixel-art, sombras duras y bordes cuadrados inspirada en 8-bits.
+✅ **Soporte Multi-Consola**: Gestiona ROMs para más de 16 sistemas de juegos retro  
+✅ **Importación desde Tarjeta SD**: Importa ROMs directamente desde tarjetas SD o discos externos  
+✅ **Detección Inteligente**: Detección automática del sistema basada en extensiones de archivo  
+✅ **Almacenamiento Organizado**: ROMs organizadas por sistema de consola con metadatos JSON  
+✅ **Interfaz Moderna**: Interfaz limpia con tema oscuro y estética de juegos retro  
+✅ **Gestión de Archivos**: Añade ROMs individuales o importa colecciones completas en masa  
+✅ **Edición de ROMs**: Edita títulos y metadatos de ROMs con editor en línea  
+✅ **Soporte de Carátulas**: Muestra imágenes de carátula personalizadas para cada ROM  
+✅ **Gestión de Partidas**: Importa, exporta y gestiona archivos de guardado para tus ROMs  
+✅ **Estilo Retro**: Fuente pixel-art y efectos visuales retro para una experiencia auténtica  
+✅ **Exportación Rápida**: Funcionalidad de exportación de ROMs y archivos de guardado con un clic  
+✅ **Búsqueda de Juegos**: Encuentra ROMs rápidamente buscando títulos con filtrado en tiempo real  
+✅ **Soporte de Manuales PDF**: Importa y visualiza manuales de juegos en formato PDF  
 
-## 🛠 Stack Tecnológico
+## Próximas Características
 
-- **Framework**: [Electron](https://www.electronjs.org/) + [React 19](https://react.dev/)
-- **Bundler**: Webpack (via Electron Forge)
-- **CSS**: Estilos custom retro + [nes.css](https://nostalgic-css.github.io/NES.css/)
-- **Tipografía**: Press Start 2P
-- **Testing**: [Jest](https://jestjs.io/) + Testing Library
-- **Base de datos**: JSON files (filesystem-based registry)
-- **Empaquetado**: Electron Forge (DMG, ZIP, AppImage, DEB, RPM, Squirrel)
+🔜 **Vista de Galería**: Navega tu colección de ROMs con diseños de cuadrícula visual  
+🔜 **Metadatos Extendidos**: Rastrea descripción, idiomas, año de lanzamiento y editorial  
+🔜 **Información de Jugadores**: Registra el número de jugadores para cada juego  
+🔜 **Valoraciones de Juegos**: Sistema de valoración personal y puntuaciones de dificultad  
+🔜 **Notas de Juegos**: Añade notas personales y comentarios para cada ROM  
 
-## 💿 Descargar e Instalar
+## Capturas de Pantalla
 
-Descargá el instalador desde [GitHub Releases](https://github.com/andreakinder/RomsManager/releases).
+### Interfaz Principal
+- Visualiza todas tus colecciones de ROMs organizadas por consola
+- Secciones de consola expandibles/colapsables
+- Insignias con el contador de ROMs para cada sistema
 
----
+### Características
+- **Añadir ROM**: Selecciona e importa archivos ROM individuales
+- **Importar desde SD**: Importación masiva de ROMs desde tarjeta SD o disco externo
+- **Actualizar**: Recarga las colecciones de ROMs
 
-## 📦 Desarrollo
+## Instalación
 
-### Requisitos previos
+### Requisitos Previos
 
-- [Node.js](https://nodejs.org/) 18+
+- Node.js 18+ 
 - npm o yarn
 
-### Pasos
+### Configuración
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/andreakinder/RomsManager.git
+# Clonar el repositorio
+git clone https://github.com/AndreaKinder/RomsManager.git
 cd RomsManager
 
-# 2. Instalar dependencias
+# Instalar dependencias
 npm install
 
-# 3. Verificar configuración de build (opcional pero recomendado)
-npm run verify-build
-```
-
-> **Nota**: La instalación puede requerir herramientas nativas para compilar dependencias como `better-sqlite3`. En macOS/Linux asegurate de tener Python y un compilador C++ disponible.
-
-## 🚀 Cómo correr
-
-### Desarrollo
-
-```bash
-# Iniciar la app en modo desarrollo con hot-reload
+# Iniciar servidor de desarrollo
 npm start
-```
 
-### Testing
-
-```bash
-# Ejecutar tests unitarios
-npm test
-
-# Modo watch
-npm run test:watch
-
-# Con cobertura
-npm run test:coverage
-```
-
-### Build y distribución
-
-El release se automatiza via GitHub Actions. Al pushear un tag (`v0.5.0`, etc.), el workflow compila para las tres plataformas, crea el release en GitHub y actualiza automáticamente el Homebrew Cask con el SHA256 del DMG.
-
-```bash
-# Empaquetar para la plataforma actual
+# Compilar para producción
 npm run package
-
-# Generar distribuibles (DMG, AppImage, etc.)
-npm run make
-
-# Publicar release (requiere configuración de GitHub en forge.config.js)
-npm run publish
 ```
 
-## 📁 Estructura del Proyecto
+## Uso
+
+### Configuración Inicial
+
+1. **Inicia la aplicación**
+2. **Configura la Ruta SD**: Introduce la letra de unidad de tu tarjeta SD (ej., `D:/`, `E:/`)
+3. **Importa ROMs**: Haz clic en "📥 Importar desde SD" para importar tu colección de ROMs
+
+### Añadir ROMs Individuales
+
+1. Haz clic en **"Añadir ROM"**
+2. Navega y selecciona un archivo ROM desde cualquier lugar de tu PC
+3. La ROM será automáticamente:
+   - Copiada a la carpeta del sistema apropiado
+   - Registrada en los metadatos JSON del sistema
+   - Mostrada en la interfaz
+
+### Importar desde Tarjeta SD
+
+1. Inserta tu tarjeta SD
+2. Establece la letra de unidad correcta en el campo **Ruta SD**
+3. Haz clic en **"📥 Importar desde SD"**
+4. Todas las ROMs serán importadas y organizadas por sistema
+
+### Gestionar tu Colección
+
+#### Buscar Juegos
+1. Usa la barra de búsqueda **🔍 Buscar juegos** en el encabezado
+2. Escribe cualquier parte del título de un juego para filtrar tu colección
+3. Los resultados de búsqueda se actualizan en tiempo real mientras escribes
+4. El pie de página muestra el contador filtrado (ej., "Mostrando: 15")
+5. Haz clic en el botón **✕** para limpiar la búsqueda y mostrar todas las ROMs
+6. La búsqueda funciona en todas las consolas simultáneamente
+
+**Características de Búsqueda:**
+- Búsqueda sin distinción entre mayúsculas y minúsculas
+- Busca tanto en títulos de ROM como en nombres de archivo
+- Solo muestra consolas con ROMs coincidentes
+- Muestra el mensaje "No se encontraron juegos" si no hay coincidencias
+
+#### Navegar ROMs
+- Haz clic en cualquier encabezado de consola para expandir/colapsar la lista de ROMs
+- Cada tarjeta de ROM muestra:
+  - Título de la ROM con fuente pixel-art retro
+  - Carátula personalizada (si está disponible)
+  - Indicador de archivo de guardado (💾) si existe una partida
+  - Botones de acción para editar, eliminar y exportar
+
+#### Editar ROMs
+1. Haz clic en el botón **✏️ Editar** en cualquier tarjeta de ROM
+2. Modifica el título de la ROM
+3. Selecciona una imagen de carátula (PNG, JPG, GIF, WebP)
+4. Importa un archivo de guardado si está disponible
+5. Haz clic en **Guardar** para aplicar los cambios
+
+#### Gestionar Archivos de Guardado
+- **Ver Estado de Guardado**: Las ROMs con archivos de guardado muestran un icono 💾
+- **Exportar Guardado**: Haz clic en el icono 💾 para exportar el archivo de guardado
+- **Importar Guardado**: Usa el modal de Edición para importar archivos de guardado desde tu PC
+
+#### Exportar ROMs
+- Haz clic en el botón **⬇️ Descargar** en cualquier tarjeta de ROM
+- Elige la ubicación de exportación
+- El archivo ROM se copia al directorio seleccionado
+
+## Sistemas Soportados
+
+| Consola | Extensiones |
+|---------|-----------|
+| NES | `.nes` |
+| SNES/SFC | `.smc`, `.sfc` |
+| Sega Genesis | `.md`, `.gen`, `.sms` |
+| Game Boy | `.gb` |
+| Game Boy Color | `.gbc` |
+| Game Boy Advance | `.gba` |
+| Nintendo 64 | `.z64`, `.v64`, `.n64` |
+| Nintendo DS | `.nds` |
+| PlayStation 1 | `.bin`, `.cue`, `.iso`, `.pbp` |
+| PlayStation 2 | `.bin`, `.cue`, `.iso` |
+| GameCube | `.gcm`, `.iso`, `.gcz` |
+| Wii | `.iso`, `.wbfs`, `.wad` |
+| Nintendo 3DS | `.3ds`, `.cia` |
+| Wii U | `.wud`, `.wux`, `.rpx` |
+| Nintendo Switch | `.nsp`, `.xci`, `.nsz` |
+
+## Estructura del Proyecto
 
 ```
 RomsManager/
 ├── src/
-│   ├── back/                       # Lógica del proceso principal (Node.js)
-│   │   ├── data/                   # Datos estáticos (consoles.json, form data, etc.)
-│   │   └── services/               # Servicios de negocio
-│   │       ├── backupService.js    # Backups ZIP
-│   │       ├── configService.js    # Configuración persistente
-│   │       ├── editService.js      # Edición de ROMs
-│   │       ├── syncService.js      # Sincronización PC ↔ SD
-│   │       ├── uiDataService.js    # Generación de datos para la UI
-│   │       └── utils/              # Utilidades
-│   │           ├── getArrays.js
-│   │           ├── getFilters.js
-│   │           ├── getJsonUtils.js
-│   │           ├── getPaths.js
-│   │           └── logger.js
-│   ├── renderer/                   # Frontend React
-│   │   ├── components/             # Componentes React
-│   │   │   ├── bigpicture/         # Modo Big Picture
-│   │   │   ├── layout/             # Layout (header, footer, modales globales)
-│   │   │   └── roms/               # Componentes de ROMs (cards, modales)
-│   │   ├── constants/              # Strings y mensajes centralizados
-│   │   ├── hooks/                  # Custom hooks
-│   │   └── App.jsx                 # Entry point del renderer
-│   ├── styles/                     # CSS global
-│   │   ├── index.css               # Estilos principales (retro dark theme)
-│   │   └── bigpicture.css          # Estilos del modo Big Picture
-│   └── window/                     # Configuración de Electron
-│       ├── main.js                 # Proceso principal (IPC, ventana, protocolos)
-│       └── preload.js              # Preload script (contextBridge)
-├── docs/                           # Documentación del proyecto
-│   ├── architecture.md             # Arquitectura general
-│   ├── big-picture-mode.md         # Documentación del modo Big Picture
-│   ├── components.md               # Documentación de componentes clave
-│   ├── conventions.md              # Convenciones de código
-│   ├── hooks-and-utils.md          # Hooks y utilidades
-│   ├── retro-design.md             # Decisiones de diseño retro
-│   └── standard-commits.md         # Estándar de commits
-├── .opencode/                      # Ecosistema de agentes OpenCode
-│   ├── agents/                     # Definiciones de agentes
-│   └── skills/                     # Skills locales
-├── AGENTS.md                       # Orquestador raíz de agentes
-├── CHANGELOG.md                    # Historial de cambios
-├── forge.config.js                 # Configuración de Electron Forge
-├── jest.config.js                  # Configuración de Jest
-├── package.json
+│   ├── back/                    # Servicios de backend
+│   │   ├── data/
+│   │   │   └── consoles.json    # Definiciones de consolas
+│   │   └── services/
+│   │       ├── syncService.js   # Lógica de importación/exportación
+│   │       └── uiDataService.js # Agregación de datos
+│   ├── renderer/                # Frontend React
+│   │   ├── assets/
+│   │   │   └── fonts/           # Fuentes de juegos retro
+│   │   ├── components/
+│   │   │   └── roms/
+│   │   │       ├── RomCard.jsx  # Componente de visualización de ROM
+│   │   │       └── EditRomModal.jsx # Modal de edición de ROM
+│   │   └── App.jsx
+│   ├── window/
+│   │   ├── main.js             # Proceso principal de Electron
+│   │   └── preload.js          # Puente IPC
+│   └── styles/
+│       └── index.css           # Estilos globales con tema retro
+├── docs/
+│   └── ARCHITECTURE.md         # Documentación detallada de arquitectura
 └── README.md
 ```
 
-## 🎯 Arquitectura General
+## Ubicaciones de Almacenamiento
 
-ROM Manager sigue una arquitectura **Electron clásica** separada en dos procesos:
+### Almacenamiento en PC
 
-1. **Main Process** (`src/window/main.js`): Node.js con acceso completo al sistema de archivos, diálogos nativos, y lanzamiento de emuladores.
-2. **Renderer Process** (`src/renderer/App.jsx`): React aislado vía `contextIsolation`. Comunicación con el main exclusivamente a través del `preload.js` y `ipcRenderer.invoke`.
+Las ROMs se almacenan en:
+```
+C:/Users/{usuario}/Roms/
+├── Json/           # Metadatos para cada sistema (título, rutas, etc.)
+├── Covers/         # Imágenes de carátula para ROMs
+├── Saves/          # Archivos de guardado organizados por consola
+├── gb/             # ROMs de Game Boy
+├── gba/            # ROMs de Game Boy Advance
+├── ps/             # ROMs de PlayStation 1
+└── ...
+```
 
-Los datos se persisten en el filesystem como archivos JSON por consola (ej: `nes.json`, `snes.json`) en un directorio de base de datos (`~/.config/romsmanager/database/` en Linux/macOS, `%APPDATA%\romsmanager\database\` en Windows).
+#### Estructura de Metadatos (JSON)
+Cada consola tiene un archivo JSON almacenando metadatos de ROM:
+```json
+{
+  "romName.gba": {
+    "title": "Título del Juego",
+    "romName": "romName.gba",
+    "romPath": "C:/Users/.../Roms/gba/romName.gba",
+    "coverPath": "C:/Users/.../Roms/Covers/gba/romName.png",
+    "savePath": "C:/Users/.../Roms/Saves/gba/romName.sav"
+  }
+}
+```
 
-Para más detalles, ver [`docs/architecture.md`](docs/architecture.md).
+### Estructura de Tarjeta SD
 
-## 🕹 Big Picture Mode
+Estructura esperada de la tarjeta SD:
+```
+{UNIDAD_SD}/Roms/
+├── GB/             # Nombres de directorio en MAYÚSCULAS
+├── GBA/
+├── PS/
+└── ...
+```
 
-El modo Big Picture transforma la interfaz en una experiencia fullscreen optimizada para TVs y gamepads:
+**Importante**: Los directorios de la tarjeta SD deben usar nombres en **MAYÚSCULAS** (ej., `GB`, `PS`, `GBA`).
 
-- **Navegación espacial**: Movimiento LRUD (Left/Right/Up/Down) que respeta la posición visual de las tarjetas en la grilla.
-- **Gamepad**: Soporte nativo vía `navigator.getGamepads()` con polling a 60fps, detección de rising edge, y repetición al mantener presionado.
-- **Teclado**: Flechas direccionales + Enter para seleccionar + Escape para salir.
-- **Auto-hide cursor**: El cursor del mouse se oculta tras 3 segundos de inactividad.
+## Desarrollo
 
-Ver documentación completa en [`docs/big-picture-mode.md`](docs/big-picture-mode.md).
+### Scripts
 
-## 🎨 Diseño Retro
+```bash
+npm start          # Iniciar modo desarrollo
+npm run package    # Compilar distribuible
+npm run make       # Crear instalador
+npm test           # Ejecutar pruebas
+npm run lint       # Linter de código
+```
 
-La estética visual busca evocar interfaces de consolas retro y computadoras de los 80s/90s:
+### Stack Tecnológico
 
-- **Sin border-radius**: Todos los elementos tienen esquinas rectas (`border-radius: 0`).
-- **Sombras duras**: `box-shadow: 4px 4px 0px #000` en lugar de sombras difusas.
-- **Transiciones deshabilitadas**: `transition: none` para respuesta instantánea tipo "arcade".
-- **Scanlines**: Fondo con patrón de líneas horizontales sutiles.
-- **Tipografía pixel**: Headers en **Press Start 2P**, cuerpo en monospaced.
-- **Paleta oscura**: Fondo `#121212`, superficies `#212121`, acento púrpura `#8b5cf6`.
+- **Electron 39**: Framework de aplicaciones de escritorio
+- **React 19**: Biblioteca de interfaz de usuario
+- **Webpack**: Empaquetador de módulos
+- **Electron Forge**: Herramientas de compilación
+- **Better-SQLite3**: Base de datos para metadatos de ROM
+- **xml2js**: Análisis XML para metadatos de juegos
+- **Fuente Press Start 2P**: Tipografía pixel-art retro
+- **Módulos ES**: Módulos JavaScript modernos
 
-Ver más en [`docs/retro-design.md`](docs/retro-design.md).
+## Configuración
 
-## 🤖 Agentes del Proyecto
+### Personalizar Rutas de Almacenamiento
 
-Este proyecto usa el ecosistema **OpenCode** con agentes especializados:
+Edita `src/back/services/utils/getPaths.js`:
 
-- `@docs` - Documentación y estándares
-- `@testing` - Testing y QA
-- `@debugger` - Diagnóstico de errores
-- `@architecture` - Decisiones de arquitectura
-- `@clean-js` - Clean code y anti-hardcoding
-- `@git-manager` - Operaciones de Git
-- `@git-merge` - Merge de ramas
-- `@project-setup` - Setup/reconfiguración
+```javascript
+export function getRomPathPC(consoleId, romFileName) {
+  return `C:/Tu/Ruta/Personalizada/Roms/${consoleId}/${romFileName}`;
+}
+```
 
-Ver [`AGENTS.md`](AGENTS.md) para instrucciones completas.
+### Añadir Nuevos Sistemas de Consola
 
-## 📄 Licencia
+Edita `src/back/data/consoles.json`:
 
-[MIT](LICENSE)
+```json
+{
+  "NuevaConsola": {
+    "id": "17",
+    "id_name": "nuevaconsola",
+    "name": "Nombre de Nueva Consola",
+    "file": [".ext1", ".ext2"]
+  }
+}
+```
+
+## Solución de Problemas
+
+### Las ROMs No Se Importan
+
+1. **Verifica la Ruta SD**: Asegúrate de que la letra de unidad sea correcta
+2. **Nombres de Directorio**: Los directorios SD deben estar en MAYÚSCULAS
+3. **Extensiones de Archivo**: Verifica que las extensiones coincidan con los formatos soportados
+4. **Permisos**: Asegúrate de tener permisos de lectura/escritura para los directorios de almacenamiento
+
+### Sistema No Detectado
+
+1. **Extensión de Archivo**: Verifica si la extensión de la ROM está soportada
+2. **Definiciones de Consola**: Verifica que el sistema existe en `consoles.json`
+3. **Formato de Extensión**: Las extensiones deben incluir el punto (ej., `.gb` no `gb`)
+
+### Las Imágenes de Carátula No Se Muestran
+
+1. **Formato de Archivo**: Asegúrate de que la carátula sea PNG, JPG, GIF o WebP
+2. **Permisos de Archivo**: Verifica los permisos de lectura en los archivos de carátula
+3. **Validación de Ruta**: Verifica que la ruta de la carátula esté correctamente almacenada en los metadatos JSON
+
+### Los Archivos de Guardado No Se Cargan
+
+1. **Ruta de Guardado**: Asegúrate de que el archivo de guardado existe en la ruta especificada
+2. **Extensión de Archivo**: Extensiones comunes: `.sav`, `.srm`, `.dat`, `.state`
+3. **Proceso de Importación**: Usa el modal de Edición para importar correctamente los archivos de guardado
+
+## Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor:
+
+1. Haz un fork del repositorio
+2. Crea una rama de característica
+3. Haz commit de tus cambios
+4. Haz push a la rama
+5. Abre un Pull Request
+
+## Licencia
+
+Licencia MIT - Ver archivo LICENSE para detalles
+
+## Créditos
+
+- Construido con [Electron](https://www.electronjs.org/)
+- Interfaz potenciada por [React](https://react.dev/)
+- Empaquetado con [Electron Forge](https://www.electronforge.io/)
+
+## Soporte
+
+Para problemas, preguntas o solicitudes de características, por favor abre un issue en GitHub.
 
 ---
 
-## 🇬🇧 English Version (For AI Agents)
-
-**ROM Manager** is a desktop Electron + React application for managing retro game ROMs. It supports 18+ console systems, bidirectional SD card sync, ZIP backups, and a Big Picture TV/gamepad mode.
-
-### Tech Stack
-- Electron + React 19
-- Webpack via Electron Forge
-- Custom retro CSS + nes.css
-- Jest for testing
-- JSON-based filesystem registry
-
-### Key Directories
-- `src/back/services/` — Business logic (sync, config, backup, UI data)
-- `src/renderer/components/` — React components
-- `src/window/` — Electron main process and preload
-- `docs/` — Project documentation
-- `.opencode/` — Agent ecosystem
-
-### Communication Pattern
-Renderer → `window.electronAPI` (preload) → `ipcRenderer.invoke` → Main Process IPC handlers → filesystem / child_process.
-
-### Big Picture Mode
-- Spatial LRUD navigation
-- Gamepad polling via `requestAnimationFrame`
-- Keyboard support (Arrow keys, Enter, Escape)
-- Auto-hide cursor after 3s inactivity
-
-### Retro Design Decisions
-- Zero border-radius everywhere
-- Hard box-shadows (4px 4px 0px #000)
-- Disabled CSS transitions for instant feedback
-- Scanline background pattern
-- Press Start 2P pixel font for headings
-- Dark palette: #121212 background, #8b5cf6 accent
+**Hecho con ❤️ para entusiastas de los juegos retro**

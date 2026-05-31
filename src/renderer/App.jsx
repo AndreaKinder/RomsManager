@@ -12,6 +12,7 @@ import PathMissingModal from "./components/layout/PathMissingModal";
 import BigPictureView from "./components/bigpicture/BigPictureView";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
+import { getDisplacementFilter } from "./utils/liquidGlass";
 
 function App() {
   const [consoles, setConsoles] = useState([]);
@@ -26,7 +27,158 @@ function App() {
   const [isCheckingFirstRun, setIsCheckingFirstRun] = useState(true);
   const [error, setError] = useState(null);
   const [isBigPictureMode, setIsBigPictureMode] = useState(false);
+  const [isMac, setIsMac] = useState(false);
   const { isLoading, handleAddRomFromPC } = useRomOperations();
+
+  useEffect(() => {
+    (async () => {
+      const { isDark } = await window.electronAPI.getNativeTheme();
+      document.documentElement.setAttribute(
+        "data-theme",
+        isDark ? "dark" : "light",
+      );
+
+      // Detect platform to enable liquid-glass theme and drag region
+      try {
+        const platform = await window.electronAPI.getPlatform();
+        if (platform === "darwin") {
+          setIsMac(true);
+          document.documentElement.classList.add("theme-liquid-glass");
+          document.documentElement.setAttribute("data-os", "macos");
+        } else if (platform === "win32") {
+          document.documentElement.setAttribute("data-os", "windows");
+        }
+      } catch (err) {
+        console.error("Failed to detect platform:", err);
+      }
+    })();
+
+    const handleThemeUpdate = ({ isDark }) => {
+      document.documentElement.setAttribute(
+        "data-theme",
+        isDark ? "dark" : "light",
+      );
+    };
+
+    window.electronAPI.onNativeThemeUpdated(handleThemeUpdate);
+
+    let unsubscribeMaximized = null;
+    if (window.electronAPI.onWindowMaximized) {
+      unsubscribeMaximized = window.electronAPI.onWindowMaximized(
+        (isMaximized) => {
+          if (isMaximized) {
+            document.documentElement.classList.add("maximized");
+          } else {
+            document.documentElement.classList.remove("maximized");
+          }
+        },
+      );
+    }
+
+    return () => {
+      window.electronAPI.removeNativeThemeUpdated();
+      if (unsubscribeMaximized) unsubscribeMaximized();
+    };
+  }, []);
+
+  // Apply Liquid Glass dynamic refraction effect (SVG displacement filter) on macOS
+  useEffect(() => {
+    if (!isMac) return;
+
+    const resizeObservers = [];
+
+    const updateGlass = (el) => {
+      const rect = el.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
+      if (width === 0 || height === 0) return;
+
+      // Configure premium parameters based on the element type or defaults
+      let blur = 12;
+      let depth = 8;
+      let strength = 35;
+      let cab = 4;
+      let saturate = 1.45;
+      let brightness = 1.15;
+
+      if (el.classList.contains("btn")) {
+        blur = 4;
+        depth = 4;
+        strength = 20;
+        cab = 2;
+        saturate = 1.25;
+        brightness = 1.35;
+      } else if (el.classList.contains("rom-card")) {
+        blur = 16;
+        depth = 12;
+        strength = 45;
+        cab = 5;
+        saturate = 1.6;
+        brightness = 1.1;
+      } else if (el.classList.contains("modal-content")) {
+        blur = 20;
+        depth = 14;
+        strength = 50;
+        cab = 6;
+        saturate = 1.5;
+        brightness = 1.1;
+      }
+
+      // Read border-radius to align displacement perfectly
+      const computedStyle = window.getComputedStyle(el);
+      const radius = parseFloat(computedStyle.borderRadius) || 12;
+
+      const filterUrl = getDisplacementFilter({
+        height,
+        width,
+        radius,
+        depth,
+        strength,
+        chromaticAberration: cab,
+      });
+    };
+
+    const initGlassEffect = () => {
+      const elements = document.querySelectorAll(
+        ".theme-liquid-glass .app-header, " +
+          ".theme-liquid-glass .app-content, " +
+          ".theme-liquid-glass .app-footer, " +
+          ".theme-liquid-glass .console-header, " +
+          ".theme-liquid-glass .rom-card, " +
+          ".theme-liquid-glass .modal-content, " +
+          ".theme-liquid-glass .btn:not(.btn-danger):not(.btn-success)",
+      );
+
+      elements.forEach((el) => {
+        if (el.dataset.glassObserved) return;
+        el.dataset.glassObserved = "true";
+
+        // Initial apply
+        updateGlass(el);
+
+        // Observe resize events to recalculate displacement SVG dimensions dynamically
+        const ro = new ResizeObserver(() => {
+          updateGlass(el);
+        });
+        ro.observe(el);
+        resizeObservers.push(ro);
+      });
+    };
+
+    // Run initially
+    initGlassEffect();
+
+    // Use MutationObserver to catch newly loaded ROM cards, modals, custom collections, etc.
+    const observer = new MutationObserver(() => {
+      initGlassEffect();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      resizeObservers.forEach((ro) => ro.disconnect());
+    };
+  }, [isMac]);
 
   useEffect(() => {
     (async () => {
@@ -115,7 +267,12 @@ function App() {
       loadConsoles();
       loadCustomCollections();
     }
-  }, [isCheckingFirstRun, showFirstRunModal, loadConsoles, loadCustomCollections]);
+  }, [
+    isCheckingFirstRun,
+    showFirstRunModal,
+    loadConsoles,
+    loadCustomCollections,
+  ]);
 
   const enterBigPicture = useCallback(async () => {
     await window.electronAPI.enterBigPicture();
@@ -237,89 +394,103 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <AppHeader
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddRom={() => setShowConsoleModal(true)}
-        onOpenSettings={() => setShowSettingsModal(true)}
-        onEnterBigPicture={enterBigPicture}
-        isLoading={isLoading}
-        onOpenCustomCollectionSelect={() =>
-          setIsCustomCollectionView(!isCustomCollectionView)
-        }
-        onOpenCustomCollectionSelected={isCustomCollectionView}
-      />
-
-      <main className="app-content">
-        {isLoading && <LoadingState />}
-        {!isLoading && !isCustomCollectionView && consoles.length === 0 && (
-          <EmptyState />
-        )}
-        {!isLoading &&
-          isCustomCollectionView &&
-          customCollections.length === 0 && (
-            <div className="empty-state">
-              <p className="empty-message">No hay colecciones personalizadas</p>
-              <p className="empty-hint">
-                Las colecciones se crean automáticamente cuando las ROMs tienen
-                el campo "collections" en su JSON
-              </p>
-            </div>
-          )}
-        {!isLoading &&
-          ((isCustomCollectionView &&
-            customCollections.length > 0 &&
-            filteredCustomCollections.length === 0) ||
-            (!isCustomCollectionView &&
-              consoles.length > 0 &&
-              filteredConsoles.length === 0)) &&
-          searchQuery && (
-            <div className="empty-state">
-              <p className="empty-message">{UI_TEXT.NO_SEARCH_RESULTS}</p>
-              <p className="empty-hint">Intenta con otro término de búsqueda</p>
-            </div>
-          )}
-        {!isLoading &&
-          !isCustomCollectionView &&
-          consoles.length > 0 &&
-          filteredConsoles.length > 0 && (
-            <ConsoleList
-              consoles={filteredConsoles}
-              onRomUpdated={loadConsoles}
-            />
-          )}
-        {!isLoading &&
-          isCustomCollectionView &&
-          customCollections.length > 0 &&
-          filteredCustomCollections.length > 0 && (
-            <ConsoleList
-              consoles={filteredCustomCollections}
-              onRomUpdated={loadCustomCollections}
-              isCustomCollection={true}
-            />
-          )}
-      </main>
-
-      <AppFooter
-        customCollectionSelected={isCustomCollectionView}
-        totalCollections={totalCollectionCount}
-        totalConsoles={totalConsoleCount}
-        totalRoms={totalRoms}
-        filteredRomsCount={searchQuery ? filteredRomsCount : null}
-      />
-
-      {showConsoleModal && (
-        <SelectConsoleModal
-          onClose={() => setShowConsoleModal(false)}
-          onSelect={handleConsoleSelected}
+    <>
+      {isMac && (
+        <div className="liquid-glass-bg">
+          <div className="bg-blob blob-1"></div>
+          <div className="bg-blob blob-2"></div>
+          <div className="bg-blob blob-3"></div>
+          <div className="bg-blob blob-4"></div>
+        </div>
+      )}
+      <div className="app-container">
+        <AppHeader
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onAddRom={() => setShowConsoleModal(true)}
+          onOpenSettings={() => setShowSettingsModal(true)}
+          onEnterBigPicture={enterBigPicture}
+          isLoading={isLoading}
+          onOpenCustomCollectionSelect={() =>
+            setIsCustomCollectionView(!isCustomCollectionView)
+          }
+          onOpenCustomCollectionSelected={isCustomCollectionView}
         />
-      )}
 
-      {showSettingsModal && (
-        <SettingsModal onClose={() => setShowSettingsModal(false)} />
-      )}
-    </div>
+        <main className="app-content">
+          {isLoading && <LoadingState />}
+          {!isLoading && !isCustomCollectionView && consoles.length === 0 && (
+            <EmptyState />
+          )}
+          {!isLoading &&
+            isCustomCollectionView &&
+            customCollections.length === 0 && (
+              <div className="empty-state">
+                <p className="empty-message">
+                  No hay colecciones personalizadas
+                </p>
+                <p className="empty-hint">
+                  Las colecciones se crean automáticamente cuando las ROMs
+                  tienen el campo "collections" en su JSON
+                </p>
+              </div>
+            )}
+          {!isLoading &&
+            ((isCustomCollectionView &&
+              customCollections.length > 0 &&
+              filteredCustomCollections.length === 0) ||
+              (!isCustomCollectionView &&
+                consoles.length > 0 &&
+                filteredConsoles.length === 0)) &&
+            searchQuery && (
+              <div className="empty-state">
+                <p className="empty-message">{UI_TEXT.NO_SEARCH_RESULTS}</p>
+                <p className="empty-hint">
+                  Intenta con otro término de búsqueda
+                </p>
+              </div>
+            )}
+          {!isLoading &&
+            !isCustomCollectionView &&
+            consoles.length > 0 &&
+            filteredConsoles.length > 0 && (
+              <ConsoleList
+                consoles={filteredConsoles}
+                onRomUpdated={loadConsoles}
+              />
+            )}
+          {!isLoading &&
+            isCustomCollectionView &&
+            customCollections.length > 0 &&
+            filteredCustomCollections.length > 0 && (
+              <ConsoleList
+                consoles={filteredCustomCollections}
+                onRomUpdated={loadCustomCollections}
+                isCustomCollection={true}
+              />
+            )}
+        </main>
+
+        <AppFooter
+          customCollectionSelected={isCustomCollectionView}
+          totalCollections={totalCollectionCount}
+          totalConsoles={totalConsoleCount}
+          totalRoms={totalRoms}
+          filteredRomsCount={searchQuery ? filteredRomsCount : null}
+        />
+
+        {showConsoleModal && (
+          <SelectConsoleModal
+            onClose={() => setShowConsoleModal(false)}
+            onSelect={handleConsoleSelected}
+          />
+        )}
+
+        {showSettingsModal && (
+          <SettingsModal onClose={() => setShowSettingsModal(false)} />
+        )}
+      </div>
+    </>
   );
 }
 

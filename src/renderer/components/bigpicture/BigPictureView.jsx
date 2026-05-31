@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import "../../../styles/bigpicture.css";
+import { IconDeviceGamepad2, IconLogout } from "@tabler/icons-react";
 
 // Gamepad button indices
 const GAMEPAD_MAP = {
@@ -344,7 +345,13 @@ function BigPictureView({ consoles, onExit }) {
       {/* Fixed top bar */}
       <div className="bp-header">
         <span className="bp-logo">Big Picture</span>
-        <button className="bp-exit-btn" onClick={onExit} tabIndex={-1}>
+        <button
+          className="bp-exit-btn"
+          onClick={onExit}
+          tabIndex={-1}
+          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+        >
+          <IconLogout size={16} />
           Exit
         </button>
       </div>
@@ -395,7 +402,7 @@ function BigPictureView({ consoles, onExit }) {
                         />
                       ) : (
                         <div className="bp-card-no-cover">
-                          <span className="bp-card-placeholder-icon">🎮</span>
+                          <IconDeviceGamepad2 size={48} stroke={1.5} style={{ opacity: 0.6 }} />
                         </div>
                       )}
                       <div className="bp-card-title">{rom.title}</div>

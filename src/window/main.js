@@ -6,6 +6,7 @@ import {
   shell,
   protocol,
   net,
+  nativeTheme,
 } from "electron";
 import path from "node:path";
 import url from "url";
@@ -28,7 +29,10 @@ if (require("electron-squirrel-startup")) {
 let mainWindow = null;
 
 const createWindow = () => {
-  mainWindow = new BrowserWindow({
+  const platform = process.platform;
+  const isDark = nativeTheme.shouldUseDarkColors;
+
+  let windowOptions = {
     width: 1200,
     height: 800,
     icon: path.join(__dirname, "../../assets/icon.png"),
@@ -39,11 +43,52 @@ const createWindow = () => {
       nodeIntegration: false,
       webSecurity: true,
     },
-  });
+  };
+
+  if (platform === "darwin") {
+    // macOS: Ventana frameless transparente con Vibrancy nativo (Liquid Glass foundation)
+    windowOptions.frame = false;
+    windowOptions.titleBarStyle = "hidden";
+    windowOptions.vibrancy = "under-window";
+    windowOptions.transparent = true;
+    windowOptions.visualEffectState = "active";
+  } else if (platform === "win32") {
+    // Windows 11: Ventana frameless transparente con Acrylic y controles del sistema
+    windowOptions.frame = false;
+    windowOptions.transparent = true;
+    windowOptions.titleBarOverlay = {
+      color: "#00000000",
+      symbolColor: isDark ? "#ffffff" : "#0f172a",
+      height: 38
+    };
+  } else {
+    // Linux: GTK sólida
+    windowOptions.frame = true;
+    windowOptions.transparent = false;
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
+
+  if (platform === "win32") {
+    try {
+      mainWindow.setBackgroundMaterial("acrylic");
+    } catch (err) {
+      console.warn("Material Acrílico no soportado en este dispositivo:", err);
+    }
+  }
 
   mainWindow.setMenu(null);
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  // Notificar estado de maximizado para adaptar bordes en CSS
+  mainWindow.on("maximize", () => {
+    mainWindow.webContents.send("window-maximized", true);
+  });
+
+  mainWindow.on("unmaximize", () => {
+    mainWindow.webContents.send("window-maximized", false);
+  });
 };
 
 app.whenReady().then(async () => {
@@ -73,6 +118,21 @@ app.whenReady().then(async () => {
 
     // Ensure we are using file protocol correctly
     return net.fetch(url.pathToFileURL(normalizedPath).toString());
+  });
+
+  ipcMain.handle("get-native-theme", () => ({
+    isDark: nativeTheme.shouldUseDarkColors,
+  }));
+
+  ipcMain.handle("set-theme-source", (event, source) => {
+    nativeTheme.themeSource = source;
+    return { isDark: nativeTheme.shouldUseDarkColors };
+  });
+
+  nativeTheme.on("updated", () => {
+    mainWindow?.webContents.send("native-theme-updated", {
+      isDark: nativeTheme.shouldUseDarkColors,
+    });
   });
 
   ipcMain.handle("close-app", () => app.quit());

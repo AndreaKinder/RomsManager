@@ -1,0 +1,548 @@
+/* ==========================================================================
+   Boilerplate Multiplataforma Nativo - CSS Adaptativo
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Diseño de Variables y Tokens del Tema (Estructura de Diseño)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Transición suave global */
+  --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.15s ease;
+
+  /* Fuentes base */
+  --font-family-fallback:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+
+  /* Bordes redondeados modernos */
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+  --border-radius-sm: 4px;
+}
+
+/* Tokens de color dinámicos según el modo */
+html[data-theme="dark"] {
+  --primary-color: white;
+  --primary-hover: white;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --accent-badge: rgba(99, 102, 241, 0.2);
+  --accent-badge-text: gray;
+
+  /* Fondos bases para translucidez */
+  --bg-sidebar: rgba(15, 23, 42, 0.2);
+  --bg-content: rgba(30, 41, 59, 0.1);
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+}
+
+html[data-theme="light"] {
+  --primary-color: black;
+  --primary-hover: black;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --accent-badge: rgba(79, 70, 229, 0.1);
+  --accent-badge-text: black;
+
+  /* Fondos bases para translucidez en modo claro */
+  --bg-sidebar: rgba(248, 250, 252, 0.4);
+  --bg-content: rgba(255, 255, 255, 0.2);
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-card-hover: rgba(0, 0, 0, 0.04);
+}
+
+/* --------------------------------------------------------------------------
+   2. Ajustes de Tipografía Específicos por Sistema Operativo
+   -------------------------------------------------------------------------- */
+html[data-os="macos"] {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    var(--font-family-fallback);
+}
+
+html[data-os="windows"] {
+  font-family:
+    "Segoe UI Variable Text", "Segoe UI", Arial, var(--font-family-fallback);
+}
+
+html[data-os="linux"] {
+  font-family: "Ubuntu", "Noto Sans", "Liberation Sans", sans-serif;
+
+  /* Linux: Sobrescribe colores base con colores sólidos de integración GTK */
+  --bg-sidebar: #1e1e2e;
+  --bg-content: #181825;
+  --bg-card: #313244;
+  --bg-card-hover: #45475a;
+  --border-color: #45475a;
+}
+html[data-os="linux"][data-theme="light"] {
+  --bg-sidebar: #f5f5f7;
+  --bg-content: #ffffff;
+  --bg-card: #e5e5eb;
+  --bg-card-hover: #dbdbe3;
+  --border-color: #d1d1d6;
+}
+
+/* --------------------------------------------------------------------------
+   3. Configuración del Contenedor Raíz y Transparencias
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* macOS y Windows: Habilitan la transparencia para ver Vibrancy/Acrylic */
+html[data-os="macos"] body,
+html[data-os="windows"] body {
+  background: rgba(0, 0, 0, 0) !important;
+}
+
+/* Linux: Fondo sólido e impenetrable */
+html[data-os="linux"] body {
+  background: var(--bg-content);
+  color: var(--text-primary);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   8. Adaptación de Bordes, Sombras y Marco de la Ventana por OS
+   ========================================================================== */
+
+/* macOS: Estilo premium con borde fino retina y sombra difusa */
+html[data-os="macos"] .app-container {
+  border-radius: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
+}
+
+html[data-os="macos"][data-theme="light"] .app-container {
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Windows 11: Estilo acrílico con borde fino de 1px y sombra sutil */
+html[data-os="windows"] .app-container {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
+}
+
+html[data-os="windows"][data-theme="light"] .app-container {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Linux: El marco lo maneja el OS nativamente, cancelamos bordes del HTML */
+html[data-os="linux"] .app-container {
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Estado Maximizado: Remueve esquinas redondeadas y bordes para rellenar la pantalla */
+html.maximized .app-container {
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. Barra de Título / Cabecera (Draggable / Arrastrable)
+   -------------------------------------------------------------------------- */
+.app-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  z-index: 100;
+}
+
+/* Región de arrastre condicional (solo macOS y Windows) */
+html[data-os="macos"] .app-header,
+html[data-os="windows"] .app-header {
+  -webkit-app-region: drag;
+}
+
+/* Elementos interactivos dentro del header NUNCA deben poder arrastrarse */
+.no-drag,
+.glass-input,
+.sidebar-menu a,
+button {
+  -webkit-app-region: no-drag;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.app-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0.85;
+}
+
+/* Ajustes de posición para macOS Traffic Lights (Evitar solape de contenido) */
+html[data-os="macos"] .header-content {
+  padding-left: 80px; /* Margen de seguridad para no cubrir los botones nativos */
+}
+
+/* Ajustes de posición para botones nativos de Windows (Espacio para TitleBarOverlay) */
+html[data-os="windows"] .header-content {
+  padding-right: 140px; /* Espacio para que encaje la máscara del sistema */
+}
+
+/* --------------------------------------------------------------------------
+   5. Diseño de Estructura de Panel y Sidebar
+   -------------------------------------------------------------------------- */
+.app-layout {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+.app-sidebar {
+  width: 240px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-sidebar);
+  padding: 16px;
+}
+
+/* macOS y Windows: Aplica desenfoque de fondo detrás del Sidebar */
+html[data-os="macos"] .app-sidebar,
+html[data-os="windows"] .app-sidebar {
+  backdrop-filter: blur(20px);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+.sidebar-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
+}
+
+.menu-item .icon {
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.menu-item.active {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  background: var(--accent-badge);
+  color: var(--accent-badge-text);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Área de Contenido Principal y Cuadrícula (Glassmorphism)
+   -------------------------------------------------------------------------- */
+.app-content {
+  flex: 1;
+  height: 100%;
+  background: var(--bg-content);
+  overflow: hidden;
+}
+
+/* macOS y Windows: Refracción de fondo */
+html[data-os="macos"] .app-content,
+html[data-os="windows"] .app-content {
+  backdrop-filter: blur(10px);
+}
+
+.content-scrollable {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.welcome-banner {
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: var(--border-radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover)
+  );
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-banner h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.welcome-banner p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Tarjeta Cristalina (Glassmorphism Premium) */
+.glass-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: var(--transition-smooth);
+}
+
+/* macOS & Windows Glassmorphic premium enhancement */
+html[data-os="macos"] .glass-card,
+html[data-os="windows"] .glass-card {
+  backdrop-filter: blur(25px);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  background: var(--bg-card-hover);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.card-title-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.card-title-icon {
+  font-size: 20px;
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+}
+
+.glass-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.glass-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   7. Inputs y Elementos Interactivos Avanzados
+   -------------------------------------------------------------------------- */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.glass-input {
+  width: 220px;
+  padding: 6px 12px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 12px;
+  transition: var(--transition-fast);
+  outline: none;
+}
+
+.search-box .glass-input {
+  padding-left: 32px;
+}
+
+html[data-theme="light"] .glass-input {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.glass-input:focus {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+html[data-theme="light"] .glass-input:focus {
+  background: #ffffff;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.dot.active {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.status-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.theme-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.theme-badge.dark {
+  background: #1e293b;
+  color: gray;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.theme-badge.light {
+  background: #f1f5f9;
+  color: gray;
+  border: 1px solid gray;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+html[data-theme="light"] .progress-bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 3px;
+  transition: width 0.5s ease-in-out;
+}

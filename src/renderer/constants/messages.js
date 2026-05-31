@@ -53,9 +53,9 @@ export const UI_TEXT = {
 };
 
 export const BUTTON_LABELS = {
-  ADD_ROM: "➕ Añadir ROM",
-  REFRESH: "🔄️ Actualizar",
-  SETTINGS: "⚙️ Configuración",
+  ADD_ROM: "Añadir ROM",
+  REFRESH: "Actualizar",
+  SETTINGS: "Configuración",
   SYNC_DATA: "Copia de Seguridad",
   CANCEL: "Cancelar",
   CONFIRM: "Confirmar",

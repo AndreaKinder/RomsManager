@@ -74,4 +74,18 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setScraperConfig: (config) => ipcRenderer.invoke("set-scraper-config", config),
   scrapeSearch: (query, consoleId, provider) => ipcRenderer.invoke("scrape-search", query, consoleId, provider),
   scrapeApply: (romName, consoleId, gameData) => ipcRenderer.invoke("scrape-apply", romName, consoleId, gameData),
+  getNativeTheme: () => ipcRenderer.invoke("get-native-theme"),
+  getPlatform: () => process.platform,
+  setThemeSource: (source) => ipcRenderer.invoke("set-theme-source", source),
+  onNativeThemeUpdated: (callback) =>
+    ipcRenderer.on("native-theme-updated", (_event, data) => callback(data)),
+  removeNativeThemeUpdated: () =>
+    ipcRenderer.removeAllListeners("native-theme-updated"),
+  onWindowMaximized: (callback) => {
+    const subscription = (event, data) => callback(data);
+    ipcRenderer.on("window-maximized", subscription);
+    return () => {
+      ipcRenderer.removeListener("window-maximized", subscription);
+    };
+  }
 });

@@ -1,0 +1,9 @@
+allowBuilds:
+  better-sqlite3: true
+  electron: true
+  electron-winstaller: true
+  fs-xattr: false
+  macos-alias: false
+  unrs-resolver: true
+blockExoticSubdeps: false
+nodeLinker: hoisted

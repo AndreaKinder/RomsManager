@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BUTTON_LABELS, UI_TEXT } from "../../constants/messages";
+import { IconX } from "@tabler/icons-react";
 
-function SettingsModal({ onClose }) {
+function SettingsModal({ onClose, isInline = false }) {
   const [diskPath, setDiskPath] = useState("");
   const [showBackupMenu, setShowBackupMenu] = useState(false);
   const [newCollection, setNewCollection] = useState("");
@@ -151,7 +152,9 @@ function SettingsModal({ onClose }) {
     try {
       const result = await window.electronAPI.exportBackup(diskPath.trim());
       if (result.success) {
-        alert(`¡Copia de seguridad exportada exitosamente!\n\n${result.outputPath}`);
+        alert(
+          `¡Copia de seguridad exportada exitosamente!\n\n${result.outputPath}`,
+        );
         onClose();
       } else {
         alert("Error al exportar la copia de seguridad: " + result.error);
@@ -168,7 +171,9 @@ function SettingsModal({ onClose }) {
     setShowBackupMenu(false);
     setIsLoading(true);
     try {
-      const result = await window.electronAPI.importBackup(diskPath.trim() || undefined);
+      const result = await window.electronAPI.importBackup(
+        diskPath.trim() || undefined,
+      );
       if (result.canceled) return;
       if (result.success) {
         alert("¡Copia de seguridad importada exitosamente!");
@@ -205,7 +210,10 @@ function SettingsModal({ onClose }) {
     }
 
     await window.electronAPI.setEmulator(newEmulatorConsole, newEmulatorPath);
-    setEmulators((prev) => ({ ...prev, [newEmulatorConsole]: newEmulatorPath }));
+    setEmulators((prev) => ({
+      ...prev,
+      [newEmulatorConsole]: newEmulatorPath,
+    }));
     setNewEmulatorPath("");
   };
 
@@ -243,35 +251,28 @@ function SettingsModal({ onClose }) {
   };
 
   const configuredConsoleIds = Object.keys(emulators);
-  const unconfiuredConsoles = availableConsoles.filter(
-    (c) => !emulators[c.id],
-  );
+  const unconfiuredConsoles = availableConsoles.filter((c) => !emulators[c.id]);
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-content">
-        <div className="modal-header">
+    <div
+      className={isInline ? "inline-view-content" : "modal-backdrop"}
+      onClick={isInline ? undefined : handleBackdropClick}
+    >
+      <div
+        className={isInline ? "" : "modal-content"}
+        onClick={isInline ? undefined : (e) => e.stopPropagation()}
+      >
+        <div className={isInline ? "inline-view-header" : "modal-header"}>
           <h2>Configuración</h2>
-          <button className="modal-close-btn" onClick={onClose}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
+          {!isInline && (
+            <button className="modal-close-btn" onClick={onClose}>
+              <IconX size={20} />
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
+          <div className={isInline ? "inline-view-body" : "modal-body"}>
             {/* Backup */}
             <div className="form-field">
               <label htmlFor="diskPath">{UI_TEXT.SG_PATH_LABEL}</label>
@@ -294,51 +295,15 @@ function SettingsModal({ onClose }) {
                     {isLoading ? "Procesando..." : BUTTON_LABELS.SYNC_DATA}
                   </button>
                   {showBackupMenu && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        right: 0,
-                        top: "calc(100% + 4px)",
-                        background: "var(--bg-secondary, #2a2a2a)",
-                        border: "1px solid var(--border-color, #444)",
-                        borderRadius: 6,
-                        overflow: "hidden",
-                        zIndex: 100,
-                        minWidth: 130,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-                      }}
-                    >
+                    <div>
                       <button
                         type="button"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "8px 16px",
-                          textAlign: "left",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "inherit",
-                        }}
                         disabled={!diskPath.trim()}
                         onClick={handleExport}
                       >
                         Exportar
                       </button>
-                      <button
-                        type="button"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "8px 16px",
-                          textAlign: "left",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "inherit",
-                        }}
-                        onClick={handleImport}
-                      >
+                      <button type="button" onClick={handleImport}>
                         Importar
                       </button>
                     </div>
@@ -354,21 +319,15 @@ function SettingsModal({ onClose }) {
               {configuredConsoleIds.length > 0 && (
                 <div className="collections-list" style={{ marginBottom: 12 }}>
                   {configuredConsoleIds.map((consoleId) => (
-                    <div key={consoleId} className="collection-tag" style={{ justifyContent: "space-between", gap: 8 }}>
+                    <div
+                      key={consoleId}
+                      className="collection-tag"
+                      style={{ justifyContent: "space-between", gap: 8 }}
+                    >
                       <span style={{ fontWeight: 600, minWidth: 60 }}>
                         {getConsoleName(consoleId)}
                       </span>
-                      <span
-                        style={{
-                          color: "var(--text-secondary)",
-                          fontSize: 12,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          flex: 1,
-                        }}
-                        title={emulators[consoleId]}
-                      >
+                      <span title={emulators[consoleId]}>
                         {getFileName(emulators[consoleId])}
                       </span>
                       <button
@@ -383,7 +342,10 @@ function SettingsModal({ onClose }) {
                 </div>
               )}
 
-              <div className="collection-input-container" style={{ flexWrap: "wrap", gap: 8 }}>
+              <div
+                className="collection-input-container"
+                style={{ flexWrap: "wrap", gap: 8 }}
+              >
                 <select
                   value={newEmulatorConsole}
                   onChange={(e) => setNewEmulatorConsole(e.target.value)}
@@ -420,7 +382,7 @@ function SettingsModal({ onClose }) {
                   onClick={handleAddEmulator}
                   disabled={isLoading || !newEmulatorPath}
                 >
-                  ➕ Añadir
+                  Añadir
                 </button>
               </div>
 
@@ -510,7 +472,7 @@ function SettingsModal({ onClose }) {
                   onClick={handleAddCollection}
                   disabled={isLoading || !newCollection.trim()}
                 >
-                  ➕ Añadir
+                  Añadir
                 </button>
               </div>
 
@@ -539,16 +501,18 @@ function SettingsModal({ onClose }) {
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isLoading}
-            >
-              {BUTTON_LABELS.CLOSE}
-            </button>
-          </div>
+          {!isInline && (
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                {BUTTON_LABELS.CLOSE}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>
