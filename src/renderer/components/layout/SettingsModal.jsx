@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BUTTON_LABELS, UI_TEXT } from "../../constants/messages";
+import { IconX } from "@tabler/icons-react";
 
 function SettingsModal({ onClose }) {
   const [diskPath, setDiskPath] = useState("");
@@ -217,20 +218,7 @@ function SettingsModal({ onClose }) {
         <div className="modal-header">
           <h2>Configuración</h2>
           <button className="modal-close-btn" onClick={onClose}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <IconX size={20} />
           </button>
         </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import RomCard from "./RomCard";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 // Import all console icons
 const icons = {
@@ -57,8 +58,10 @@ function ConsoleCollection({
         className="console-header"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h2>
-          <span className="chevron">{isExpanded ? "▼" : "▶"}</span>
+        <h2 style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span className="chevron" style={{ display: "inline-flex", alignItems: "center" }}>
+            {isExpanded ? <IconChevronDown size={18} /> : <IconChevronRight size={18} />}
+          </span>
           <img src={displayIcon} alt={displayName} className="console-icon" />
           {displayName}
           <span className="rom-count">({romsArray.length} ROMs)</span>
