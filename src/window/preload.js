@@ -70,4 +70,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setRomsBasePath: (basePath) =>
     ipcRenderer.invoke("set-roms-base-path", basePath),
   selectRomsFolder: () => ipcRenderer.invoke("select-roms-folder"),
+  getNativeTheme: () => ipcRenderer.invoke("get-native-theme"),
+  setThemeSource: (source) => ipcRenderer.invoke("set-theme-source", source),
+  onNativeThemeUpdated: (callback) =>
+    ipcRenderer.on("native-theme-updated", (_event, data) => callback(data)),
+  removeNativeThemeUpdated: () =>
+    ipcRenderer.removeAllListeners("native-theme-updated"),
 });

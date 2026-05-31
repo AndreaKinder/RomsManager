@@ -6,6 +6,7 @@ import {
   shell,
   protocol,
   net,
+  nativeTheme,
 } from "electron";
 import path from "node:path";
 import url from "url";
@@ -73,6 +74,21 @@ app.whenReady().then(async () => {
 
     // Ensure we are using file protocol correctly
     return net.fetch(url.pathToFileURL(normalizedPath).toString());
+  });
+
+  ipcMain.handle("get-native-theme", () => ({
+    isDark: nativeTheme.shouldUseDarkColors,
+  }));
+
+  ipcMain.handle("set-theme-source", (event, source) => {
+    nativeTheme.themeSource = source;
+    return { isDark: nativeTheme.shouldUseDarkColors };
+  });
+
+  nativeTheme.on("updated", () => {
+    mainWindow?.webContents.send("native-theme-updated", {
+      isDark: nativeTheme.shouldUseDarkColors,
+    });
   });
 
   ipcMain.handle("close-app", () => app.quit());

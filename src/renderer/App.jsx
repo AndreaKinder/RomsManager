@@ -30,6 +30,26 @@ function App() {
 
   useEffect(() => {
     (async () => {
+      const { isDark } = await window.electronAPI.getNativeTheme();
+      document.documentElement.setAttribute(
+        "data-theme",
+        isDark ? "dark" : "light",
+      );
+    })();
+
+    const handleThemeUpdate = ({ isDark }) => {
+      document.documentElement.setAttribute(
+        "data-theme",
+        isDark ? "dark" : "light",
+      );
+    };
+
+    window.electronAPI.onNativeThemeUpdated(handleThemeUpdate);
+    return () => window.electronAPI.removeNativeThemeUpdated();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
       const hasPath = await window.electronAPI.hasRomsBasePath();
       if (!hasPath) {
         setShowFirstRunModal(true);
