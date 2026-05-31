@@ -218,11 +218,14 @@ function SettingsModal({ onClose, isInline = false }) {
   const unconfiuredConsoles = availableConsoles.filter((c) => !emulators[c.id]);
 
   return (
-    <div 
-      className={isInline ? "inline-view-content" : "modal-backdrop"} 
+    <div
+      className={isInline ? "inline-view-content" : "modal-backdrop"}
       onClick={isInline ? undefined : handleBackdropClick}
     >
-      <div className={isInline ? "" : "modal-content"} onClick={isInline ? undefined : (e) => e.stopPropagation()}>
+      <div
+        className={isInline ? "" : "modal-content"}
+        onClick={isInline ? undefined : (e) => e.stopPropagation()}
+      >
         <div className={isInline ? "inline-view-header" : "modal-header"}>
           <h2>Configuración</h2>
           {!isInline && (
@@ -256,51 +259,15 @@ function SettingsModal({ onClose, isInline = false }) {
                     {isLoading ? "Procesando..." : BUTTON_LABELS.SYNC_DATA}
                   </button>
                   {showBackupMenu && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        right: 0,
-                        top: "calc(100% + 4px)",
-                        background: "var(--bg-secondary, #2a2a2a)",
-                        border: "1px solid var(--border-color, #444)",
-                        borderRadius: 6,
-                        overflow: "hidden",
-                        zIndex: 100,
-                        minWidth: 130,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-                      }}
-                    >
+                    <div>
                       <button
                         type="button"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "8px 16px",
-                          textAlign: "left",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "inherit",
-                        }}
                         disabled={!diskPath.trim()}
                         onClick={handleExport}
                       >
                         Exportar
                       </button>
-                      <button
-                        type="button"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "8px 16px",
-                          textAlign: "left",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "inherit",
-                        }}
-                        onClick={handleImport}
-                      >
+                      <button type="button" onClick={handleImport}>
                         Importar
                       </button>
                     </div>
@@ -324,17 +291,7 @@ function SettingsModal({ onClose, isInline = false }) {
                       <span style={{ fontWeight: 600, minWidth: 60 }}>
                         {getConsoleName(consoleId)}
                       </span>
-                      <span
-                        style={{
-                          color: "var(--text-secondary)",
-                          fontSize: 12,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          flex: 1,
-                        }}
-                        title={emulators[consoleId]}
-                      >
+                      <span title={emulators[consoleId]}>
                         {getFileName(emulators[consoleId])}
                       </span>
                       <button

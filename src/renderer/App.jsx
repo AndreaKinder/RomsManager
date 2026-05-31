@@ -38,12 +38,15 @@ function App() {
         isDark ? "dark" : "light",
       );
 
-      // Detect macOS platform to enable liquid-glass theme
+      // Detect platform to enable liquid-glass theme and drag region
       try {
         const platform = await window.electronAPI.getPlatform();
         if (platform === "darwin") {
           setIsMac(true);
           document.documentElement.classList.add("theme-liquid-glass");
+          document.documentElement.setAttribute("data-os", "macos");
+        } else if (platform === "win32") {
+          document.documentElement.setAttribute("data-os", "windows");
         }
       } catch (err) {
         console.error("Failed to detect platform:", err);
@@ -61,13 +64,15 @@ function App() {
 
     let unsubscribeMaximized = null;
     if (window.electronAPI.onWindowMaximized) {
-      unsubscribeMaximized = window.electronAPI.onWindowMaximized((isMaximized) => {
-        if (isMaximized) {
-          document.documentElement.classList.add("maximized");
-        } else {
-          document.documentElement.classList.remove("maximized");
-        }
-      });
+      unsubscribeMaximized = window.electronAPI.onWindowMaximized(
+        (isMaximized) => {
+          if (isMaximized) {
+            document.documentElement.classList.add("maximized");
+          } else {
+            document.documentElement.classList.remove("maximized");
+          }
+        },
+      );
     }
 
     return () => {
@@ -131,19 +136,17 @@ function App() {
         strength,
         chromaticAberration: cab,
       });
-
-      el.style.backdropFilter = `blur(${blur / 2}px) url('${filterUrl}') blur(${blur}px) brightness(${brightness}) saturate(${saturate})`;
     };
 
     const initGlassEffect = () => {
       const elements = document.querySelectorAll(
         ".theme-liquid-glass .app-header, " +
-        ".theme-liquid-glass .app-content, " +
-        ".theme-liquid-glass .app-footer, " +
-        ".theme-liquid-glass .console-header, " +
-        ".theme-liquid-glass .rom-card, " +
-        ".theme-liquid-glass .modal-content, " +
-        ".theme-liquid-glass .btn:not(.btn-danger):not(.btn-success)"
+          ".theme-liquid-glass .app-content, " +
+          ".theme-liquid-glass .app-footer, " +
+          ".theme-liquid-glass .console-header, " +
+          ".theme-liquid-glass .rom-card, " +
+          ".theme-liquid-glass .modal-content, " +
+          ".theme-liquid-glass .btn:not(.btn-danger):not(.btn-success)",
       );
 
       elements.forEach((el) => {
@@ -264,7 +267,12 @@ function App() {
       loadConsoles();
       loadCustomCollections();
     }
-  }, [isCheckingFirstRun, showFirstRunModal, loadConsoles, loadCustomCollections]);
+  }, [
+    isCheckingFirstRun,
+    showFirstRunModal,
+    loadConsoles,
+    loadCustomCollections,
+  ]);
 
   const enterBigPicture = useCallback(async () => {
     await window.electronAPI.enterBigPicture();
@@ -418,10 +426,12 @@ function App() {
             isCustomCollectionView &&
             customCollections.length === 0 && (
               <div className="empty-state">
-                <p className="empty-message">No hay colecciones personalizadas</p>
+                <p className="empty-message">
+                  No hay colecciones personalizadas
+                </p>
                 <p className="empty-hint">
-                  Las colecciones se crean automáticamente cuando las ROMs tienen
-                  el campo "collections" en su JSON
+                  Las colecciones se crean automáticamente cuando las ROMs
+                  tienen el campo "collections" en su JSON
                 </p>
               </div>
             )}
@@ -435,7 +445,9 @@ function App() {
             searchQuery && (
               <div className="empty-state">
                 <p className="empty-message">{UI_TEXT.NO_SEARCH_RESULTS}</p>
-                <p className="empty-hint">Intenta con otro término de búsqueda</p>
+                <p className="empty-hint">
+                  Intenta con otro término de búsqueda
+                </p>
               </div>
             )}
           {!isLoading &&

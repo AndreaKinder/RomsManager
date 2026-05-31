@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
 
 @font-face {
   font-family: "Press Start 2P";
@@ -27,6 +27,7 @@
   --text-secondary: #94a3b8;
   --border-color: #475569;
   --hover-bg: #2d3748;
+  --transition-smooth: all 0.2s ease;
 }
 
 body {
@@ -117,7 +118,9 @@ body {
   min-width: 300px;
   position: relative;
   padding: 0 0 0 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .search-input:focus-within {
@@ -187,8 +190,8 @@ body {
   padding: 10px 20px;
   background: var(--primary-color);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-primary);
+  border-radius: 100%;
+  color: white;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -201,6 +204,7 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
 .btn:active:not(:disabled) {
   transform: translateY(0);
 }
@@ -208,6 +212,16 @@ body {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.btn.btn-icon {
+  padding: 8px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
 }
 
 .btn-primary {
@@ -670,7 +684,8 @@ body {
   color: var(--text-primary);
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
   padding: 10px 14px;
   background: var(--surface-light);
@@ -681,7 +696,13 @@ body {
   transition: all 0.2s;
 }
 
-.form-field input:focus {
+.form-field select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-field input:focus,
+.form-field select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -929,15 +950,17 @@ body {
 }
 
 .btn-bigpicture {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
 }
 
 .btn-bigpicture:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: white;
 }
+
 
 /* Collection Input Container */
 .collection-input-container {
@@ -1262,7 +1285,13 @@ body {
 .theme-liquid-glass h2,
 .theme-liquid-glass h3:not(.rom-title),
 .theme-liquid-glass p {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif !important;
 }
 
 /* Cosmic Animated Background Blobs */
@@ -1290,7 +1319,7 @@ body {
 .blob-1 {
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, #ff007f 0%, rgba(255,0,127,0) 70%);
+  background: radial-gradient(circle, #ff007f 0%, rgba(255, 0, 127, 0) 70%);
   top: -15%;
   left: -10%;
   animation-duration: 25s;
@@ -1299,7 +1328,7 @@ body {
 .blob-2 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, #00f0ff 0%, rgba(0,240,255,0) 70%);
+  background: radial-gradient(circle, #00f0ff 0%, rgba(0, 240, 255, 0) 70%);
   bottom: -15%;
   right: -10%;
   animation-duration: 30s;
@@ -1308,7 +1337,7 @@ body {
 .blob-3 {
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, #7000ff 0%, rgba(112,0,255,0) 70%);
+  background: radial-gradient(circle, #7000ff 0%, rgba(112, 0, 255, 0) 70%);
   top: 35%;
   left: 45%;
   animation-duration: 35s;
@@ -1317,7 +1346,7 @@ body {
 .blob-4 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, #ffb300 0%, rgba(255,179,0,0) 70%);
+  background: radial-gradient(circle, #ffb300 0%, rgba(255, 179, 0, 0) 70%);
   bottom: 15%;
   left: 5%;
   animation-duration: 28s;
@@ -1344,7 +1373,7 @@ body {
 .theme-liquid-glass .modal-content {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 
+  box-shadow:
     0 8px 32px 0 rgba(0, 0, 0, 0.37),
     inset 0 0 1px 1px rgba(255, 255, 255, 0.15) !important;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -1355,7 +1384,7 @@ body {
 .theme-liquid-glass .rom-card:hover {
   background: rgba(255, 255, 255, 0.09) !important;
   border-color: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 
+  box-shadow:
     0 12px 40px 0 rgba(0, 0, 0, 0.5),
     inset 0 0 1px 1px rgba(255, 255, 255, 0.25) !important;
 }
@@ -1388,9 +1417,9 @@ body {
   border-radius: 8px !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  box-shadow: 
+  box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.15),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
 }
@@ -1398,7 +1427,7 @@ body {
 .theme-liquid-glass .btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.18) !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 
+  box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.3),
     inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
   transform: translateY(-1.5px) scale(1.02);
@@ -1435,7 +1464,7 @@ body {
 }
 
 .theme-liquid-glass .rom-title {
-  text-shadow: 
+  text-shadow:
     0px 2px 4px rgba(0, 0, 0, 0.8),
     0px 0px 8px rgba(255, 255, 255, 0.2) !important;
   font-size: 14px !important;
@@ -1508,15 +1537,17 @@ html[data-os="windows"] .liquid-glass-bg {
 html[data-os="macos"] .app-window-mac {
   border-radius: 12px;
   border: 0.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
+  box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
 }
 
-html[data-os="macos"][data-theme="light"] .app-window-mac {
+html[data-os="macos"][data-theme="dark"] .app-window-mac {
   border: 0.5px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 
+  box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
@@ -1526,10 +1557,12 @@ html[data-os="windows"] .app-window-mac {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.32);
-  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
 }
 
-html[data-os="windows"][data-theme="light"] .app-window-mac {
+html[data-os="windows"][data-theme="dark"] .app-window-mac {
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
@@ -1574,7 +1607,12 @@ html[data-os="windows"] .app-header {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(12, 9, 24, 0.38) !important; /* Tintado morado oscuro traslúcido de lujo */
+  background: rgba(
+    12,
+    9,
+    24,
+    0.38
+  ) !important; /* Tintado morado oscuro traslúcido de lujo */
   border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
   backdrop-filter: blur(35px);
   padding: 24px 16px;
@@ -1582,11 +1620,6 @@ html[data-os="windows"] .app-header {
   transition: var(--transition-smooth);
 }
 
-/* En modo claro de macOS/Windows - Blanco traslúcido rico */
-html[data-theme="light"] .app-sidebar {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
 
 .sidebar-brand {
   display: flex;
@@ -1598,7 +1631,9 @@ html[data-theme="light"] .app-sidebar {
 
 .brand-logo {
   font-size: 24px;
-  filter: drop-shadow(0 2px 10px rgba(59, 130, 246, 0.65)); /* Resplandor de marca */
+  filter: drop-shadow(
+    0 2px 10px rgba(59, 130, 246, 0.65)
+  ); /* Resplandor de marca */
 }
 
 .brand-title {
@@ -1609,9 +1644,6 @@ html[data-theme="light"] .app-sidebar {
   margin: 0 !important;
 }
 
-html[data-theme="light"] .brand-title {
-  color: #0f172a !important; /* Negro/Gris pizarra en modo claro */
-}
 
 .sidebar-nav {
   display: flex;
@@ -1628,7 +1660,12 @@ html[data-theme="light"] .brand-title {
   border-radius: 10px;
   background: transparent !important;
   border: 1px solid transparent !important;
-  color: rgba(255, 255, 255, 0.72) !important; /* Texto inactivo de alto contraste */
+  color: rgba(
+    255,
+    255,
+    255,
+    0.72
+  ) !important; /* Texto inactivo de alto contraste */
   font-size: 13px;
   font-weight: 500;
   text-align: left;
@@ -1639,9 +1676,6 @@ html[data-theme="light"] .brand-title {
   width: 100%;
 }
 
-html[data-theme="light"] .sidebar-item {
-  color: #555555 !important; /* Gris intermedio inactivo */
-}
 
 .sidebar-item:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.09) !important;
@@ -1650,32 +1684,18 @@ html[data-theme="light"] .sidebar-item {
   transform: translateX(2px);
 }
 
-html[data-theme="light"] .sidebar-item:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.04) !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-  color: #000000 !important; /* Negro puro al pasar el ratón */
-}
 
 /* Botón Activo: Cristalización y resplandor en azul nativo Liquid Glass */
 .sidebar-item.active {
-  background: rgba(59, 130, 246, 0.25) !important; 
+  background: rgba(59, 130, 246, 0.25) !important;
   border-color: rgba(59, 130, 246, 0.4) !important;
   color: #60a5fa !important; /* Texto brillante */
   font-weight: 600;
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(59, 130, 246, 0.15),
     inset 0 0 1px 1px rgba(255, 255, 255, 0.15) !important;
 }
 
-html[data-theme="light"] .sidebar-item.active {
-  background: rgba(0, 0, 0, 0.06) !important;
-  border-color: rgba(0, 0, 0, 0.12) !important;
-  color: #000000 !important; /* Negro puro para item activo en modo claro */
-  font-weight: 600;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    inset 0 0 1px 1px rgba(255, 255, 255, 0.75) !important;
-}
 
 .sidebar-item-icon {
   display: flex;
@@ -1697,9 +1717,6 @@ html[data-theme="light"] .sidebar-item.active {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-html[data-theme="light"] .sidebar-footer {
-  border-top-color: rgba(0, 0, 0, 0.08);
-}
 
 .sidebar-footer-badge {
   display: inline-block;
@@ -1713,11 +1730,6 @@ html[data-theme="light"] .sidebar-footer {
   letter-spacing: 0.5px;
 }
 
-html[data-theme="light"] .sidebar-footer-badge {
-  background: rgba(0, 0, 0, 0.04) !important;
-  color: #475569 !important; /* Gris oscuro neutro */
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
 
 /* ==========================================================================
    ESTILOS DE CONTENEDORES ESTRUCTURALES DEL LAYOUT
@@ -1777,20 +1789,13 @@ html[data-theme="light"] .sidebar-footer-badge {
   border-radius: 12px;
   padding: 28px;
   backdrop-filter: blur(25px);
-  box-shadow: 
+  box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.4),
     inset 0 0 1px 1px rgba(255, 255, 255, 0.1) !important;
   animation: nativeModalPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-top: 10px;
 }
 
-html[data-theme="light"] .inline-view-content {
-  background: rgba(0, 0, 0, 0.01) !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.05),
-    inset 0 0 1px 1px rgba(255, 255, 255, 0.6) !important;
-}
 
 .inline-view-header {
   display: flex;
@@ -1801,16 +1806,13 @@ html[data-theme="light"] .inline-view-content {
   padding-bottom: 12px;
 }
 
-html[data-theme="light"] .inline-view-header {
-  border-bottom-color: rgba(0, 0, 0, 0.06);
-}
 
 .inline-view-header h2 {
   font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .inline-view-body {
@@ -1828,9 +1830,6 @@ html[data-theme="light"] .inline-view-header {
   padding-top: 16px;
 }
 
-html[data-theme="light"] .inline-view-footer {
-  border-top-color: rgba(0, 0, 0, 0.06);
-}
 
 /* ==========================================================================
    DISEÑO DE MODALES COMO SIDEBARS DESLIZANTES (Drawers desde la derecha)
@@ -1858,51 +1857,43 @@ html[data-theme="light"] .inline-view-footer {
 .modal-content {
   height: 100% !important;
   width: 100vw !important;
-  max-width: 480px !important; /* Ancho idóneo para entrada de formularios */
-  margin: 0 !important;
-  border-radius: 16px 0 0 16px !important; /* Curvatura solo en el lado interno (izquierdo) */
-  border-top: none !important;
-  border-bottom: none !important;
-  border-right: none !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: rgba(9, 7, 20, 0.72) !important; /* Fondo premium traslúcido compatible con Liquid Glass */
-  backdrop-filter: blur(35px);
-  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.5) !important;
-  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-html[data-theme="light"] .modal-content {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* 3. Contenedor del visor de manuales (Slide-over ancho) */
-.manual-modal-content {
-  height: 100% !important;
-  width: 100vw !important;
-  max-width: 750px !important; /* Ancho expandido para optimizar lectura de PDFs */
+  max-width: 480px !important;
   margin: 0 !important;
   border-radius: 16px 0 0 16px !important;
   border-top: none !important;
   border-bottom: none !important;
   border-right: none !important;
   border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: rgba(9, 7, 20, 0.72) !important;
-  backdrop-filter: blur(35px);
-  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(15, 12, 30, 0.96) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.6) !important;
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+
+/* 3. Contenedor del visor de manuales (Slide-over ancho) */
+.manual-modal-content {
+  height: 100% !important;
+  width: 100vw !important;
+  max-width: 750px !important;
+  margin: 0 !important;
+  border-radius: 16px 0 0 16px !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(15, 12, 30, 0.96) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.6) !important;
   animation: slideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
   display: flex !important;
   flex-direction: column !important;
 }
 
-html[data-theme="light"] .manual-modal-content {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15) !important;
-}
 
 /* 4. Maquetación del scroll interno en los cuerpos del slide-over */
 .modal-body,
@@ -1918,10 +1909,6 @@ html[data-theme="light"] .manual-modal-content {
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-html[data-theme="light"] .modal-footer,
-html[data-theme="light"] .manual-modal-footer {
-  border-top-color: rgba(0, 0, 0, 0.08) !important;
-}
 
 /* 5. Animación de entrada por deslizamiento lateral derecho */
 @keyframes slideInRight {
@@ -1932,4 +1919,3 @@ html[data-theme="light"] .manual-modal-footer {
     transform: translateX(0);
   }
 }
-

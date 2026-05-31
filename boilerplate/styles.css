@@ -9,10 +9,12 @@
   /* Transición suave global */
   --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: all 0.15s ease;
-  
+
   /* Fuentes base */
-  --font-family-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  
+  --font-family-fallback:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+
   /* Bordes redondeados modernos */
   --border-radius-lg: 12px;
   --border-radius-md: 8px;
@@ -21,14 +23,14 @@
 
 /* Tokens de color dinámicos según el modo */
 html[data-theme="dark"] {
-  --primary-color: #6366f1;
-  --primary-hover: #4f46e5;
+  --primary-color: white;
+  --primary-hover: white;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --border-color: rgba(255, 255, 255, 0.08);
   --accent-badge: rgba(99, 102, 241, 0.2);
-  --accent-badge-text: #818cf8;
-  
+  --accent-badge-text: gray;
+
   /* Fondos bases para translucidez */
   --bg-sidebar: rgba(15, 23, 42, 0.2);
   --bg-content: rgba(30, 41, 59, 0.1);
@@ -37,13 +39,13 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="light"] {
-  --primary-color: #4f46e5;
-  --primary-hover: #3730a3;
+  --primary-color: black;
+  --primary-hover: black;
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --border-color: rgba(0, 0, 0, 0.08);
   --accent-badge: rgba(79, 70, 229, 0.1);
-  --accent-badge-text: #4f46e5;
+  --accent-badge-text: black;
 
   /* Fondos bases para translucidez en modo claro */
   --bg-sidebar: rgba(248, 250, 252, 0.4);
@@ -56,16 +58,19 @@ html[data-theme="light"] {
    2. Ajustes de Tipografía Específicos por Sistema Operativo
    -------------------------------------------------------------------------- */
 html[data-os="macos"] {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", var(--font-family-fallback);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    var(--font-family-fallback);
 }
 
 html[data-os="windows"] {
-  font-family: "Segoe UI Variable Text", "Segoe UI", Arial, var(--font-family-fallback);
+  font-family:
+    "Segoe UI Variable Text", "Segoe UI", Arial, var(--font-family-fallback);
 }
 
 html[data-os="linux"] {
   font-family: "Ubuntu", "Noto Sans", "Liberation Sans", sans-serif;
-  
+
   /* Linux: Sobrescribe colores base con colores sólidos de integración GTK */
   --bg-sidebar: #1e1e2e;
   --bg-content: #181825;
@@ -90,7 +95,8 @@ html[data-os="linux"][data-theme="light"] {
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -125,15 +131,17 @@ html[data-os="linux"] body {
 html[data-os="macos"] .app-container {
   border-radius: 12px;
   border: 0.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
+  box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
 }
 
 html[data-os="macos"][data-theme="light"] .app-container {
   border: 0.5px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 
+  box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
@@ -143,7 +151,9 @@ html[data-os="windows"] .app-container {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+  transition:
+    border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-width 0.2s ease;
 }
 
 html[data-os="windows"][data-theme="light"] .app-container {
@@ -345,7 +355,11 @@ html[data-os="windows"] .app-content {
   margin-bottom: 24px;
   padding: 24px;
   border-radius: var(--border-radius-lg);
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover)
+  );
   color: #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }

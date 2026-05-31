@@ -32,11 +32,6 @@ export default function Sidebar({ currentView, onViewChange, isLoading }) {
 
   return (
     <aside className="app-sidebar no-drag">
-      <div className="sidebar-brand">
-        <span className="brand-logo">👾</span>
-        <h2 className="brand-title">RomsManager</h2>
-      </div>
-
       <nav className="sidebar-nav">
         {menuItems.map((item) => {
           const isActive = currentView === item.id;
