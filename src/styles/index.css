@@ -44,8 +44,12 @@ body {
 }
 
 header {
-  margin-left: 70px;
-  margin-bottom: 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 8px 20px 8px 90px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -58,7 +62,10 @@ header > div {
   align-items: center;
   gap: 6px;
 }
-
+main {
+  margin-top: 50px;
+  padding: 20px;
+}
 .app-container {
   display: flex;
   flex-direction: column;
