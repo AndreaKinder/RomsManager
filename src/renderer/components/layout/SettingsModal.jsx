@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BUTTON_LABELS, UI_TEXT } from "../../constants/messages";
 import { IconX } from "@tabler/icons-react";
 
-function SettingsModal({ onClose }) {
+function SettingsModal({ onClose, isInline = false }) {
   const [diskPath, setDiskPath] = useState("");
   const [showBackupMenu, setShowBackupMenu] = useState(false);
   const [newCollection, setNewCollection] = useState("");
@@ -218,17 +218,22 @@ function SettingsModal({ onClose }) {
   const unconfiuredConsoles = availableConsoles.filter((c) => !emulators[c.id]);
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-content">
-        <div className="modal-header">
+    <div 
+      className={isInline ? "inline-view-content" : "modal-backdrop"} 
+      onClick={isInline ? undefined : handleBackdropClick}
+    >
+      <div className={isInline ? "" : "modal-content"} onClick={isInline ? undefined : (e) => e.stopPropagation()}>
+        <div className={isInline ? "inline-view-header" : "modal-header"}>
           <h2>Configuración</h2>
-          <button className="modal-close-btn" onClick={onClose}>
-            <IconX size={20} />
-          </button>
+          {!isInline && (
+            <button className="modal-close-btn" onClick={onClose}>
+              <IconX size={20} />
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
+          <div className={isInline ? "inline-view-body" : "modal-body"}>
             {/* Backup */}
             <div className="form-field">
               <label htmlFor="diskPath">{UI_TEXT.SG_PATH_LABEL}</label>
@@ -442,16 +447,18 @@ function SettingsModal({ onClose }) {
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isLoading}
-            >
-              {BUTTON_LABELS.CLOSE}
-            </button>
-          </div>
+          {!isInline && (
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                {BUTTON_LABELS.CLOSE}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

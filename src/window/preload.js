@@ -77,4 +77,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("native-theme-updated", (_event, data) => callback(data)),
   removeNativeThemeUpdated: () =>
     ipcRenderer.removeAllListeners("native-theme-updated"),
+  onWindowMaximized: (callback) => {
+    const subscription = (event, data) => callback(data);
+    ipcRenderer.on("window-maximized", subscription);
+    return () => {
+      ipcRenderer.removeListener("window-maximized", subscription);
+    };
+  }
 });

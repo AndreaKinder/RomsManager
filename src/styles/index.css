@@ -1476,3 +1476,460 @@ body {
   ) !important;
 }
 
+/* ==========================================================================
+   ADAPTACIÓN DEL MARCO DE VENTANA Y TRANSPARENCIAS (Cross-platform)
+   ========================================================================== */
+
+/* Habilitar transparencia en los elementos base para dar paso a Vibrancy / Acrylic */
+html[data-os="macos"] html,
+html[data-os="macos"] body,
+html[data-os="windows"] html,
+html[data-os="windows"] body {
+  background: transparent !important;
+}
+
+/* Atenuar el fondo sólido del tema Liquid Glass en macOS/Windows para revelar el blur nativo */
+html[data-os="macos"] .liquid-glass-bg,
+html[data-os="windows"] .liquid-glass-bg {
+  background: rgba(9, 7, 20, 0.45) !important; /* Base translúcida sutil */
+}
+
+/* Contenedor principal de la interfaz en RomsManager */
+.app-window-mac {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Contorno y sombra premium en macOS (Efecto cristal nativo) */
+html[data-os="macos"] .app-window-mac {
+  border-radius: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 24px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+}
+
+html[data-os="macos"][data-theme="light"] .app-window-mac {
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 
+    0 24px 50px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Contorno y sombra premium en Windows 11 (Acrílico) */
+html[data-os="windows"] .app-window-mac {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.32);
+  transition: border-radius 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-width 0.2s ease;
+}
+
+html[data-os="windows"][data-theme="light"] .app-window-mac {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Remoción automática de bordes al maximizar la ventana */
+html.maximized .app-window-mac {
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Región de arrastre interactiva para la barra de título (AppHeader) */
+html[data-os="macos"] .app-header,
+html[data-os="windows"] .app-header {
+  -webkit-app-region: drag !important;
+}
+
+/* Márgenes de seguridad para evitar solapamiento de botones de control nativos */
+html[data-os="macos"] .app-header {
+  padding-left: 80px !important; /* Margen para traffic lights de macOS */
+}
+
+html[data-os="windows"] .app-header {
+  padding-right: 140px !important; /* Margen para Windows Control Overlay */
+}
+
+/* Evitar que elementos interactivos de la cabecera capturen el drag del ratón */
+.app-header input,
+.app-header button,
+.app-header a,
+.app-header select,
+.no-drag {
+  -webkit-app-region: no-drag !important;
+}
+
+/* ==========================================================================
+   ESTILOS DE LA BARRA LATERAL (Sidebar) NATIVA ADAPTADA
+   ========================================================================== */
+
+.app-sidebar {
+  width: 240px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(12, 9, 24, 0.38) !important; /* Tintado morado oscuro traslúcido de lujo */
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(35px);
+  padding: 24px 16px;
+  flex-shrink: 0;
+  transition: var(--transition-smooth);
+}
+
+/* En modo claro de macOS/Windows - Blanco traslúcido rico */
+html[data-theme="light"] .app-sidebar {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 0 8px;
+}
+
+.brand-logo {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 10px rgba(59, 130, 246, 0.65)); /* Resplandor de marca */
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.3px;
+  margin: 0 !important;
+}
+
+html[data-theme="light"] .brand-title {
+  color: #0f172a !important; /* Negro/Gris pizarra en modo claro */
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: rgba(255, 255, 255, 0.72) !important; /* Texto inactivo de alto contraste */
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition-smooth);
+  box-shadow: none !important;
+  width: 100%;
+}
+
+html[data-theme="light"] .sidebar-item {
+  color: #555555 !important; /* Gris intermedio inactivo */
+}
+
+.sidebar-item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  transform: translateX(2px);
+}
+
+html[data-theme="light"] .sidebar-item:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  color: #000000 !important; /* Negro puro al pasar el ratón */
+}
+
+/* Botón Activo: Cristalización y resplandor en azul nativo Liquid Glass */
+.sidebar-item.active {
+  background: rgba(59, 130, 246, 0.25) !important; 
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important; /* Texto brillante */
+  font-weight: 600;
+  box-shadow: 
+    0 4px 16px rgba(59, 130, 246, 0.15),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+}
+
+html[data-theme="light"] .sidebar-item.active {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #000000 !important; /* Negro puro para item activo en modo claro */
+  font-weight: 600;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.75) !important;
+}
+
+.sidebar-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="light"] .sidebar-footer {
+  border-top-color: rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-footer-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+html[data-theme="light"] .sidebar-footer-badge {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #475569 !important; /* Gris oscuro neutro */
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ==========================================================================
+   ESTILOS DE CONTENEDORES ESTRUCTURALES DEL LAYOUT
+   ========================================================================== */
+
+.app-layout-body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+.app-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.app-main-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+/* ==========================================================================
+   ESTILOS PARA OCULTAR LA BARRA DE DESPLAZAMIENTO (Scrollbar) GLOBALES
+   ========================================================================== */
+
+/* Ocultar barra de desplazamiento en navegadores basados en Webkit/Blink (Chrome, Safari, Electron, etc.) */
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Ocultar barra de desplazamiento en otros navegadores y elementos del DOM */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+/* ==========================================================================
+   ESTILOS PARA VISTAS INTEGRADAS EN EL PANEL (Inline Views - Sin Modales)
+   ========================================================================== */
+
+.inline-view-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  padding: 28px;
+  backdrop-filter: blur(25px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+  animation: nativeModalPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: 10px;
+}
+
+html[data-theme="light"] .inline-view-content {
+  background: rgba(0, 0, 0, 0.01) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.05),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+.inline-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+html[data-theme="light"] .inline-view-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.inline-view-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.inline-view-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inline-view-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+}
+
+html[data-theme="light"] .inline-view-footer {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   DISEÑO DE MODALES COMO SIDEBARS DESLIZANTES (Drawers desde la derecha)
+   ========================================================================== */
+
+/* 1. Fondo translúcido cubriente (Overlay) alineando los hijos a la derecha */
+.modal-backdrop,
+.manual-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important; /* Capa difusa sutil */
+  display: flex !important;
+  justify-content: flex-end !important; /* Alineación al borde derecho */
+  align-items: stretch !important; /* Estirar verticalmente al 100% de la pantalla */
+  z-index: 10000 !important;
+  padding: 0 !important; /* Sin espacios */
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.25s ease-out !important;
+}
+
+/* 2. Contenedor del panel de edición (Slide-over / Drawer angosto) */
+.modal-content {
+  height: 100% !important;
+  width: 100vw !important;
+  max-width: 480px !important; /* Ancho idóneo para entrada de formularios */
+  margin: 0 !important;
+  border-radius: 16px 0 0 16px !important; /* Curvatura solo en el lado interno (izquierdo) */
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(9, 7, 20, 0.72) !important; /* Fondo premium traslúcido compatible con Liquid Glass */
+  backdrop-filter: blur(35px);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.5) !important;
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html[data-theme="light"] .modal-content {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 3. Contenedor del visor de manuales (Slide-over ancho) */
+.manual-modal-content {
+  height: 100% !important;
+  width: 100vw !important;
+  max-width: 750px !important; /* Ancho expandido para optimizar lectura de PDFs */
+  margin: 0 !important;
+  border-radius: 16px 0 0 16px !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(9, 7, 20, 0.72) !important;
+  backdrop-filter: blur(35px);
+  box-shadow: -12px 0 50px rgba(0, 0, 0, 0.5) !important;
+  animation: slideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html[data-theme="light"] .manual-modal-content {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 4. Maquetación del scroll interno en los cuerpos del slide-over */
+.modal-body,
+.manual-modal-body {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 24px !important;
+}
+
+.modal-footer,
+.manual-modal-footer {
+  padding: 16px 24px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="light"] .modal-footer,
+html[data-theme="light"] .manual-modal-footer {
+  border-top-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 5. Animación de entrada por deslizamiento lateral derecho */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+

@@ -58,7 +58,22 @@ function App() {
     };
 
     window.electronAPI.onNativeThemeUpdated(handleThemeUpdate);
-    return () => window.electronAPI.removeNativeThemeUpdated();
+
+    let unsubscribeMaximized = null;
+    if (window.electronAPI.onWindowMaximized) {
+      unsubscribeMaximized = window.electronAPI.onWindowMaximized((isMaximized) => {
+        if (isMaximized) {
+          document.documentElement.classList.add("maximized");
+        } else {
+          document.documentElement.classList.remove("maximized");
+        }
+      });
+    }
+
+    return () => {
+      window.electronAPI.removeNativeThemeUpdated();
+      if (unsubscribeMaximized) unsubscribeMaximized();
+    };
   }, []);
 
   // Apply Liquid Glass dynamic refraction effect (SVG displacement filter) on macOS

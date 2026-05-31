@@ -6,7 +6,7 @@ import {
 } from "../../constants/messages";
 import { IconX } from "@tabler/icons-react";
 
-function SelectConsoleModal({ onClose, onSelect }) {
+function SelectConsoleModal({ onClose, onSelect, isInline = false }) {
   const [consoles, setConsoles] = useState([]);
   const [selectedConsole, setSelectedConsole] = useState("");
   const [selectedRomFile, setSelectedRomFile] = useState(null);
@@ -68,17 +68,22 @@ function SelectConsoleModal({ onClose, onSelect }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-content">
-        <div className="modal-header">
+    <div 
+      className={isInline ? "inline-view-content" : "modal-backdrop"} 
+      onClick={isInline ? undefined : handleBackdropClick}
+    >
+      <div className={isInline ? "" : "modal-content"}>
+        <div className={isInline ? "inline-view-header" : "modal-header"}>
           <h2>Agregar ROM desde PC</h2>
-          <button className="modal-close-btn" onClick={onClose}>
-            <IconX size={20} />
-          </button>
+          {!isInline && (
+            <button className="modal-close-btn" onClick={onClose}>
+              <IconX size={20} />
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
+          <div className={isInline ? "inline-view-body" : "modal-body"}>
             <div className="form-field">
               <label htmlFor="console">Consola *</label>
               {isLoading ? (
@@ -122,15 +127,17 @@ function SelectConsoleModal({ onClose, onSelect }) {
             {error && <div className="error-message">{error}</div>}
           </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isLoading}
-            >
-              {BUTTON_LABELS.CANCEL}
-            </button>
+          <div className={isInline ? "inline-view-footer" : "modal-footer"}>
+            {!isInline && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                {BUTTON_LABELS.CANCEL}
+              </button>
+            )}
             <button
               type="submit"
               className="btn btn-primary"

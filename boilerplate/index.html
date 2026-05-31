@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout Multiplataforma Nativo - Electron</title>
+  <!-- Hojas de Estilos: Tabler Icons CDN + Hojas de Estilo Propias -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Contenedor general adaptativo -->
+  <div class="app-container">
+    
+    <!-- Barra de Título / Cabecera (Soporta arrastre en macOS y Windows) -->
+    <header class="app-header">
+      <div class="drag-region"></div>
+      <div class="header-content">
+        <span class="app-title">Consola del Sistema</span>
+        <div class="search-box">
+          <i class="ti ti-search search-icon"></i>
+          <input type="text" placeholder="Buscar roms, emuladores..." class="glass-input no-drag">
+        </div>
+      </div>
+      <!-- En Windows 11, la propiedad titleBarOverlay reserva el espacio del extremo derecho e inyecta los botones nativos automáticamente -->
+    </header>
+
+    <!-- Contenido Estructural principal -->
+    <div class="app-layout">
+      
+      <!-- Menú Lateral Izquierdo (Sidebar) -->
+      <aside class="app-sidebar">
+        <div class="sidebar-header">
+          <div class="app-logo"><i class="ti ti-device-gamepad-2"></i></div>
+          <h3>RomsManager</h3>
+        </div>
+        <nav class="sidebar-menu">
+          <a href="#" class="menu-item active">
+            <i class="ti ti-device-gamepad icon"></i> Mis Consolas
+          </a>
+          <a href="#" class="menu-item">
+            <i class="ti ti-circle-plus icon"></i> Añadir ROM
+          </a>
+          <a href="#" class="menu-item">
+            <i class="ti ti-device-tv icon"></i> Big Picture
+          </a>
+          <a href="#" class="menu-item">
+            <i class="ti ti-settings icon"></i> Ajustes
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="badge">PRO CORE</span>
+        </div>
+      </aside>
+
+      <!-- Panel de Contenido Principal -->
+      <main class="app-content">
+        <div class="content-scrollable">
+          <div class="welcome-banner">
+            <h1>Efecto Multiplataforma Detectado</h1>
+            <p>Esta aplicación adapta su motor CSS, bordes de componentes y opacidad en base al sistema operativo del usuario en tiempo real.</p>
+          </div>
+
+          <!-- Muestra de Tarjetas con Glassmorphic y Micro-interacciones -->
+          <div class="dashboard-grid">
+            
+            <div class="glass-card">
+              <div class="card-title-container">
+                <i class="ti ti-photo-sensor-3 card-title-icon"></i>
+                <h3>Filtro de Refracción</h3>
+              </div>
+              <p id="os-effect-description">Detectando motor de refracción del sistema...</p>
+              <div class="status-indicator">
+                <span class="dot active"></span>
+                <span class="status-text" id="os-status">Inicializando puente IPC...</span>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-title-container">
+                <i class="ti ti-palette card-title-icon"></i>
+                <h3>Tema Operativo</h3>
+              </div>
+              <p>El color y contraste se ajusta automáticamente a las preferencias de tu sistema:</p>
+              <div class="theme-badge" id="theme-status">
+                Obteniendo preferencia...
+              </div>
+            </div>
+
+            <div class="glass-card flex-between">
+              <div class="card-title-container">
+                <i class="ti ti-cpu card-title-icon"></i>
+                <h3>Optimización</h3>
+              </div>
+              <p>Aceleración por Hardware activada. El renderizado translúcido utiliza el compositor de la GPU.</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 78%;"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Script de Control del Proceso de Renderizado -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Validamos si la API de Electron está disponible en el espacio global
+      if (window.electronAPI) {
+        try {
+          // 1. Obtener y aplicar la configuración inicial enviada por el proceso Main
+          const info = await window.electronAPI.getOSInfo();
+          applySystemStyles(info.os, info.isDark);
+
+          // 2. Registrar escucha para eventos de cambio dinámico del tema del SO
+          window.electronAPI.onSystemThemeChanged((data) => {
+            applySystemStyles(info.os, data.isDark);
+          });
+
+          // 3. Sintonizar el estado de maximización del marco de la ventana
+          window.electronAPI.onWindowMaximized((isMaximized) => {
+            if (isMaximized) {
+              document.documentElement.classList.add("maximized");
+            } else {
+              document.documentElement.classList.remove("maximized");
+            }
+          });
+        } catch (err) {
+          console.error("Fallo al inicializar el puente de estilos:", err);
+          fallbackMock();
+        }
+      } else {
+        // Fallback en navegador para depuración rápida de maquetación CSS
+        fallbackMock();
+      }
+    });
+
+    /**
+     * Inyecta atributos semánticos al elemento HTML raíz para activar
+     * selectores CSS específicos por sistema operativo y tema.
+     */
+    function applySystemStyles(os, isDark) {
+      document.documentElement.setAttribute("data-os", os);
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+
+      // Modificación dinámica de textos descriptivos del Dashboard
+      document.getElementById("os-status").textContent = `Nativo: ${os.toUpperCase()}`;
+      
+      const themeStatus = document.getElementById("theme-status");
+      themeStatus.textContent = isDark ? "Modo Oscuro" : "Modo Claro";
+      themeStatus.className = `theme-badge ${isDark ? "dark" : "light"}`;
+
+      const desc = document.getElementById("os-effect-description");
+      if (os === "macos") {
+        desc.textContent = "macOS Vibrancy activado de forma transparente sobre el fondo de ventana 'under-window'.";
+      } else if (os === "windows") {
+        desc.textContent = "Windows 11 Acrylic activado mediante setBackgroundMaterial y TitleBarOverlay transparente.";
+      } else {
+        desc.textContent = "Modo GTK nativo sobre lienzo plano con integración de fuentes libres del sistema.";
+      }
+    }
+
+    /**
+     * Estado simulado de prueba si se abre directamente en el navegador
+     */
+    function fallbackMock() {
+      console.log("No se ha detectado el puente Electron. Ejecutando simulación...");
+      applySystemStyles("macos", true);
+      document.getElementById("os-status").textContent = "Navegador (Simulación)";
+      document.getElementById("os-effect-description").textContent = "Corriendo fuera de Electron. Estructuras translúcidas simuladas mediante opacidad CSS.";
+    }
+  </script>
+</body>
+</html>
