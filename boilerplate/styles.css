@@ -184,7 +184,6 @@ html.maximized .app-container {
   align-items: center;
   justify-content: space-between;
   height: 48px;
-  border-bottom: 1px solid var(--border-color);
   z-index: 100;
 }
 
@@ -518,14 +517,14 @@ html[data-theme="light"] .glass-input:focus {
 
 .theme-badge.dark {
   background: #1e293b;
-  color: #38bdf8;
+  color: gray;
   border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 .theme-badge.light {
   background: #f1f5f9;
-  color: #0284c7;
-  border: 1px solid rgba(2, 132, 199, 0.2);
+  color: gray;
+  border: 1px solid gray;
 }
 
 .progress-bar {
