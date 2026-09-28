@@ -12,26 +12,23 @@ function AppFooter({
 }) {
   return (
     <footer className="app-footer">
-      <p>
-        {customCollectionSelected && (
-          <>
-            {UI_TEXT.TOTAL_COLLECTIONS} {totalCollections} |{" "}
-          </>
-        )}
-        {!customCollectionSelected && (
-          <>
-            {UI_TEXT.TOTAL_CONSOLES} {totalConsoles} |{" "}
-          </>
-        )}
-        {UI_TEXT.TOTAL_ROMS} {totalRoms}{" "}
+      <div className="footer-status">
+        <span className="footer-chip">
+          {customCollectionSelected ? UI_TEXT.TOTAL_COLLECTIONS : UI_TEXT.TOTAL_CONSOLES}{" "}
+          <strong>{customCollectionSelected ? totalCollections : totalConsoles}</strong>
+        </span>
+        <span className="footer-chip">
+          {UI_TEXT.TOTAL_ROMS} <strong>{totalRoms}</strong>
+        </span>
         {filteredRomsCount !== null && filteredRomsCount !== totalRoms && (
-          <span className="filtered-count">
-            {" "}
-            | Mostrando: {filteredRomsCount}
+          <span className="footer-chip footer-chip-filter">
+            Mostrando: <strong>{filteredRomsCount}</strong>
           </span>
         )}
-      </p>
-      <p className="version-info">v{APP_VERSION}</p>
+      </div>
+      <div className="footer-meta">
+        <span className="version-info">v{APP_VERSION}</span>
+      </div>
     </footer>
   );
 }

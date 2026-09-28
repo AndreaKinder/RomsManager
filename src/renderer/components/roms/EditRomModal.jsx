@@ -324,8 +324,8 @@ function EditRomModal({ rom, onClose, onSave }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-content">
+    <div className="modal-backdrop modal-backdrop-drawer" onClick={handleBackdropClick}>
+      <div className="modal-content modal-side-sheet">
         <div className="modal-header">
           <h2>Editar ROM</h2>
           <button className="modal-close-btn" onClick={onClose}>
@@ -376,21 +376,21 @@ function EditRomModal({ rom, onClose, onSave }) {
 
               {showScrapeResults && (
                 <div style={{ 
-                  marginTop: "10px", 
-                  padding: "10px", 
-                  background: "var(--bg-secondary, #2a2a2a)", 
-                  border: "1px solid var(--border-color, #444)", 
-                  borderRadius: "6px",
+                  marginTop: "12px", 
+                  padding: "14px", 
+                  background: "var(--md-sys-color-surface-container)", 
+                  border: "1px solid var(--md-sys-color-outline-variant)", 
+                  borderRadius: "var(--md-sys-shape-corner-medium, 12px)",
                   maxHeight: "300px",
                   overflowY: "auto"
                 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                    <span style={{ fontWeight: "bold" }}>Resultados de la búsqueda:</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <span style={{ fontWeight: 600, color: "var(--md-sys-color-on-surface)" }}>Resultados de la búsqueda:</span>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <select 
                         value={scraperProvider}
                         onChange={(e) => setScraperProvider(e.target.value)}
-                        style={{ padding: "2px 4px", fontSize: "12px" }}
+                        style={{ padding: "4px 8px", fontSize: "12px", borderRadius: "var(--md-sys-shape-corner-small, 8px)" }}
                         disabled={isScraping}
                       >
                         <option value="screenscraper">ScreenScraper</option>
@@ -399,7 +399,8 @@ function EditRomModal({ rom, onClose, onSave }) {
                       <button 
                         type="button" 
                         onClick={() => setShowScrapeResults(false)}
-                        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "16px" }}
+                        className="modal-close-btn"
+                        style={{ width: "24px", height: "24px", fontSize: "14px" }}
                       >
                         ✕
                       </button>
@@ -407,9 +408,9 @@ function EditRomModal({ rom, onClose, onSave }) {
                   </div>
 
                   {isScraping ? (
-                    <div style={{ textAlign: "center", padding: "20px" }}>Buscando...</div>
+                    <div style={{ textAlign: "center", padding: "20px", color: "var(--md-sys-color-on-surface-variant)" }}>Buscando...</div>
                   ) : scrapeResults.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "20px", color: "var(--text-secondary)" }}>
+                    <div style={{ textAlign: "center", padding: "20px", color: "var(--md-sys-color-on-surface-variant)" }}>
                       No se encontraron resultados
                     </div>
                   ) : (
@@ -419,18 +420,19 @@ function EditRomModal({ rom, onClose, onSave }) {
                           key={result.id} 
                           style={{ 
                             display: "flex", 
-                            gap: "10px", 
-                            padding: "8px", 
-                            background: "rgba(0,0,0,0.2)", 
-                            borderRadius: "4px",
+                            gap: "12px", 
+                            padding: "10px", 
+                            background: "var(--md-sys-color-surface-container-high)", 
+                            borderRadius: "var(--md-sys-shape-corner-small, 8px)",
+                            border: "1px solid var(--md-sys-color-outline-variant)",
                             alignItems: "center"
                           }}
                         >
-                          <div style={{ width: "50px", height: "70px", backgroundColor: "#000", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                          <div style={{ width: "50px", height: "70px", backgroundColor: "var(--md-sys-color-surface-container-lowest)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                             {result.coverUrl ? (
                               <img src={result.coverUrl} alt="Cover" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
                             ) : (
-                              <span style={{ fontSize: "10px", color: "#666" }}>No img</span>
+                              <span style={{ fontSize: "10px", color: "var(--md-sys-color-on-surface-variant)" }}>No img</span>
                             )}
                           </div>
                           <div style={{ flex: 1, overflow: "hidden" }}>

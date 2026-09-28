@@ -97,5 +97,35 @@ contextBridge.exposeInMainWorld("electronAPI", {
     return () => {
       ipcRenderer.removeListener("window-maximized", subscription);
     };
-  }
+  },
+
+  // ADB Android Console Sync APIs
+  adbGetStatus: () => ipcRenderer.invoke("adb-get-status"),
+  adbSelectBinary: () => ipcRenderer.invoke("adb-select-binary"),
+  adbSetConfig: (config) => ipcRenderer.invoke("adb-set-config", config),
+  adbDownloadInstall: () => ipcRenderer.invoke("adb-download-install"),
+  adbListDevices: () => ipcRenderer.invoke("adb-list-devices"),
+  adbConnectWireless: (ip, port) => ipcRenderer.invoke("adb-connect-wireless", ip, port),
+  adbDisconnectWireless: (target) => ipcRenderer.invoke("adb-disconnect-wireless", target),
+  adbGetStoragePaths: (serial) => ipcRenderer.invoke("adb-get-storage-paths", serial),
+  adbCompareRoms: (serial, remoteRomsPath) =>
+    ipcRenderer.invoke("adb-compare-roms", serial, remoteRomsPath),
+  adbExportRoms: (serial, remoteRomsPath, items, options) =>
+    ipcRenderer.invoke("adb-export-roms", serial, remoteRomsPath, items, options),
+  adbImportRoms: (serial, items) =>
+    ipcRenderer.invoke("adb-import-roms", serial, items),
+  adbExportSingleRom: (serial, remoteRomsPath, rom, options) =>
+    ipcRenderer.invoke("adb-export-single-rom", serial, remoteRomsPath, rom, options),
+  onAdbSyncProgress: (callback) => {
+    const handler = (_event, data) => callback(data);
+    ipcRenderer.on("adb-sync-progress", handler);
+    return () => ipcRenderer.removeListener("adb-sync-progress", handler);
+  },
+  removeAdbSyncProgress: () => ipcRenderer.removeAllListeners("adb-sync-progress"),
+  onAdbDownloadProgress: (callback) => {
+    const handler = (_event, data) => callback(data);
+    ipcRenderer.on("adb-download-progress", handler);
+    return () => ipcRenderer.removeListener("adb-download-progress", handler);
+  },
+  removeAdbDownloadProgress: () => ipcRenderer.removeAllListeners("adb-download-progress"),
 });

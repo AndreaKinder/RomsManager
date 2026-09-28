@@ -12,7 +12,8 @@ import {
   IconPlayerPlay,
   IconTrash,
   IconPencil,
-  IconDownload
+  IconDownload,
+  IconBrandAndroid,
 } from "@tabler/icons-react";
 
 function RomCard({ rom, onRomUpdated }) {
@@ -101,6 +102,40 @@ function RomCard({ rom, onRomUpdated }) {
       alert(`Error al exportar la partida: ${error.message}`);
     }
   };
+
+  const handleSendToAndroid = async (e) => {
+    e.stopPropagation();
+    try {
+      const devRes = await window.electronAPI.adbListDevices();
+      const connected = (devRes.devices || []).find((d) => d.state === "device");
+      if (!connected) {
+        alert("No se detecta ninguna consola Android conectada por cable USB. Conecta la consola y activa la Depuración USB.");
+        return;
+      }
+
+      const confirmed = window.confirm(`¿Enviar "${rom.title || rom.romName}" a la consola ${connected.displayName}?`);
+      if (!confirmed) return;
+
+      const storages = await window.electronAPI.adbGetStoragePaths(connected.serial);
+      const targetPath = storages?.locations?.[0]?.path || "/sdcard/ROMs";
+
+      const res = await window.electronAPI.adbExportSingleRom(
+        connected.serial,
+        targetPath,
+        rom,
+        { syncSaves: true, syncCovers: true }
+      );
+
+      if (res.success) {
+        alert(`¡Juego "${rom.title || rom.romName}" transferido exitosamente a la consola Android (${targetPath})!`);
+      } else {
+        alert("Error al transferir a la consola: " + (res.errors?.[0]?.error || res.error || "Error desconocido"));
+      }
+    } catch (err) {
+      alert("Error al enviar a la consola Android: " + err.message);
+    }
+  };
+
   const handleViewManualClick = useCallback((e) => {
     e.stopPropagation();
     setIsManualModalOpen(true);
@@ -237,6 +272,14 @@ function RomCard({ rom, onRomUpdated }) {
             title="Exportar ROM"
           >
             <IconDownload size={16} />
+          </button>
+          <button
+            className="rom-icon-btn btn-android"
+            onClick={handleSendToAndroid}
+            disabled={isDeleting}
+            title="Enviar a consola Android por cable USB"
+          >
+            <IconBrandAndroid size={16} />
           </button>
         </div>
       </div>

@@ -1,11 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { createRequire } from "module";
+import consolesData from "../data/consoles.json" with { type: "json" };
 import { getPathSystemJsonSystemsPC } from "./utils/getPaths.js";
 import logger from "./utils/logger.js";
-
-const require = createRequire(import.meta.url);
-const consolesData = require("../data/consoles.json");
 
 const consoleNameMap = Object.values(consolesData.consoles).reduce(
   (map, c) => ({ ...map, [c.id_name]: c.name }),

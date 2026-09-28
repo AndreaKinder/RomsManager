@@ -5,11 +5,15 @@ import os from "os";
 const CONFIG_FILE = "config.json";
 const CONFIG_DIR = ".config/romsmanager";
 
-function getConfigPath() {
+export function getConfigDirectory() {
   if (process.platform === "win32") {
-    return path.join(process.env.APPDATA, "romsmanager", CONFIG_FILE);
+    return path.join(process.env.APPDATA, "romsmanager");
   }
-  return path.join(os.homedir(), CONFIG_DIR, CONFIG_FILE);
+  return path.join(os.homedir(), CONFIG_DIR);
+}
+
+function getConfigPath() {
+  return path.join(getConfigDirectory(), CONFIG_FILE);
 }
 
 
@@ -152,4 +156,24 @@ export function setScraperConfig(scraperConfig) {
   const config = readConfig();
   config.scraper = scraperConfig;
   writeConfig(config);
+}
+
+export function getAdbConfig() {
+  const config = readConfig();
+  return {
+    adbPath: config.adbPath || "",
+    defaultRemotePath: config.adbDefaultRemotePath || "/sdcard/ROMs",
+    lastDeviceSerial: config.adbLastDeviceSerial || "",
+    lastWirelessIp: config.adbLastWirelessIp || "",
+  };
+}
+
+export function setAdbConfig({ adbPath, defaultRemotePath, lastDeviceSerial, lastWirelessIp } = {}) {
+  const config = readConfig();
+  if (adbPath !== undefined) config.adbPath = adbPath;
+  if (defaultRemotePath !== undefined) config.adbDefaultRemotePath = defaultRemotePath;
+  if (lastDeviceSerial !== undefined) config.adbLastDeviceSerial = lastDeviceSerial;
+  if (lastWirelessIp !== undefined) config.adbLastWirelessIp = lastWirelessIp;
+  writeConfig(config);
+  return getAdbConfig();
 }

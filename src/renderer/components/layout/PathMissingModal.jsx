@@ -9,24 +9,22 @@ function PathMissingModal({ missingPath, onClose, onChangeRoute }) {
         </div>
 
         <div className="modal-body">
-          <p style={{ color: "var(--text-secondary)", marginBottom: 12 }}>
+          <p style={{ color: "var(--md-sys-color-on-surface-variant)", marginBottom: 12 }}>
             La carpeta de ROMs configurada ya no existe:
           </p>
-          <p
+          <div
+            className="error-message"
             style={{
-              background: "var(--surface-light)",
-              borderRadius: 6,
-              padding: "8px 12px",
               fontFamily: "monospace",
               fontSize: 13,
-              color: "var(--danger-color)",
               wordBreak: "break-all",
               marginBottom: 16,
+              marginTop: 0,
             }}
           >
             {missingPath}
-          </p>
-          <p style={{ color: "var(--text-secondary)" }}>
+          </div>
+          <p style={{ color: "var(--md-sys-color-on-surface-variant)" }}>
             Podés cerrar la app o seleccionar una nueva ruta.
           </p>
         </div>

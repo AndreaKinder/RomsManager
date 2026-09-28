@@ -57,15 +57,25 @@ function ConsoleCollection({
       <div
         className="console-header"
         onClick={() => setIsExpanded(!isExpanded)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
       >
-        <h2 style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span className="chevron" style={{ display: "inline-flex", alignItems: "center" }}>
-            {isExpanded ? <IconChevronDown size={18} /> : <IconChevronRight size={18} />}
+        <div className="console-header-left">
+          <span className={`chevron ${isExpanded ? "expanded" : ""}`}>
+            <IconChevronRight size={18} />
           </span>
-          <img src={displayIcon} alt={displayName} className="console-icon" />
-          {displayName}
-          <span className="rom-count">({romsArray.length} ROMs)</span>
-        </h2>
+          <div className="console-icon-wrap">
+            <img src={displayIcon} alt={displayName} className="console-icon" />
+          </div>
+          <h2 className="console-title">{displayName}</h2>
+        </div>
+        <span className="rom-count-chip">{romsArray.length} ROMs</span>
       </div>
 
       {isExpanded && (

@@ -15,6 +15,7 @@ import * as syncService from "../back/services/syncService.js";
 import * as configService from "../back/services/configService.js";
 import * as backupService from "../back/services/backupService.js";
 import * as emulationStationService from "../back/services/emulationStationService.js";
+import * as adbService from "../back/services/adbService.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -982,6 +983,156 @@ app.whenReady().then(async () => {
       return { success: false, error: error.message };
     }
   });
+
+  // --- ADB Android Console Sync IPC Handlers ---
+  ipcMain.handle("adb-get-status", async () => {
+    try {
+      const status = await adbService.getAdbStatus();
+      const config = configService.getAdbConfig();
+      return { success: true, ...status, config };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-select-binary", async () => {
+    try {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        title: "Seleccionar ejecutable de ADB",
+        properties: ["openFile"],
+      });
+      if (canceled || !filePaths.length) return { canceled: true };
+      const selected = filePaths[0];
+      configService.setAdbConfig({ adbPath: selected });
+      const status = await adbService.getAdbStatus();
+      return { success: true, path: selected, ...status };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-set-config", async (event, config) => {
+    try {
+      const updated = configService.setAdbConfig(config);
+      return { success: true, config: updated };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-download-install", async (event) => {
+    try {
+      const result = await adbService.downloadPlatformTools((prog) => {
+        if (event.sender && !event.sender.isDestroyed()) {
+          event.sender.send("adb-download-progress", prog);
+        }
+      });
+      return { success: true, ...result };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-list-devices", async () => {
+    try {
+      const devices = await adbService.listDevices();
+      return { success: true, devices };
+    } catch (error) {
+      return { success: false, error: error.message, devices: [] };
+    }
+  });
+
+  ipcMain.handle("adb-connect-wireless", async (event, ip, port) => {
+    try {
+      const res = await adbService.connectWireless(ip, port);
+      return res;
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-disconnect-wireless", async (event, target) => {
+    try {
+      const res = await adbService.disconnectWireless(target);
+      return res;
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  });
+
+  ipcMain.handle("adb-get-storage-paths", async (event, serial) => {
+    try {
+      const locations = await adbService.getStorageLocations(serial);
+      return { success: true, locations };
+    } catch (error) {
+      return { success: false, error: error.message, locations: [] };
+    }
+  });
+
+  ipcMain.handle("adb-compare-roms", async (event, serial, remoteRomsPath) => {
+    try {
+      const diff = await adbService.compareRoms(serial, remoteRomsPath);
+      return { success: true, ...diff };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle(
+    "adb-export-roms",
+    async (event, serial, remoteRomsPath, items, options) => {
+      try {
+        const result = await adbService.exportRomsToAndroid(
+          serial,
+          remoteRomsPath,
+          items,
+          options,
+          (progress) => {
+            if (event.sender && !event.sender.isDestroyed()) {
+              event.sender.send("adb-sync-progress", progress);
+            }
+          },
+        );
+        return result;
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    },
+  );
+
+  ipcMain.handle("adb-import-roms", async (event, serial, items) => {
+    try {
+      const result = await adbService.importRomsFromAndroid(
+        serial,
+        items,
+        (progress) => {
+          if (event.sender && !event.sender.isDestroyed()) {
+            event.sender.send("adb-sync-progress", progress);
+          }
+        },
+      );
+      return result;
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle(
+    "adb-export-single-rom",
+    async (event, serial, remoteRomsPath, rom, options) => {
+      try {
+        const result = await adbService.exportSingleRomToAndroid(
+          serial,
+          remoteRomsPath,
+          rom,
+          options,
+        );
+        return result;
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    },
+  );
 
   createWindow();
 

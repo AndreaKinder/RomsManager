@@ -10,6 +10,7 @@ import SettingsModal from "./components/layout/SettingsModal";
 import FirstRunModal from "./components/layout/FirstRunModal";
 import PathMissingModal from "./components/layout/PathMissingModal";
 import BigPictureView from "./components/bigpicture/BigPictureView";
+import AndroidSyncModal from "./components/sync/AndroidSyncModal";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 import { getDisplacementFilter } from "./utils/liquidGlass";
@@ -21,6 +22,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showConsoleModal, setShowConsoleModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showAndroidSyncModal, setShowAndroidSyncModal] = useState(false);
+  const [singleRomForSync, setSingleRomForSync] = useState(null);
   const [showFirstRunModal, setShowFirstRunModal] = useState(false);
   const [showPathMissingModal, setShowPathMissingModal] = useState(false);
   const [missingPath, setMissingPath] = useState("");
@@ -409,6 +412,10 @@ function App() {
           onSearchChange={setSearchQuery}
           onAddRom={() => setShowConsoleModal(true)}
           onOpenSettings={() => setShowSettingsModal(true)}
+          onOpenAndroidSync={() => {
+            setSingleRomForSync(null);
+            setShowAndroidSyncModal(true);
+          }}
           onEnterBigPicture={enterBigPicture}
           isLoading={isLoading}
           onOpenCustomCollectionSelect={() =>
@@ -490,6 +497,20 @@ function App() {
           <SettingsModal
             onClose={() => {
               setShowSettingsModal(false);
+              loadConsoles();
+              loadCustomCollections();
+            }}
+          />
+        )}
+
+        {showAndroidSyncModal && (
+          <AndroidSyncModal
+            initialSingleRom={singleRomForSync}
+            onClose={() => {
+              setShowAndroidSyncModal(false);
+              setSingleRomForSync(null);
+            }}
+            onSyncComplete={() => {
               loadConsoles();
               loadCustomCollections();
             }}

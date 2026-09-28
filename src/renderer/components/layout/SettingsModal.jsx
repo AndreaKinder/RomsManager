@@ -8,6 +8,8 @@ import {
   IconFolder,
   IconRefresh,
   IconCheck,
+  IconBrandAndroid,
+  IconDownload,
 } from "@tabler/icons-react";
 
 function SettingsModal({ onClose, isInline = false }) {
@@ -39,6 +41,13 @@ function SettingsModal({ onClose, isInline = false }) {
       igdb: { clientId: "", clientSecret: "" }
     }
   });
+
+  // ADB state
+  const [adbStatus, setAdbStatus] = useState(null);
+  const [adbDefaultRemotePath, setAdbDefaultRemotePath] = useState("/sdcard/ROMs");
+  const [isDownloadingAdb, setIsDownloadingAdb] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [adbFeedback, setAdbFeedback] = useState(null);
 
   useEffect(() => {
     const loadCollections = async () => {
@@ -111,11 +120,68 @@ function SettingsModal({ onClose, isInline = false }) {
       }
     };
 
+    const loadAdbConfig = async () => {
+      try {
+        if (window.electronAPI.adbGetStatus) {
+          const status = await window.electronAPI.adbGetStatus();
+          setAdbStatus(status);
+          if (status.config?.defaultRemotePath) {
+            setAdbDefaultRemotePath(status.config.defaultRemotePath);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading ADB status:", err);
+      }
+    };
+
     loadCollections();
     loadEmulators();
     loadScraperConfig();
     loadStorageConfig();
+    loadAdbConfig();
   }, []);
+
+  const handleSelectAdbBinary = async () => {
+    try {
+      const res = await window.electronAPI.adbSelectBinary();
+      if (!res.canceled && res.success) {
+        setAdbStatus(res);
+        setAdbFeedback("Ruta de ADB guardada con éxito");
+        setTimeout(() => setAdbFeedback(null), 3000);
+      }
+    } catch (err) {
+      setAdbFeedback("Error: " + err.message);
+    }
+  };
+
+  const handleDownloadAdb = async () => {
+    setIsDownloadingAdb(true);
+    setDownloadProgress(0);
+    setAdbFeedback(null);
+    try {
+      const res = await window.electronAPI.adbDownloadInstall();
+      if (res.success) {
+        setAdbStatus(res);
+        setAdbFeedback("ADB instalado correctamente");
+        setTimeout(() => setAdbFeedback(null), 3000);
+      } else {
+        setAdbFeedback("Error: " + res.error);
+      }
+    } catch (err) {
+      setAdbFeedback("Error: " + err.message);
+    } finally {
+      setIsDownloadingAdb(false);
+    }
+  };
+
+  const handleUpdateAdbRemotePath = async (val) => {
+    setAdbDefaultRemotePath(val);
+    try {
+      await window.electronAPI.adbSetConfig({ defaultRemotePath: val });
+    } catch (err) {
+      console.error("Error saving adb remote path:", err);
+    }
+  };
 
   const handleSelectStorageType = async (type) => {
     setStorageType(type);
@@ -338,7 +404,7 @@ function SettingsModal({ onClose, isInline = false }) {
       onClick={isInline ? undefined : handleBackdropClick}
     >
       <div
-        className={isInline ? "" : "modal-content"}
+        className={isInline ? "" : "modal-content settings-modal"}
         onClick={isInline ? undefined : (e) => e.stopPropagation()}
       >
         <div className={isInline ? "inline-view-header" : "modal-header"}>
@@ -505,6 +571,96 @@ function SettingsModal({ onClose, isInline = false }) {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Consolas Android (ADB / USB) */}
+            <div className="form-field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <IconBrandAndroid size={18} color="var(--success-color)" />
+                Consolas Android (Sincronización por cable USB)
+              </label>
+
+              <div
+                style={{
+                  background: "var(--surface)",
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid var(--border-color)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>Estado de ADB: </span>
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        color: adbStatus?.installed ? "var(--success-color)" : "var(--warning-color)",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {adbStatus?.installed
+                        ? `Instalado (versión ${adbStatus.version})`
+                        : "No detectado"}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {!adbStatus?.installed && (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleDownloadAdb}
+                        disabled={isDownloadingAdb}
+                        style={{ fontSize: "0.75rem", padding: "4px 8px", display: "flex", alignItems: "center", gap: 4 }}
+                      >
+                        <IconDownload size={14} />
+                        {isDownloadingAdb ? `Descargando (${downloadProgress}%)...` : "Instalar ADB"}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleSelectAdbBinary}
+                      style={{ fontSize: "0.75rem", padding: "4px 8px" }}
+                    >
+                      {adbStatus?.installed ? "Cambiar ruta adb..." : "Buscar adb..."}
+                    </button>
+                  </div>
+                </div>
+
+                {adbStatus?.path && (
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "0 0 8px 0" }}>
+                    Ejecutable: <code>{adbStatus.path}</code>
+                  </p>
+                )}
+
+                <div style={{ marginTop: 8 }}>
+                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "block", marginBottom: 4 }}>
+                    Carpeta ROMs por defecto en la consola Android:
+                  </label>
+                  <input
+                    type="text"
+                    value={adbDefaultRemotePath}
+                    onChange={(e) => handleUpdateAdbRemotePath(e.target.value)}
+                    placeholder="/sdcard/ROMs"
+                    style={{
+                      width: "100%",
+                      fontSize: "0.85rem",
+                      padding: "6px 8px",
+                      background: "var(--background)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: 6,
+                      color: "var(--text-primary)",
+                    }}
+                  />
+                </div>
+
+                {adbFeedback && (
+                  <span style={{ fontSize: 12, color: "var(--success-color)", display: "block", marginTop: 6 }}>
+                    {adbFeedback}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Backup */}

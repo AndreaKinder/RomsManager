@@ -48,6 +48,32 @@
         "wiiu": "wiiu",
         "switch": "switch"
       }
+    },
+    {
+      "id": "android",
+      "name": "Android (RetroArch / ES-DE / Daijishō)",
+      "mappings": {
+        "nes": "nes",
+        "genesis": "genesis",
+        "gb": "gb",
+        "sfc": "snes",
+        "sega_cd": "segacd",
+        "gbc": "gbc",
+        "ps": "psx",
+        "n64": "n64",
+        "gba": "gba",
+        "nds": "nds",
+        "ps2": "ps2",
+        "gc": "gc",
+        "3ds": "3ds",
+        "psp": "psp",
+        "neogeo": "neogeo",
+        "switch": "switch"
+      },
+      "paths": {
+        "roms": "ROMs",
+        "cover": "Covers"
+      }
     }
   ]
 }
