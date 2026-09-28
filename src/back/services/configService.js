@@ -13,7 +13,19 @@ function getConfigPath() {
 }
 
 
+export function getDefaultInternalRomsPath() {
+  const userHome = process.env.USERPROFILE || os.homedir();
+  return path.join(userHome, "Roms");
+}
+
 export function getDatabasePath() {
+  const config = readConfig();
+  if (config.storageType === "external" && config.romsBasePath) {
+    return path.join(config.romsBasePath, "database");
+  }
+  if (config.databasePath) {
+    return config.databasePath;
+  }
   if (process.platform === "win32") {
     return path.join(process.env.APPDATA, "romsmanager", "database");
   }
@@ -36,6 +48,26 @@ function writeConfig(config) {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf-8");
 }
 
+export function getStorageType() {
+  return readConfig().storageType || null;
+}
+
+export function setStorageType(storageType) {
+  const config = readConfig();
+  config.storageType = storageType;
+  writeConfig(config);
+}
+
+export function getSyncEmulationStation() {
+  return Boolean(readConfig().syncEmulationStation);
+}
+
+export function setSyncEmulationStation(sync) {
+  const config = readConfig();
+  config.syncEmulationStation = Boolean(sync);
+  writeConfig(config);
+}
+
 export function getRomsBasePath() {
   return readConfig().romsBasePath || null;
 }
@@ -47,7 +79,39 @@ export function setRomsBasePath(basePath) {
 }
 
 export function hasRomsBasePath() {
-  return getRomsBasePath() !== null;
+  const config = readConfig();
+  return Boolean(config.romsBasePath && config.storageType);
+}
+
+export function getAppConfig() {
+  const config = readConfig();
+  return {
+    storageType: config.storageType || "internal",
+    romsBasePath: config.romsBasePath || null,
+    syncEmulationStation: Boolean(config.syncEmulationStation),
+    databasePath: getDatabasePath(),
+  };
+}
+
+export function setAppConfig({ storageType, romsBasePath, syncEmulationStation }) {
+  const config = readConfig();
+  if (storageType !== undefined) config.storageType = storageType;
+  if (romsBasePath !== undefined) config.romsBasePath = romsBasePath;
+  if (syncEmulationStation !== undefined) {
+    config.syncEmulationStation = Boolean(syncEmulationStation);
+  }
+  writeConfig(config);
+
+  const dbPath = getDatabasePath();
+  if (dbPath && !fs.existsSync(dbPath)) {
+    try {
+      fs.mkdirSync(dbPath, { recursive: true });
+    } catch (e) {
+      // Ignore if directory cannot be created immediately (e.g. mock or drive permissions)
+    }
+  }
+
+  return getAppConfig();
 }
 
 export function getEmulators() {

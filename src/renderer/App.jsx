@@ -487,7 +487,13 @@ function App() {
         )}
 
         {showSettingsModal && (
-          <SettingsModal onClose={() => setShowSettingsModal(false)} />
+          <SettingsModal
+            onClose={() => {
+              setShowSettingsModal(false);
+              loadConsoles();
+              loadCustomCollections();
+            }}
+          />
         )}
       </div>
     </>

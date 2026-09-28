@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { BUTTON_LABELS, UI_TEXT } from "../../constants/messages";
-import { IconX } from "@tabler/icons-react";
+import {
+  IconX,
+  IconDeviceDesktop,
+  IconUsb,
+  IconDeviceGamepad2,
+  IconFolder,
+  IconRefresh,
+  IconCheck,
+} from "@tabler/icons-react";
 
 function SettingsModal({ onClose, isInline = false }) {
   const [diskPath, setDiskPath] = useState("");
@@ -8,6 +16,13 @@ function SettingsModal({ onClose, isInline = false }) {
   const [newCollection, setNewCollection] = useState("");
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Storage & Sync state
+  const [storageType, setStorageType] = useState("internal");
+  const [romsBasePath, setRomsBasePath] = useState("");
+  const [syncEmulationStation, setSyncEmulationStation] = useState(false);
+  const [isSyncingGamelists, setIsSyncingGamelists] = useState(false);
+  const [esSyncFeedback, setEsSyncFeedback] = useState(null);
 
   // Emulators state
   const [emulators, setEmulators] = useState({});
@@ -83,10 +98,74 @@ function SettingsModal({ onClose, isInline = false }) {
       }
     };
 
+    const loadStorageConfig = async () => {
+      try {
+        if (window.electronAPI.getAppConfig) {
+          const config = await window.electronAPI.getAppConfig();
+          setStorageType(config.storageType || "internal");
+          setRomsBasePath(config.romsBasePath || "");
+          setSyncEmulationStation(Boolean(config.syncEmulationStation));
+        }
+      } catch (error) {
+        console.error("Error loading storage config:", error);
+      }
+    };
+
     loadCollections();
     loadEmulators();
     loadScraperConfig();
+    loadStorageConfig();
   }, []);
+
+  const handleSelectStorageType = async (type) => {
+    setStorageType(type);
+    try {
+      await window.electronAPI.setStorageType(type);
+    } catch (err) {
+      console.error("Error setting storage type:", err);
+    }
+  };
+
+  const handleSelectRomsFolder = async () => {
+    try {
+      const folder = await window.electronAPI.selectRomsFolder();
+      if (folder) {
+        setRomsBasePath(folder);
+        await window.electronAPI.setRomsBasePath(folder);
+      }
+    } catch (err) {
+      console.error("Error selecting folder:", err);
+    }
+  };
+
+  const handleToggleSyncEmulationStation = async () => {
+    const nextVal = !syncEmulationStation;
+    setSyncEmulationStation(nextVal);
+    try {
+      await window.electronAPI.setSyncEmulationStation(nextVal);
+    } catch (err) {
+      console.error("Error toggling syncEmulationStation:", err);
+    }
+  };
+
+  const handleManualSyncAllGamelists = async () => {
+    setIsSyncingGamelists(true);
+    setEsSyncFeedback(null);
+    try {
+      const res = await window.electronAPI.syncAllGamelists();
+      if (res && res.success) {
+        setEsSyncFeedback(
+          `¡Sincronizado! Se actualizaron ${res.syncedConsoles} consolas (${res.totalGames} juegos).`,
+        );
+      } else {
+        setEsSyncFeedback("Error al sincronizar: " + (res?.error || "Desconocido"));
+      }
+    } catch (err) {
+      setEsSyncFeedback("Error: " + err.message);
+    } finally {
+      setIsSyncingGamelists(false);
+    }
+  };
 
   const handleBackdropClick = (e) => {
     if (e.target.className === "modal-backdrop") {
@@ -273,6 +352,161 @@ function SettingsModal({ onClose, isInline = false }) {
 
         <form onSubmit={handleSubmit}>
           <div className={isInline ? "inline-view-body" : "modal-body"}>
+            {/* Almacenamiento y Sincronización */}
+            <div className="form-field">
+              <label>Almacenamiento de ROMs y Datos</label>
+
+              <div className="storage-options-grid" style={{ marginBottom: 12 }}>
+                <div
+                  className={`storage-card ${storageType === "internal" ? "selected" : ""}`}
+                  onClick={() => handleSelectStorageType("internal")}
+                >
+                  <div className="storage-card-icon">
+                    <IconDeviceDesktop size={20} />
+                  </div>
+                  <div className="storage-card-title">
+                    Disco Interno
+                    {storageType === "internal" && (
+                      <IconCheck size={16} color="var(--primary-color)" />
+                    )}
+                  </div>
+                  <div className="storage-card-desc">
+                    Datos en tu usuario local. Ideal para jugar en este equipo.
+                  </div>
+                </div>
+
+                <div
+                  className={`storage-card ${storageType === "external" ? "selected" : ""}`}
+                  onClick={() => handleSelectStorageType("external")}
+                >
+                  <div className="storage-card-icon">
+                    <IconUsb size={20} />
+                  </div>
+                  <div className="storage-card-title">
+                    Disco Externo / SD
+                    {storageType === "external" && (
+                      <IconCheck size={16} color="var(--primary-color)" />
+                    )}
+                  </div>
+                  <div className="storage-card-desc">
+                    ROMs y base de datos portátiles en unidad externa o SD.
+                  </div>
+                </div>
+              </div>
+
+              <div className="collection-input-container">
+                <input
+                  type="text"
+                  value={romsBasePath}
+                  readOnly
+                  placeholder="Ninguna carpeta seleccionada"
+                  style={{ cursor: "default" }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleSelectRomsFolder}
+                  disabled={isLoading}
+                  style={{ display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  <IconFolder size={16} />
+                  Cambiar
+                </button>
+              </div>
+              {romsBasePath && (
+                <p className="form-hint" style={{ marginTop: 6 }}>
+                  Ruta base: <strong>{romsBasePath}/Roms</strong>
+                  {storageType === "external" && (
+                    <span>
+                      {" "}
+                      | Base de datos:{" "}
+                      <strong>{romsBasePath}/database</strong>
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+
+            {/* Sincronización con Emulation Station */}
+            <div className="form-field">
+              <label>Emulation Station</label>
+              <div
+                className={`sync-switch-card ${syncEmulationStation ? "active" : ""}`}
+                onClick={handleToggleSyncEmulationStation}
+                style={{ marginTop: 0 }}
+              >
+                <div className="sync-switch-info">
+                  <div className="sync-switch-header">
+                    <IconDeviceGamepad2
+                      size={20}
+                      color={
+                        syncEmulationStation
+                          ? "var(--success-color)"
+                          : "var(--text-secondary)"
+                      }
+                    />
+                    <span>
+                      Sincronizar automáticamente con Emulation Station
+                    </span>
+                    {syncEmulationStation && (
+                      <span className="sync-feedback-badge">Activo</span>
+                    )}
+                  </div>
+                  <div className="sync-switch-desc">
+                    Mantiene sincronizados los archivos <code>gamelist.xml</code>{" "}
+                    y carátulas en cada carpeta de consola.
+                  </div>
+                </div>
+
+                <label
+                  className="custom-toggle"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={syncEmulationStation}
+                    onChange={handleToggleSyncEmulationStation}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              {syncEmulationStation && (
+                <div
+                  style={{
+                    marginTop: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleManualSyncAllGamelists}
+                    disabled={isSyncingGamelists || !romsBasePath}
+                    style={{ display: "flex", alignItems: "center", gap: 6 }}
+                  >
+                    <IconRefresh
+                      size={16}
+                      className={isSyncingGamelists ? "spin-animation" : ""}
+                    />
+                    {isSyncingGamelists
+                      ? "Sincronizando..."
+                      : "Sincronizar gamelist.xml ahora"}
+                  </button>
+                  {esSyncFeedback && (
+                    <span
+                      style={{ fontSize: 12, color: "var(--success-color)" }}
+                    >
+                      {esSyncFeedback}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Backup */}
             <div className="form-field">
               <label htmlFor="diskPath">{UI_TEXT.SG_PATH_LABEL}</label>

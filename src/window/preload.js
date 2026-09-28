@@ -2,10 +2,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
   getAllRoms: () => ipcRenderer.invoke("get-all-roms"),
-  getRom: (id) => ipcRenderer.invoke("get-rom", id),
-  createRom: (romData) => ipcRenderer.invoke("create-rom", romData),
-  updateRom: (id, updates) => ipcRenderer.invoke("update-rom", id, updates),
-  deleteRom: (id) => ipcRenderer.invoke("delete-rom", id),
   selectRomFile: () => ipcRenderer.invoke("select-rom-file"),
   selectCoverImage: () => ipcRenderer.invoke("select-cover-image"),
   selectSaveFile: () => ipcRenderer.invoke("select-save-file"),
@@ -70,6 +66,20 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setRomsBasePath: (basePath) =>
     ipcRenderer.invoke("set-roms-base-path", basePath),
   selectRomsFolder: () => ipcRenderer.invoke("select-roms-folder"),
+  getAppConfig: () => ipcRenderer.invoke("get-app-config"),
+  setAppConfig: (config) => ipcRenderer.invoke("set-app-config", config),
+  getStorageType: () => ipcRenderer.invoke("get-storage-type"),
+  setStorageType: (storageType) =>
+    ipcRenderer.invoke("set-storage-type", storageType),
+  getSyncEmulationStation: () =>
+    ipcRenderer.invoke("get-sync-emulation-station"),
+  setSyncEmulationStation: (enabled) =>
+    ipcRenderer.invoke("set-sync-emulation-station", enabled),
+  getDefaultInternalPath: () =>
+    ipcRenderer.invoke("get-default-internal-path"),
+  syncAllGamelists: () => ipcRenderer.invoke("sync-all-gamelists"),
+  syncSystemGamelist: (consoleId) =>
+    ipcRenderer.invoke("sync-system-gamelist", consoleId),
   getScraperConfig: () => ipcRenderer.invoke("get-scraper-config"),
   setScraperConfig: (config) => ipcRenderer.invoke("set-scraper-config", config),
   scrapeSearch: (query, consoleId, provider) => ipcRenderer.invoke("scrape-search", query, consoleId, provider),

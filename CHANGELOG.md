@@ -8,12 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Homebrew Cask distribution for macOS (`brew install --cask romsmanager`)
-- Automated cask update on tagged releases via GitHub Actions
-- Multi-provider metadata scraping (ScreenScraper + TheGamesDB)
+- **Storage Location Selection**: Choose between Internal Drive (local storage) or External Drive / SD Card during setup or in Settings
+- **Portable Database**: When External Drive is selected, the database and metadata are stored directly on the drive for full portability
+- **EmulationStation Synchronization**: Automatic generation and synchronization of `gamelist.xml` and cover art in console directories for Emulation Station, ES-DE, RetroPie, and Batocera
+- **Manual ES Sync**: Trigger full `gamelist.xml` synchronization on-demand from the Settings modal
+- **Enhanced Setup Wizard**: Redesigned First Run modal with storage type cards, folder browser, and EmulationStation sync toggle
+
+## [0.5.0-alpha] - 2026-05-31
+
+### Added
+- **Big Picture Mode**: Immersive full-screen interface tailored for gamepad and keyboard navigation
+- **Native OS Visuals**:
+  - macOS: Frameless window with native Vibrancy and dynamic Liquid Glass SVG refraction
+  - Windows 11: Frameless window with native Acrylic material and integrated window controls
+  - Linux: Clean native GTK frame
+- **Tabler Icons**: Modern, scalable icon set integration (`@tabler/icons-react`)
+- **Scraper Services**: Multi-provider metadata and cover art scraping via ScreenScraper and TheGamesDB
+- **Sidebar & Layout Redesign**: Enhanced navigation, quick console access, and collection views
+- **Multi-Platform Build Pipeline**: Automated packaging for Linux (`.AppImage`), Windows (`.exe` Setup), and macOS (`.zip`)
+
+### Changed
+- Streamlined UI focusing exclusively on a refined dark retro-gaming aesthetic
+- Upgraded to React 19 and modern Electron 39 foundation
 
 ### Fixed
-- macOS Gatekeeper "damaged app" warning resolved via Homebrew distribution
+- Build configuration consistency across platforms with Electron Forge and Webpack
+- Synchronized package dependencies and CI release workflows
 
 ## [0.2.0-alpha] - 2025-12-02
 

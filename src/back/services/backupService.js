@@ -49,7 +49,7 @@ export function importBackup(zipPath) {
 
     if (entry.entryName.startsWith("database/")) {
       const relative = entry.entryName.slice("database/".length);
-      const target = path.join(appConfigDir, "database", relative);
+      const target = path.join(getDatabasePath(), relative);
       fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.writeFileSync(target, entry.getData());
     } else if (entry.entryName.startsWith("roms/") && romsBasePath) {

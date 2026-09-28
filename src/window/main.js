@@ -14,6 +14,7 @@ import * as uiDataService from "../back/services/uiDataService.js";
 import * as syncService from "../back/services/syncService.js";
 import * as configService from "../back/services/configService.js";
 import * as backupService from "../back/services/backupService.js";
+import * as emulationStationService from "../back/services/emulationStationService.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -220,6 +221,67 @@ app.whenReady().then(async () => {
   ipcMain.handle("set-roms-base-path", (event, basePath) => {
     configService.setRomsBasePath(basePath);
     return { success: true };
+  });
+
+  ipcMain.handle("get-app-config", () => configService.getAppConfig());
+
+  ipcMain.handle("set-app-config", async (event, config) => {
+    const updated = configService.setAppConfig(config);
+    if (config.syncEmulationStation) {
+      try {
+        emulationStationService.syncAllGamelists();
+      } catch (err) {
+        console.warn("Error running initial ES sync:", err);
+      }
+    }
+    return { success: true, config: updated };
+  });
+
+  ipcMain.handle("get-storage-type", () => configService.getStorageType());
+
+  ipcMain.handle("set-storage-type", (event, storageType) => {
+    configService.setStorageType(storageType);
+    return { success: true };
+  });
+
+  ipcMain.handle("get-sync-emulation-station", () =>
+    configService.getSyncEmulationStation(),
+  );
+
+  ipcMain.handle("set-sync-emulation-station", (event, sync) => {
+    configService.setSyncEmulationStation(sync);
+    if (sync) {
+      try {
+        emulationStationService.syncAllGamelists();
+      } catch (err) {
+        console.warn("Error running ES sync on enable:", err);
+      }
+    }
+    return { success: true };
+  });
+
+  ipcMain.handle("get-default-internal-path", () =>
+    configService.getDefaultInternalRomsPath(),
+  );
+
+  ipcMain.handle("sync-all-gamelists", async () => {
+    try {
+      const result = emulationStationService.syncAllGamelists();
+      return { success: true, ...result };
+    } catch (error) {
+      console.error("Failed to sync gamelists:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("sync-system-gamelist", async (event, consoleId) => {
+    try {
+      const result = emulationStationService.syncSystemGamelist(consoleId);
+      return { success: true, ...result };
+    } catch (error) {
+      console.error(`Failed to sync gamelist for ${consoleId}:`, error);
+      return { success: false, error: error.message };
+    }
   });
 
   ipcMain.handle("select-roms-folder", async () => {

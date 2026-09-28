@@ -2,6 +2,7 @@ import { systemRomDecider } from "./getFilters.js";
 import fs from "fs";
 import path from "path";
 import { getPathSystemJsonSystemsPC } from "./getPaths.js";
+import { syncSystemGamelist } from "../emulationStationService.js";
 
 const FILE_EXTENSION_SEPARATOR = ".";
 const FIRST_ELEMENT = 0;
@@ -73,6 +74,12 @@ export function persistRomToJson(romObject) {
 
   writeRomsDataToFile(jsonFilePath, updatedRomsData);
 
+  try {
+    syncSystemGamelist(romObject.system);
+  } catch (esErr) {
+    console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
+  }
+
   return updatedRomsData;
 }
 
@@ -85,12 +92,22 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
+    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
+      const syncGamelist = () => {
+        try {
+          syncSystemGamelist(consoleId);
+        } catch (esErr) {
+          console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
+        }
+      };
+
       // Caso: actualizar campos simples (title, system, etc)
       if (fieldToUpdate !== "romName" && fieldToUpdate !== "romPath") {
         romsData[romName][fieldToUpdate] = newValue;
         writeRomsDataToFile(jsonFilePath, romsData);
+        syncGamelist();
         return romsData[romName];
       }
 
@@ -116,6 +133,7 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
         romsData[newValue] = updatedRom;
 
         writeRomsDataToFile(jsonFilePath, romsData);
+        syncGamelist();
         return updatedRom;
       }
 
@@ -139,10 +157,12 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
           delete romsData[romName];
           romsData[newRomName] = updatedRom;
           writeRomsDataToFile(jsonFilePath, romsData);
+          syncGamelist();
           return updatedRom;
         } else {
           romsData[romName].romPath = newValue;
           writeRomsDataToFile(jsonFilePath, romsData);
+          syncGamelist();
           return romsData[romName];
         }
       }
@@ -161,6 +181,7 @@ export function deleteRomFromJson(romName) {
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
+    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
       const romPath = romsData[romName].romPath;
@@ -172,6 +193,12 @@ export function deleteRomFromJson(romName) {
       // Delete physical ROM file if it exists
       if (fs.existsSync(romPath)) {
         fs.unlinkSync(romPath);
+      }
+
+      try {
+        syncSystemGamelist(consoleId);
+      } catch (esErr) {
+        console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
       }
 
       return { success: true, romName, romPath };
@@ -190,6 +217,7 @@ export function updateRomCollections(romName, collections) {
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
+    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
       // Update collections field
@@ -197,6 +225,13 @@ export function updateRomCollections(romName, collections) {
         ? collections
         : [];
       writeRomsDataToFile(jsonFilePath, romsData);
+
+      try {
+        syncSystemGamelist(consoleId);
+      } catch (esErr) {
+        console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
+      }
+
       return {
         success: true,
         romName,
