@@ -1,7 +1,7 @@
 {
   "name": "romsmanager",
   "productName": "ROM Manager",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A desktop application for managing retro game ROMs with SD card sync capabilities",
   "main": ".webpack/main",
   "private": true,
@@ -62,6 +62,7 @@
     "axios": "^1.13.2",
     "better-sqlite3": "^12.5.0",
     "electron-squirrel-startup": "^1.0.1",
+    "eslint": "^10.11.0",
     "nes.css": "^2.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
