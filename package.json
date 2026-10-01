@@ -3,7 +3,7 @@
   "productName": "ROM Manager",
   "version": "0.6.0",
   "description": "A desktop application for managing retro game ROMs with SD card sync capabilities",
-  "main": ".webpack/main",
+  "main": ".webpack/main/index.cjs",
   "private": true,
   "repository": {
     "type": "git",

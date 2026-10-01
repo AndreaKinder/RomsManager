@@ -1,6 +1,19 @@
 const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
+// Polyfill clone method on @reforged/maker-appimage for Electron Forge v8 compatibility
+try {
+  const appImageModule = require("@reforged/maker-appimage");
+  const MakerAppImage = appImageModule.default || appImageModule;
+  if (MakerAppImage && !MakerAppImage.prototype.clone) {
+    MakerAppImage.prototype.clone = function () {
+      return new this.constructor(this.configOrConfigFetcher, this.platformsToMakeOn);
+    };
+  }
+} catch {
+  // Ignore if not present
+}
+
 module.exports = {
   packagerConfig: {
     asar: true,
