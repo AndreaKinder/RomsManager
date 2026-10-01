@@ -43,17 +43,75 @@ Gestiona la configuración persistente del usuario en un archivo JSON.
 |---------|---------|-------------|
 | `getRomsBasePath()` | `string \| null` | Ruta base configurada para ROMs |
 | `setRomsBasePath(basePath)` | `void` | Guarda nueva ruta base |
-| `hasRomsBasePath()` | `boolean` | Verifica si hay ruta configurada |
+| `hasRomsBasePath()` | `boolean` | Verifica si hay ruta configurada y tipo de almacenamiento |
+| `getStorageType()` | `'internal' \| 'external' \| null` | Obtiene el tipo de almacenamiento activo |
+| `setStorageType(type)` | `void` | Define el tipo de almacenamiento |
+| `getSyncEmulationStation()` | `boolean` | Indica si la sincronización ES está habilitada |
+| `setSyncEmulationStation(bool)` | `void` | Habilita o deshabilita la sincronización ES |
+| `getAppConfig()` | `Object` | Retorna configuración unificada de almacenamiento |
+| `setAppConfig(config)` | `Object` | Actualiza la configuración global |
 | `getEmulators()` | `Object` | Mapa consoleId → path de emulador |
 | `getEmulatorForConsole(consoleId)` | `string \| null` | Path del emulador para una consola |
 | `setEmulator(consoleId, emulatorPath)` | `void` | Asigna emulador a consola |
 | `removeEmulator(consoleId)` | `void` | Elimina emulador de consola |
-| `getDatabasePath()` | `string` | Ruta al directorio de JSONs de sistema |
+| `getScraperConfig()` | `Object` | Credenciales y proveedor activo de scraping |
+| `setScraperConfig(config)` | `void` | Guarda configuración del scraper |
+| `getAdbConfig()` | `Object` | Configuración de ADB (binario, rutas remotas, último IP) |
+| `setAdbConfig(config)` | `Object` | Guarda configuración de ADB |
+| `getDatabasePath()` | `string` | Directorio de la base de datos (interno o portátil) |
 
 #### Ubicación del Config
 
 - **Linux/macOS**: `~/.config/romsmanager/config.json`
 - **Windows**: `%APPDATA%\romsmanager\config.json`
+
+---
+
+### `emulationStationService.js`
+
+**Ubicación**: `src/back/services/emulationStationService.js`
+
+Genera y sincroniza `gamelist.xml` compatible con EmulationStation / ES-DE / RetroPie / Batocera.
+
+| Función | Descripción |
+|---------|-------------|
+| `syncSystemGamelist(consoleId)` | Genera el `gamelist.xml` para la consola especificada con rutas relativas de carátula |
+| `syncAllGamelists()` | Sincroniza todas las consolas que tienen base de datos |
+| `parseGamelistXml(filePath)` | Parsea un `gamelist.xml` existente a una lista de objetos |
+| `formatEsReleaseDate(dateStr)` | Convierte fechas a formato ES (`YYYYMMDDTHHMMSS`) |
+
+---
+
+### `adbService.js`
+
+**Ubicación**: `src/back/services/adbService.js`
+
+Gestor integral para sincronización inalámbrica o USB con dispositivos portátiles basados en Android.
+
+| Función | Descripción |
+|---------|-------------|
+| `resolveAdbBinary()` | Encuentra el binario ADB en el sistema o en el directorio interno de la app |
+| `downloadAndInstallAdb(onProgress)` | Descarga e instala automáticamente Google Platform Tools |
+| `listConnectedDevices()` | Detecta consolas y teléfonos conectados por USB o Wi-Fi |
+| `connectWireless(ip, port)` | Conecta a una consola Android por red inalámbrica |
+| `disconnectWireless(target)` | Desconecta una sesión ADB inalámbrica |
+| `getAndroidStoragePaths(serial)` | Detecta rutas de almacenamiento interno y tarjetas MicroSD |
+| `compareRoms(serial, remotePath)` | Compara ROMs locales y remotas detectando faltantes y sincronizadas |
+| `exportRomsToAndroid(serial, ...)` | Transfiere ROMs seleccionadas al dispositivo con eventos de progreso |
+| `importRomsFromAndroid(serial, ...)` | Copia ROMs del dispositivo Android hacia el PC |
+
+---
+
+### `scrapers/` (`screenScraper.js` & `theGamesDb.js`)
+
+**Ubicación**: `src/back/services/scrapers/`
+
+Módulos para consulta de APIs de metadatos de videojuegos.
+
+| Proveedor | Archivo | Capacidades |
+|-----------|---------|-------------|
+| **ScreenScraper** | `screenScraper.js` | Búsqueda por nombre y hash, carátulas 2D/3D, sinopsis, fechas de lanzamiento |
+| **TheGamesDB** | `theGamesDb.js` | Búsqueda por título, resumen del juego, año y desarrollador |
 
 ---
 

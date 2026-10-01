@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Portable Database**: When External Drive is selected, the database and metadata are stored directly on the drive for full portability
 - **EmulationStation Synchronization**: Automatic generation and synchronization of `gamelist.xml` and cover art in console directories for Emulation Station, ES-DE, RetroPie, and Batocera
 - **Manual ES Sync**: Trigger full `gamelist.xml` synchronization on-demand from the Settings modal
+- **ADB Android Device Sync**: Bi-directional wireless (Wi-Fi) and USB synchronization for Android gaming handhelds (Retroid, Odin, Anbernic) with library comparison, progress tracking, and automated platform-tools installer
 - **Enhanced Setup Wizard**: Redesigned First Run modal with storage type cards, folder browser, and EmulationStation sync toggle
 
 ## [0.5.0-alpha] - 2026-05-31

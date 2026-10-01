@@ -1,61 +1,64 @@
-# ROM Manager
+# 🎮 ROM Manager
 
-A desktop application for managing retro game ROM collections with SD card sync, Big Picture TV mode, and gamepad support.
+A modern retro desktop application to organize, synchronize, scrape, and play retro game ROM collections across multiple consoles.
 
-## Features
+![ROM Manager](./screenshots/app-screenshot.png)
 
-- **Multi-Console Support**: 18+ systems from NES to Nintendo Switch
-- **Metadata Scraping**: Integration with ScreenScraper and TheGamesDB to automatically download covers, titles, and descriptions.
-- **SD Card Sync**: Bidirectional import/export between PC and SD card
-- **Big Picture Mode**: Fullscreen TV interface with gamepad and keyboard navigation
-- **Gamepad Support**: Native controller support via Web Gamepad API
-- **Custom Collections**: Organize ROMs with custom tags across consoles
-- **Direct Launch**: Configure emulators per console and launch ROMs from the app
-- **Backup & Restore**: ZIP export/import of your entire library
-- **Retro Aesthetic**: Dark pixel-art UI with hard shadows and scanlines
-
-## Tech Stack
-
-- **Electron** + **React 19**
-- **Webpack** (via Electron Forge)
-- **Custom Retro CSS** + [nes.css](https://nostalgic-css.github.io/NES.css/)
-- **Jest** for testing
-- **JSON-based** filesystem registry
-
-## 💿 Download & Install
-
-### macOS
-
-```bash
-brew tap andreakinder/tap
-brew install --cask romsmanager
-```
-
-### Windows & Linux
-
-Download the installer from [GitHub Releases](https://github.com/andreakinder/RomsManager/releases).
+![Version](https://img.shields.io/badge/version-0.6.0-purple)
+![Electron](https://img.shields.io/badge/Electron-44-blue)
+![React](https://img.shields.io/badge/React-19-61dafb)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## Development
+## 🌟 Key Features
 
-### Requirements
+### 🕹️ ROM Library Management
+- **Multi-Console Support**: 18+ retro systems from NES to Nintendo Switch.
+- **Smart System Classification**: Automatic console identification based on file extensions.
+- **Custom Collections & Tags**: Group ROMs across consoles using custom tags.
+- **Real-Time Search**: Instant filtering by game title and filename.
+- **Saves & Manuals Support**: Link save states (`.sav`, `.srm`, `.state`) and view integrated PDF manuals.
 
-- Node.js 18+
-- npm or yarn
+### 📺 Big Picture Mode (TV & Gamepad)
+- **Gamepad Navigation**: Native controller support via Web Gamepad API with rising-edge detection and hold-repeat.
+- **Spatial Grid Navigation**: Seamless directional movement across console lists and game cards.
+- **Keyboard Controls**: Arrow keys, Enter, and Escape support.
+- **Cursor Auto-Hide**: Mouse cursor automatically disappears after 3 seconds of inactivity.
 
-### Setup
+### 💾 Flexible Storage & Portability
+- **Internal vs External Storage**: Store your library on local drives or directly on SD cards / external drives.
+- **Portable Database**: External mode stores the JSON database directly on the portable storage for plug-and-play across different PCs.
+
+### 🔄 Multi-Device Synchronization
+- **SD Card Sync**: Bidirectional PC ↔ SD card file synchronization.
+- **EmulationStation / ES-DE Sync**: Automated generation and updating of `gamelist.xml` metadata and relative cover art paths.
+- **Android ADB Wireless & USB Sync**: Connect to Android retro handhelds (Retroid Pocket, AYN Odin, Anbernic, etc.) over Wi-Fi or USB. Features automated ADB platform-tools acquisition, library diffing, and progress tracking.
+
+### 🌐 Metadata Scraping
+- **ScreenScraper & TheGamesDB**: Automated scraping of titles, descriptions, developer information, release dates, and box art.
+
+### 🚀 Direct Launch & Library Backup
+- **Direct Emulator Launch**: Configure emulator paths per console and launch games directly from the app.
+- **Backup & Restore**: Create full ZIP archives of your ROMs, saves, covers, and database for easy restoration.
+
+---
+
+## 💻 Installation & Setup
+
+### Prerequisites
+- **Node.js**: v18 or higher
+- **npm** or package manager of choice
+
+### Clone & Install
 
 ```bash
 git clone https://github.com/andreakinder/RomsManager.git
 cd RomsManager
 npm install
-npm run verify-build  # optional but recommended
 ```
 
-## Running
-
-### Development
+### Running in Development
 
 ```bash
 npm start
@@ -69,94 +72,97 @@ npm run test:watch
 npm run test:coverage
 ```
 
-### Build & Distribution
+### Building & Packaging
 
 ```bash
-npm run package    # Package for current platform
-npm run make       # Generate distributables (DMG, AppImage, etc.)
-npm run publish    # Publish release
+# Package for current OS
+npm run package
+
+# Build installers (AppImage, deb, exe, zip)
+npm run make
+
+# Verify build configuration
+npm run verify-build
 ```
 
-## Project Structure
+---
+
+## 📁 Storage Structure
 
 ```
-RomsManager/
-├── src/
-│   ├── back/               # Main process services (Node.js)
-│   ├── renderer/           # React frontend
-│   ├── styles/             # Global CSS (retro dark theme + Big Picture)
-│   └── window/             # Electron main & preload
-├── docs/                   # Project documentation
-├── .opencode/              # OpenCode agent ecosystem
-├── AGENTS.md               # Root orchestrator for AI agents
-├── CHANGELOG.md
-└── package.json
+<RomsBasePath>/
+├── Roms/
+│   ├── nes/
+│   │   ├── SuperMarioBros.nes
+│   │   └── gamelist.xml       # Generated if EmulationStation sync is enabled
+│   ├── snes/
+│   ├── gba/
+│   └── ...
+├── Saves/
+│   ├── nes/
+│   └── ...
+├── Covers/
+│   ├── nes/
+│   └── ...
+├── Manuals/
+│   ├── nes/
+│   └── ...
+└── database/                 # Present when using External Storage mode
+    ├── nes.json
+    └── ...
 ```
 
-## Architecture
+---
 
-ROM Manager uses a **classic Electron architecture** with strict process separation:
+## 🗂️ Supported Systems
 
-- **Main Process** (`src/window/main.js`): Node.js with full system access, IPC handlers, emulator spawning, native dialogs.
-- **Renderer Process** (`src/renderer/App.jsx`): Isolated React app communicating via `contextBridge` preload script.
-- **Data Layer**: JSON files per console stored in `~/.config/romsmanager/database/` (Linux/macOS) or `%APPDATA%\romsmanager\database\` (Windows).
+| Console | System ID | File Extensions |
+|---------|-----------|-----------------|
+| NES / Famicom | `nes` | `.nes` |
+| Super Nintendo (SNES) | `sfc` | `.smc`, `.sfc` |
+| Sega Genesis / Mega Drive | `genesis` | `.md`, `.gen`, `.sms` |
+| Sega CD | `sega_cd` | `.ccd`, `.cue`, `.iso` |
+| Game Boy | `gb` | `.gb` |
+| Game Boy Color | `gbc` | `.gbc` |
+| Game Boy Advance | `gba` | `.gba` |
+| Nintendo 64 | `n64` | `.z64`, `.v64`, `.n64` |
+| Nintendo DS | `nds` | `.nds` |
+| Nintendo 3DS | `3ds` | `.3ds`, `.cia` |
+| GameCube | `gc` | `.gcm`, `.iso`, `.gcz` |
+| Wii | `wii` | `.iso`, `.wbfs`, `.wad` |
+| Wii U | `wiiu` | `.wud`, `.wux`, `.rpx` |
+| Nintendo Switch | `switch` | `.nsp`, `.xci`, `.nca`, `.nro` |
+| PlayStation 1 | `ps` | `.pbp`, `.bin`, `.cue`, `.iso` |
+| PlayStation 2 | `ps2` | `.bin`, `.cue`, `.iso` |
+| PlayStation Portable | `psp` | `.iso`, `.cso`, `.psp` |
+| Neo Geo | `neogeo` | `.zip` |
 
-See [`docs/architecture.md`](docs/architecture.md) for detailed architecture documentation.
+---
 
-## Big Picture Mode
+## 🛠️ Tech Stack
 
-A fullscreen TV-optimized view with spatial navigation and gamepad support:
+- **Desktop Framework**: [Electron 44](https://www.electronjs.org/) + [Electron Forge](https://www.electronforge.io/)
+- **UI Library**: [React 19](https://react.dev/)
+- **Icons**: [Tabler Icons React](https://tabler.io/icons)
+- **Styling**: Retro Dark Aesthetic + [nes.css](https://nostalgic-css.github.io/NES.css/) + Pixel Art Fonts (Press Start 2P)
+- **Bundler**: Webpack 5
+- **Services**: Axios, xml2js, Adm-Zip, Child Process ADB Bridge
 
-- **Spatial LRUD Navigation**: Directional movement respects visual grid layout
-- **Gamepad Polling**: 60fps `requestAnimationFrame` loop with rising-edge detection and hold-repeat
-- **Keyboard**: Arrow keys + Enter + Escape
-- **Auto-hide Cursor**: Mouse hides after 3 seconds of inactivity
+---
 
-See [`docs/big-picture-mode.md`](docs/big-picture-mode.md) for complete documentation.
+## 📚 Documentation
 
-## Retro Design
+For deeper architectural details, check the guides in [`docs/`](docs/):
+- [Architecture Overview](docs/architecture.md)
+- [Big Picture Mode & Gamepad](docs/big-picture-mode.md)
+- [React Components](docs/components.md)
+- [Hooks & Backend Services](docs/hooks-and-utils.md)
+- [Retro Design System](docs/retro-design.md)
+- [Code Conventions](docs/conventions.md)
+- [Standard Commits](docs/standard-commits.md)
 
-- Zero border-radius everywhere
-- Hard box shadows (`4px 4px 0px #000`)
-- No CSS transitions for instant arcade-like feedback
-- Press Start 2P pixel font for headings
-- Scanline background pattern
-- Dark palette: `#121212` background, `#8b5cf6` accent
+---
 
-See [`docs/retro-design.md`](docs/retro-design.md) for design decisions.
+## 📄 License
 
-## Supported Systems
-
-| Console | Extensions |
-|---------|-----------|
-| NES | `.nes` |
-| SNES | `.smc`, `.sfc` |
-| Sega Genesis | `.md`, `.gen`, `.sms` |
-| Game Boy | `.gb` |
-| Game Boy Color | `.gbc` |
-| Game Boy Advance | `.gba` |
-| Nintendo 64 | `.z64`, `.v64`, `.n64` |
-| Nintendo DS | `.nds` |
-| PlayStation | `.pbp`, `.bin`, `.cue`, `.iso` |
-| PlayStation 2 | `.bin`, `.cue`, `.iso` |
-| PSP | `.iso`, `.cso`, `.psp` |
-| GameCube | `.gcm`, `.iso`, `.gcz` |
-| Nintendo 3DS | `.3ds`, `.cia` |
-| Nintendo Switch | `.nsp`, `.xci`, `.nca`, `.nro` |
-| Neo Geo | `.zip` |
-| Sega CD | `.ccd`, `.cue`, `.iso` |
-
-## Documentation
-
-- [`docs/architecture.md`](docs/architecture.md) — System architecture
-- [`docs/big-picture-mode.md`](docs/big-picture-mode.md) — Big Picture mode & gamepad
-- [`docs/components.md`](docs/components.md) — Key React components
-- [`docs/hooks-and-utils.md`](docs/hooks-and-utils.md) — Hooks & backend services
-- [`docs/retro-design.md`](docs/retro-design.md) — Retro design decisions
-- [`docs/conventions.md`](docs/conventions.md) — Code conventions
-- [`docs/standard-commits.md`](docs/standard-commits.md) — Commit standards
-- [`AGENTS.md`](AGENTS.md) — AI agent ecosystem
-
-## License
-
-[MIT](LICENSE)
+This project is licensed under the [MIT License](LICENSE).

@@ -126,28 +126,29 @@ El path se codifica por segmentos (no por slashes completos) para evitar problem
 **Tipo**: Modal con estado local
 
 Permite editar los metadatos de una ROM:
-- Título
-- Nombre de archivo
-- Carátula (seleccionar imagen del PC)
-- Partida guardada (importar save file)
-- Manual PDF (seleccionar PDF)
-- Colecciones personalizadas (agregar/remover tags)
+- **Scraping Integrado**: Botón para consultar ScreenScraper o TheGamesDB y autocompletar título, sinopsis, año, desarrollador y carátula.
+- Título y nombre de archivo.
+- Carátula (seleccionar imagen local o desde el scraper).
+- Partida guardada (importar archivo de guardado).
+- Manual PDF (seleccionar archivo PDF).
+- Colecciones personalizadas (añadir/eliminar etiquetas).
 
-Actualiza el JSON correspondiente via IPC y refresca la lista padre.
+Actualiza el JSON correspondiente y, si está activa la sincronización con EmulationStation, actualiza el `gamelist.xml`.
 
 ---
 
 ## `SettingsModal`
 
 **Ubicación**: `src/renderer/components/layout/SettingsModal.jsx`
-**Tipo**: Modal con estado local
+**Tipo**: Modal con estado local y pestañas/secciones
 
 Configuración global de la aplicación:
-- **Ruta base de ROMs**: Cambiar el directorio raíz donde se almacenan ROMs, saves, covers, manuals.
-- **Emuladores por consola**: Asignar un ejecutable de emulador a cada consola soportada. Usa un selector de archivo nativo.
-- **Backup/Restore**: Exportar toda la biblioteca a un ZIP o restaurar desde uno.
-
-Los emuladores se guardan en `config.json` bajo la clave `emulators`.
+- **Almacenamiento**: Selección entre Almacenamiento Interno (disco local) o Almacenamiento Externo (tarjeta SD / USB portátil con base de datos autónoma).
+- **Sincronización EmulationStation**: Switch para sincronización automática y botón para sincronizar todos los `gamelist.xml` bajo demanda.
+- **Sincronización ADB Android**: Configuración de binario ADB, conexión inalámbrica por IP/puerto, detección de consolas Android y explorador/comparador de ROMs.
+- **Scraper**: Configuración del proveedor preferido (ScreenScraper / TheGamesDB) e introducción de credenciales/API keys.
+- **Emuladores por consola**: Asignar un ejecutable de emulador a cada consola soportada con selector nativo.
+- **Copia de Seguridad y Restauración**: Exportar toda la biblioteca a un ZIP o restaurar desde un archivo ZIP.
 
 ---
 
@@ -170,13 +171,12 @@ Resumen de responsabilidades:
 ## `FirstRunModal`
 
 **Ubicación**: `src/renderer/components/layout/FirstRunModal.jsx`
-**Tipo**: Modal (wizard)
+**Tipo**: Modal (wizard de configuración inicial)
 
-Aparece la primera vez que se ejecuta la app. Guía al usuario para:
-1. Seleccionar el directorio base donde se almacenarán las ROMs.
-2. Confirmar la configuración.
-
-Una vez completado, guarda la ruta en `config.json` y carga las consolas.
+Aparece la primera vez que se ejecuta la app o si se reconfigura el almacenamiento:
+1. **Tipo de almacenamiento**: Tarjetas interactivas para elegir entre almacenamiento Interno (PC) o Externo (tarjeta SD / disco USB con base de datos portátil).
+2. **Directorio base**: Selector para definir la carpeta raíz donde se crearán las subcarpetas de ROMs.
+3. **EmulationStation Sync**: Opción para habilitar la generación automática de archivos `gamelist.xml` y carátulas para frontends compatibles.
 
 ---
 
@@ -224,12 +224,13 @@ ROM Manager uses functional React components with minimal local state. Business 
 | `ConsoleList` | `layout/ConsoleList.jsx` | Presentational | Renders ConsoleCollection list |
 | `ConsoleCollection` | `roms/ConsoleCollection.jsx` | Presentational | Collapsible console section with RomCards |
 | `RomCard` | `roms/RomCard.jsx` | Presentational + local state | ROM display card with cover, actions, indicators |
-| `EditRomModal` | `roms/EditRomModal.jsx` | Modal | Edit ROM metadata, cover, save, manual, collections |
-| `SettingsModal` | `layout/SettingsModal.jsx` | Modal | Global settings: base path, emulators, backup |
+| `EditRomModal` | `roms/EditRomModal.jsx` | Modal | Edit ROM metadata, scraper search, cover, save, manual, collections |
+| `SettingsModal` | `layout/SettingsModal.jsx` | Modal | Global settings: storage type, ES sync, ADB sync, scraper credentials, emulators, backup |
 | `BigPictureView` | `bigpicture/BigPictureView.jsx` | Fullscreen view | TV/gamepad mode with spatial navigation |
-| `FirstRunModal` | `layout/FirstRunModal.jsx` | Wizard | Initial setup for ROMs base path |
+| `FirstRunModal` | `layout/FirstRunModal.jsx` | Wizard | Initial setup for storage mode (internal/external), base path, and ES sync |
 | `PathMissingModal` | `layout/PathMissingModal.jsx` | Alert | Warns when configured path is missing |
 | `ManualViewerModal` | `roms/ManualViewerModal.jsx` | Modal | PDF viewer for game manuals |
+
 
 ### RomCard Actions
 

@@ -124,20 +124,49 @@ Gestiona la configuración persistente del usuario en un archivo JSON:
 - **Ubicación**:
   - Linux/macOS: `~/.config/romsmanager/config.json`
   - Windows: `%APPDATA%\romsmanager\config.json`
-- **Datos almacenados**: `romsBasePath`, `emulators` (mapeo consoleId → path).
+- **Datos almacenados**:
+  - `storageType`: `'internal'` o `'external'`.
+  - `romsBasePath`: Ruta base de la biblioteca de ROMs.
+  - `syncEmulationStation`: Booleano para sincronización automática de `gamelist.xml`.
+  - `emulators`: Mapeo `consoleId → executablePath`.
+  - `scraper`: Credenciales de proveedores y scraper por defecto.
+  - `adb`: Rutas de ADB, dispositivo previo y último puerto/IP inalámbrico.
+
+### `emulationStationService.js`
+
+Sincroniza y genera archivos `gamelist.xml` compatibles con EmulationStation, ES-DE, RetroPie y Batocera:
+
+- `syncSystemGamelist(consoleId)`: Genera el `gamelist.xml` en la carpeta de la consola correspondiente (`<romsBasePath>/Roms/<consoleId>/gamelist.xml`) a partir de la base de datos de metadatos, formateando fechas y ajustando carátulas relativas.
+- `syncAllGamelists()`: Sincroniza todas las consolas registradas en una sola pasada.
+- `parseGamelistXml(filePath)`: Parsea listas de juegos existentes usando `xml2js`.
+
+### `adbService.js`
+
+Gestiona la comunicación y sincronización de ROMs con dispositivos portátiles Android (Retroid Pocket, AYN Odin, Anbernic, etc.):
+
+- **Detección y binario**: Auto-descarga binarios oficiales de `platform-tools` si no existen localmente, o usa ADB del sistema.
+- **Conectividad**: Soporte para conexión USB y conexión inalámbrica (`adb connect <ip>:<port>`).
+- **Detección de almacenamiento**: Inspecciona rutas internas y tarjetas SD externas en el dispositivo Android (`/storage/XXXX-XXXX`, `/sdcard`).
+- **Comparación y sincronización**: Compara las ROMs locales con las del dispositivo Android, ejecuta transferencias con reporte de progreso en tiempo real (`adb-sync-progress`).
+
+### `scrapers/` (Servicio de Scraping)
+
+- **Proveedores**: `screenScraper.js` y `theGamesDb.js`.
+- Busca información de juegos por título y consola (`scrapeSearch`).
+- Descarga y asocia carátulas, títulos normalizados, descripciones y desarrollador a la base de datos local (`scrapeApply`).
 
 ### `uiDataService.js`
 
 Genera los datos que consume la UI:
 
-- `getGeneratedConsoles()`: Lee los archivos JSON del directorio de sistemas, parsea las ROMs, y devuelve objetos de consola con `consoleId`, `consoleName`, `romCount`, `roms`.
+- `getGeneratedConsoles()`: Lee los archivos JSON del directorio de base de datos, parsea las ROMs, y devuelve objetos de consola con `consoleId`, `consoleName`, `romCount`, `roms`.
 - `getAllRoms()`: Devuelve todas las ROMs indexadas por `consoleId`.
 - `fixCoverPath()`: Si una carátula no se encuentra en la ruta registrada, intenta encontrarla con otras extensiones (`.jpg`, `.png`, `.webp`, etc.).
 - `getAllCustomCollections()`: Extrae colecciones personalizadas del campo `collections` de cada ROM.
 
 ### `syncService.js`
 
-Maneja la sincronización de archivos entre PC y tarjeta SD:
+Maneja la sincronización de archivos entre PC y tarjeta SD tradicional:
 
 - `importRomsPC(sdPath)`: Itera por todos los sistemas, lee ROMs del directorio de la SD (`sdPath/Roms/<SYSTEM>/`), y las copia al PC registrándolas en JSON.
 - `exportAllRomsPcToGalic(sdPath)`: Copia todas las ROMs del PC al directorio correspondiente de la SD.
@@ -163,6 +192,9 @@ Cada consola tiene su propio archivo JSON (ej: `nes.json`) con este esquema:
     "romName": "SuperMarioBros.nes",
     "system": "nes",
     "title": "Super Mario Bros",
+    "description": "Juego de plataformas clásico de NES...",
+    "developer": "Nintendo",
+    "releaseDate": "19850913",
     "romPath": "/home/user/Roms/Roms/nes/SuperMarioBros.nes",
     "savePath": "/home/user/Roms/Saves/nes/SuperMarioBros.sav",
     "coverPath": "/home/user/Roms/Covers/nes/SuperMarioBros.png",
@@ -172,12 +204,22 @@ Cada consola tiene su propio archivo JSON (ej: `nes.json`) con este esquema:
 }
 ```
 
+### Ubicación de la Base de Datos
+
+- **Modo Almacenamiento Interno**:
+  - Linux/macOS: `~/.config/romsmanager/database/<consoleId>.json`
+  - Windows: `%APPDATA%\romsmanager\database\<consoleId>.json`
+- **Modo Almacenamiento Externo**:
+  - `<RomsBasePath>/database/<consoleId>.json` (completamente portátil).
+
 ### Directorios del Usuario
 
 ```
 <RomsBasePath>/
 ├── Roms/
 │   ├── nes/
+│   │   ├── SuperMarioBros.nes
+│   │   └── gamelist.xml       # Sincronización EmulationStation
 │   ├── snes/
 │   └── ...
 ├── Saves/
@@ -189,7 +231,7 @@ Cada consola tiene su propio archivo JSON (ej: `nes.json`) con este esquema:
 ├── Manuals/
 │   ├── nes/
 │   └── ...
-└── .config/romsmanager/database/
+└── database/                 # Modo externo portátil
     ├── nes.json
     ├── snes.json
     └── ...
@@ -214,28 +256,31 @@ ROM Manager uses a **classic Electron architecture** with strict separation betw
 
 1. React components call `window.electronAPI.*` methods
 2. Preload forwards to `ipcRenderer.invoke(channel, ...args)`
-3. Main process IPC handlers execute filesystem operations via services
+3. Main process IPC handlers execute filesystem, scraping, or device sync operations via dedicated backend services
 4. Results return through the IPC promise chain back to React
 
 ### Key Services
 
 | Service | Responsibility |
 |---------|---------------|
-| `configService` | Persistent user config (paths, emulators) |
-| `uiDataService` | Read JSON DB, fix cover paths, build console/collection objects |
+| `configService` | Persistent user config (paths, storage types, emulators, scraper, adb) |
+| `emulationStationService` | Generates & parses `gamelist.xml` files for ES-DE / RetroPie / Batocera |
+| `adbService` | USB and wireless ADB sync for Android gaming handhelds |
+| `scrapers/` | Metadata & cover art scraping via ScreenScraper and TheGamesDB |
+| `uiDataService` | Reads JSON DB, fixes cover paths, builds console/collection views |
 | `syncService` | Bidirectional PC ↔ SD card file sync |
 | `backupService` | ZIP export/import of entire library |
 | `editService` | ROM metadata editing |
 
 ### Persistence Layer
 
-- JSON files per console in `~/.config/romsmanager/database/`
-- ROM files, saves, covers, and manuals stored in user-configured base path
-- No SQL database; filesystem is the source of truth
+- JSON files per console stored in user config dir (Internal mode) or directly inside `<romsBasePath>/database/` (External portable mode).
+- ROM files, saves, covers, and manuals stored in user-configured base path.
+- Filesystem is the source of truth with automated XML syncing for frontend emulators.
 
 ### Security Model
 
 - `contextIsolation: true`
 - `nodeIntegration: false`
 - Custom `media://` protocol for local image serving
-- All fs operations happen in main process only
+- All filesystem and process executions happen in the main process only.
