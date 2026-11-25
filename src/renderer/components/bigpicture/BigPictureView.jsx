@@ -188,7 +188,7 @@ function BigPictureView({ consoles, onExit }) {
           );
           return;
         }
-        await window.electronAPI.launchRom(emulatorPath, rom.romPath);
+        await window.electronAPI.launchRom(emulatorPath, rom.romPath, rom.system);
       } catch (err) {
         console.error(err);
       } finally {

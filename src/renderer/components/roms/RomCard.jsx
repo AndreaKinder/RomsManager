@@ -162,6 +162,7 @@ function RomCard({ rom, onRomUpdated }) {
     const result = await window.electronAPI.launchRom(
       emulatorPath,
       rom.romPath,
+      rom.system,
     );
 
     if (!result.success) {

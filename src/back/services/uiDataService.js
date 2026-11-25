@@ -64,7 +64,7 @@ function buildConsoleData(consoleId, roms) {
 function loadConsoleFromJsonFile(systemPath, jsonFile) {
   const consoleId = extractConsoleIdFromFilename(jsonFile);
   const jsonPath = path.join(systemPath, jsonFile);
-  const roms = parseRomsFromJsonFile(jsonPath);
+  const roms = parseRomsFromJsonFile(jsonPath).map(fixCoverPath);
   return buildConsoleData(consoleId, roms);
 }
 
@@ -88,29 +88,21 @@ function fixCoverPath(rom) {
     return rom;
   }
 
-  // Check if the cover file exists
   if (fs.existsSync(rom.coverPath)) {
     return rom;
   }
 
-  // Cover doesn't exist, try to find it with different extensions
-  console.log(`Cover file not found: ${rom.coverPath}`);
   const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
   const basePathWithoutExt = rom.coverPath.replace(/\.[^.]+$/, "");
-  console.log(`Searching for covers with base path: ${basePathWithoutExt}`);
 
   for (const ext of validExtensions) {
     const possiblePath = basePathWithoutExt + ext;
-    console.log(`Trying: ${possiblePath}`);
     if (fs.existsSync(possiblePath)) {
-      console.log(`✓ Found cover: ${possiblePath}`);
       logger.info(`Fixed cover path for ${rom.romName}: ${possiblePath}`);
       return { ...rom, coverPath: possiblePath };
     }
   }
 
-  // No cover found, return with null coverPath
-  console.log(`No cover found for ${rom.romName}`);
   logger.warn(`Cover not found for ${rom.romName}, expected: ${rom.coverPath}`);
   return { ...rom, coverPath: null };
 }
@@ -134,15 +126,29 @@ export function getAllRoms() {
   return allRoms;
 }
 
-function extractCustomCollectionsFromRom(romObject) {
-  const collections = romObject.collections || [];
-  return collections;
+function extractCustomCollectionsFromRoms(romsList) {
+  if (!Array.isArray(romsList)) {
+    return Array.isArray(romsList?.collections) ? romsList.collections : [];
+  }
+  const collectionsSet = new Set();
+  for (const romObject of romsList) {
+    if (Array.isArray(romObject?.collections)) {
+      for (const col of romObject.collections) {
+        collectionsSet.add(col);
+      }
+    }
+  }
+  return Array.from(collectionsSet);
 }
 
 function getRomForCustomCollection(romsObjectList, collection) {
+  if (!Array.isArray(romsObjectList)) return [];
   const romsCollection = [];
   for (const romObject of romsObjectList) {
-    if (collection === romObject.collection) {
+    if (
+      Array.isArray(romObject?.collections) &&
+      romObject.collections.includes(collection)
+    ) {
       romsCollection.push(romObject);
     }
   }
@@ -156,7 +162,7 @@ function createCollectionObject(roms, collection) {
 
 export function getCollectionObject(allObjectRoms) {
   const customCollections = {};
-  const collections = extractCustomCollectionsFromRom(allObjectRoms);
+  const collections = extractCustomCollectionsFromRoms(allObjectRoms);
   collections.forEach((collection) => {
     const collectionObject = createCollectionObject(allObjectRoms, collection);
     customCollections[collection] = collectionObject;

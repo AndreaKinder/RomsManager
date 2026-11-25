@@ -6,6 +6,7 @@ import {
   getSyncEmulationStation,
   getDatabasePath,
 } from "./configService.js";
+import { getRomsDirPC } from "./utils/getPaths.js";
 import logger from "./utils/logger.js";
 
 /**
@@ -34,7 +35,7 @@ export function formatEsReleaseDate(dateStr) {
 export function getGamelistPathForConsole(consoleId) {
   const basePath = getRomsBasePath();
   if (!basePath) return null;
-  return path.join(basePath, "Roms", consoleId, "gamelist.xml");
+  return path.join(getRomsDirPC(consoleId), "gamelist.xml");
 }
 
 /**

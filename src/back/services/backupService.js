@@ -3,11 +3,6 @@ import path from "path";
 import AdmZip from "adm-zip";
 import { getDatabasePath, getRomsBasePath } from "./configService.js";
 
-// ~/.config/romsmanager  (or %APPDATA%/romsmanager on Windows)
-function getAppConfigDir() {
-  return path.dirname(getDatabasePath());
-}
-
 function buildTimestamp() {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, "0");
@@ -41,7 +36,6 @@ export function importBackup(zipPath) {
   const zip = new AdmZip(zipPath);
   const entries = zip.getEntries();
 
-  const appConfigDir = getAppConfigDir();
   const romsBasePath = getRomsBasePath();
 
   for (const entry of entries) {

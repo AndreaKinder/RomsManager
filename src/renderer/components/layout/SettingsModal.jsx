@@ -10,7 +10,9 @@ import {
   IconCheck,
   IconBrandAndroid,
   IconDownload,
+  IconServer,
 } from "@tabler/icons-react";
+import { EMULATOR_ARG_PRESETS } from "../../../back/services/utils/emulatorArgs";
 
 function SettingsModal({ onClose, isInline = false }) {
   const [diskPath, setDiskPath] = useState("");
@@ -22,6 +24,17 @@ function SettingsModal({ onClose, isInline = false }) {
   // Storage & Sync state
   const [storageType, setStorageType] = useState("internal");
   const [romsBasePath, setRomsBasePath] = useState("");
+  const [pathLayout, setPathLayout] = useState({
+    preset: "standard",
+    romsPattern: "{base}/Roms/{console}",
+    savesPattern: "{base}/Saves/{console}",
+    statesPattern: "{base}/States/{console}",
+    coversPattern: "{base}/Covers/{console}",
+    manualsPattern: "{base}/Manuals/{console}",
+    consoleOverrides: {},
+  });
+  const [isScanningLibrary, setIsScanningLibrary] = useState(false);
+  const [scanFeedback, setScanFeedback] = useState(null);
   const [syncEmulationStation, setSyncEmulationStation] = useState(false);
   const [isSyncingGamelists, setIsSyncingGamelists] = useState(false);
   const [esSyncFeedback, setEsSyncFeedback] = useState(null);
@@ -31,14 +44,32 @@ function SettingsModal({ onClose, isInline = false }) {
   const [availableConsoles, setAvailableConsoles] = useState([]);
   const [newEmulatorConsole, setNewEmulatorConsole] = useState("");
   const [newEmulatorPath, setNewEmulatorPath] = useState("");
+  const [newEmulatorArgs, setNewEmulatorArgs] = useState("");
+
+  // RomM state
+  const [rommConfig, setRommConfig] = useState({
+    enabled: false,
+    serverUrl: "",
+    authType: "token",
+    apiToken: "",
+    username: "",
+    password: "",
+    tlsVerify: true,
+    platformMap: {},
+    autoSyncSaves: false,
+    syncMetadata: true,
+    autoDownloadCovers: true,
+  });
+  const [rommPlatforms, setRommPlatforms] = useState([]);
+  const [isTestingRomm, setIsTestingRomm] = useState(false);
+  const [rommFeedback, setRommFeedback] = useState(null);
 
   // Scraper state
   const [scraperConfig, setScraperConfig] = useState({
     defaultScraper: "screenscraper",
     credentials: {
       screenscraper: { developerId: "", developerPassword: "" },
-      thegamesdb: { apiKey: "" },
-      igdb: { clientId: "", clientSecret: "" }
+      thegamesdb: { apiKey: "" }
     }
   });
 
@@ -114,9 +145,23 @@ function SettingsModal({ onClose, isInline = false }) {
           setStorageType(config.storageType || "internal");
           setRomsBasePath(config.romsBasePath || "");
           setSyncEmulationStation(Boolean(config.syncEmulationStation));
+          if (config.pathLayout) {
+            setPathLayout(config.pathLayout);
+          }
         }
       } catch (error) {
         console.error("Error loading storage config:", error);
+      }
+    };
+
+    const loadRommConfig = async () => {
+      try {
+        if (window.electronAPI.rommGetConfig) {
+          const cfg = await window.electronAPI.rommGetConfig();
+          if (cfg) setRommConfig(cfg);
+        }
+      } catch (err) {
+        console.error("Error loading RomM config:", err);
       }
     };
 
@@ -138,6 +183,7 @@ function SettingsModal({ onClose, isInline = false }) {
     loadEmulators();
     loadScraperConfig();
     loadStorageConfig();
+    loadRommConfig();
     loadAdbConfig();
   }, []);
 
@@ -202,6 +248,100 @@ function SettingsModal({ onClose, isInline = false }) {
     } catch (err) {
       console.error("Error selecting folder:", err);
     }
+  };
+
+  const handlePathLayoutPresetChange = async (preset) => {
+    try {
+      const res = await window.electronAPI.setPathLayout({ preset });
+      if (res?.layout) setPathLayout(res.layout);
+    } catch (err) {
+      console.error("Error updating path layout preset:", err);
+    }
+  };
+
+  const handlePathPatternChange = async (field, value) => {
+    const updated = { ...pathLayout, preset: "custom", [field]: value };
+    setPathLayout(updated);
+    try {
+      await window.electronAPI.setPathLayout(updated);
+    } catch (err) {
+      console.error("Error updating path pattern:", err);
+    }
+  };
+
+  const handleScanLocalLibrary = async () => {
+    setIsScanningLibrary(true);
+    setScanFeedback(null);
+    try {
+      const res = await window.electronAPI.scanLocalLibrary({ pruneMissing: false });
+      if (res?.success) {
+        setScanFeedback(
+          `Escaneo completado (${res.consolesScanned} consolas): ${res.added} añadidas, ${res.updated} actualizadas.`,
+        );
+      } else {
+        setScanFeedback("Error: " + (res?.error || "Desconocido"));
+      }
+    } catch (err) {
+      setScanFeedback("Error: " + err.message);
+    } finally {
+      setIsScanningLibrary(false);
+    }
+  };
+
+  const handleRommConfigUpdate = async (patch) => {
+    const next = { ...rommConfig, ...patch };
+    setRommConfig(next);
+    try {
+      await window.electronAPI.rommSetConfig(next);
+    } catch (err) {
+      console.error("Error saving RomM config:", err);
+    }
+  };
+
+  const handleDetectRommSync = async () => {
+    try {
+      const detected = await window.electronAPI.rommDetectRommSync();
+      if (!detected?.found) {
+        setRommFeedback("No se encontró ninguna instalación de romm-sync en este equipo.");
+        return;
+      }
+      await handleRommConfigUpdate({
+        enabled: true,
+        serverUrl: detected.serverUrl,
+        authType: detected.authType,
+        apiToken: detected.apiToken,
+        username: detected.username,
+        tlsVerify: detected.tlsVerify,
+      });
+      setRommFeedback(`Datos importados desde ${detected.sourcePath}`);
+    } catch (err) {
+      setRommFeedback("Error: " + err.message);
+    }
+  };
+
+  const handleTestRommConnection = async () => {
+    setIsTestingRomm(true);
+    setRommFeedback(null);
+    try {
+      const res = await window.electronAPI.rommTestConnection(rommConfig);
+      if (res?.success) {
+        setRommPlatforms(res.platforms || []);
+        setRommFeedback(
+          `Conectado${res.serverVersion ? ` (RomM v${res.serverVersion})` : ""}: ${res.platformCount} plataformas detectadas.`,
+        );
+      } else {
+        setRommFeedback("Error de conexión: " + (res?.error || "Desconocido"));
+      }
+    } catch (err) {
+      setRommFeedback("Error: " + err.message);
+    } finally {
+      setIsTestingRomm(false);
+    }
+  };
+
+  const handleRommPlatformMapChange = async (rommSlug, localConsoleId) => {
+    const nextMap = { ...(rommConfig.platformMap || {}), [rommSlug]: localConsoleId };
+    await handleRommConfigUpdate({ platformMap: nextMap });
   };
 
   const handleToggleSyncEmulationStation = async () => {
@@ -354,12 +494,18 @@ function SettingsModal({ onClose, isInline = false }) {
       return;
     }
 
-    await window.electronAPI.setEmulator(newEmulatorConsole, newEmulatorPath);
+    const entry = {
+      path: newEmulatorPath,
+      args: newEmulatorArgs.trim(),
+      workingDir: "",
+    };
+    await window.electronAPI.setEmulator(newEmulatorConsole, entry);
     setEmulators((prev) => ({
       ...prev,
-      [newEmulatorConsole]: newEmulatorPath,
+      [newEmulatorConsole]: entry,
     }));
     setNewEmulatorPath("");
+    setNewEmulatorArgs("");
   };
 
   const handleRemoveEmulator = async (consoleId) => {
@@ -396,7 +542,6 @@ function SettingsModal({ onClose, isInline = false }) {
   };
 
   const configuredConsoleIds = Object.keys(emulators);
-  const unconfiuredConsoles = availableConsoles.filter((c) => !emulators[c.id]);
 
   return (
     <div
@@ -481,7 +626,7 @@ function SettingsModal({ onClose, isInline = false }) {
               </div>
               {romsBasePath && (
                 <p className="form-hint" style={{ marginTop: 6 }}>
-                  Ruta base: <strong>{romsBasePath}/Roms</strong>
+                  Ruta base: <strong>{romsBasePath}</strong>
                   {storageType === "external" && (
                     <span>
                       {" "}
@@ -491,6 +636,253 @@ function SettingsModal({ onClose, isInline = false }) {
                   )}
                 </p>
               )}
+
+              {/* Estructura de carpetas personalizable y escáner local */}
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: 12,
+                  borderRadius: 8,
+                  background: "var(--surface)",
+                  border: "1px solid var(--border-color)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                    Estructura de carpetas:
+                  </span>
+                  <select
+                    value={pathLayout.preset || "standard"}
+                    onChange={(e) => handlePathLayoutPresetChange(e.target.value)}
+                    style={{ flex: 1, minWidth: 180 }}
+                  >
+                    <option value="standard">ROM Manager (Estándar)</option>
+                    <option value="romm">RomM / RommDeck ({`{console}/games`})</option>
+                    <option value="emulationstation">EmulationStation / ES-DE / EmuDeck</option>
+                    <option value="custom">Personalizado</option>
+                  </select>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                    ROMs:
+                    <input
+                      type="text"
+                      value={pathLayout.romsPattern || ""}
+                      onChange={(e) => handlePathPatternChange("romsPattern", e.target.value)}
+                      style={{ width: "100%", marginTop: 2, fontSize: "0.8rem" }}
+                    />
+                  </label>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                    Saves:
+                    <input
+                      type="text"
+                      value={pathLayout.savesPattern || ""}
+                      onChange={(e) => handlePathPatternChange("savesPattern", e.target.value)}
+                      style={{ width: "100%", marginTop: 2, fontSize: "0.8rem" }}
+                    />
+                  </label>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                    States:
+                    <input
+                      type="text"
+                      value={pathLayout.statesPattern || ""}
+                      onChange={(e) => handlePathPatternChange("statesPattern", e.target.value)}
+                      style={{ width: "100%", marginTop: 2, fontSize: "0.8rem" }}
+                    />
+                  </label>
+                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                    Covers:
+                    <input
+                      type="text"
+                      value={pathLayout.coversPattern || ""}
+                      onChange={(e) => handlePathPatternChange("coversPattern", e.target.value)}
+                      style={{ width: "100%", marginTop: 2, fontSize: "0.8rem" }}
+                    />
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleScanLocalLibrary}
+                    disabled={isScanningLibrary || !romsBasePath}
+                    style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem" }}
+                  >
+                    <IconRefresh
+                      size={15}
+                      className={isScanningLibrary ? "spin-animation" : ""}
+                    />
+                    {isScanningLibrary ? "Escaneando..." : "Escanear biblioteca local"}
+                  </button>
+                  {scanFeedback && (
+                    <span style={{ fontSize: 12, color: "var(--success-color)" }}>
+                      {scanFeedback}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Integración con RomM (Opcional y personalizable) */}
+            <div className="form-field">
+              <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <IconServer size={18} />
+                Servidor RomM (Opcional)
+              </label>
+
+              <div
+                style={{
+                  background: "var(--surface)",
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid var(--border-color)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", margin: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(rommConfig.enabled)}
+                      onChange={(e) => handleRommConfigUpdate({ enabled: e.target.checked })}
+                    />
+                    <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                      Habilitar integración con RomM
+                    </span>
+                  </label>
+
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleDetectRommSync}
+                    style={{ fontSize: "0.75rem", padding: "4px 8px" }}
+                  >
+                    Importar de romm-sync
+                  </button>
+                </div>
+
+                {rommConfig.enabled && (
+                  <>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <input
+                        type="url"
+                        value={rommConfig.serverUrl || ""}
+                        onChange={(e) => handleRommConfigUpdate({ serverUrl: e.target.value })}
+                        placeholder="https://romm.tudominio.com o http://192.168.1.10:4002"
+                      />
+
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <select
+                          value={rommConfig.authType || "token"}
+                          onChange={(e) => handleRommConfigUpdate({ authType: e.target.value })}
+                        >
+                          <option value="token">API Token</option>
+                          <option value="basic">Usuario y contraseña</option>
+                        </select>
+
+                        {rommConfig.authType === "basic" ? (
+                          <>
+                            <input
+                              type="text"
+                              value={rommConfig.username || ""}
+                              onChange={(e) => handleRommConfigUpdate({ username: e.target.value })}
+                              placeholder="Usuario"
+                              style={{ flex: 1 }}
+                            />
+                            <input
+                              type="password"
+                              value={rommConfig.password || ""}
+                              onChange={(e) => handleRommConfigUpdate({ password: e.target.value })}
+                              placeholder="Contraseña"
+                              style={{ flex: 1 }}
+                            />
+                          </>
+                        ) : (
+                          <input
+                            type="password"
+                            value={rommConfig.apiToken || ""}
+                            onChange={(e) => handleRommConfigUpdate({ apiToken: e.target.value })}
+                            placeholder="Token API de RomM (rmm_...)"
+                            style={{ flex: 1 }}
+                          />
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: "0.8rem" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={rommConfig.tlsVerify !== false}
+                            onChange={(e) => handleRommConfigUpdate({ tlsVerify: e.target.checked })}
+                          />
+                          Verificar certificado TLS
+                        </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={rommConfig.autoDownloadCovers !== false}
+                            onChange={(e) => handleRommConfigUpdate({ autoDownloadCovers: e.target.checked })}
+                          />
+                          Descargar carátulas automáticamente
+                        </label>
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={handleTestRommConnection}
+                          disabled={isTestingRomm || !rommConfig.serverUrl}
+                          style={{ fontSize: "0.8rem" }}
+                        >
+                          {isTestingRomm ? "Probando..." : "Probar conexión"}
+                        </button>
+                        {rommFeedback && (
+                          <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                            {rommFeedback}
+                          </span>
+                        )}
+                      </div>
+
+                      {rommPlatforms.length > 0 && (
+                        <div style={{ marginTop: 6 }}>
+                          <div style={{ fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}>
+                            Mapeo de plataformas RomM → Consola local:
+                          </div>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                            {rommPlatforms.map((p) => (
+                              <div
+                                key={p.id}
+                                style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.78rem" }}
+                              >
+                                <span style={{ minWidth: 90 }}>{p.slug}:</span>
+                                <select
+                                  value={rommConfig.platformMap?.[p.slug] || p.mappedConsoleId || ""}
+                                  onChange={(e) => handleRommPlatformMapChange(p.slug, e.target.value)}
+                                  style={{ flex: 1, fontSize: "0.78rem" }}
+                                >
+                                  {availableConsoles.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                      {c.name} ({c.id})
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Sincronización con Emulation Station */}
@@ -708,27 +1100,33 @@ function SettingsModal({ onClose, isInline = false }) {
 
               {configuredConsoleIds.length > 0 && (
                 <div className="collections-list" style={{ marginBottom: 12 }}>
-                  {configuredConsoleIds.map((consoleId) => (
-                    <div
-                      key={consoleId}
-                      className="collection-tag"
-                      style={{ justifyContent: "space-between", gap: 8 }}
-                    >
-                      <span style={{ fontWeight: 600, minWidth: 60 }}>
-                        {getConsoleName(consoleId)}
-                      </span>
-                      <span title={emulators[consoleId]}>
-                        {getFileName(emulators[consoleId])}
-                      </span>
-                      <button
-                        type="button"
-                        className="collection-remove-btn"
-                        onClick={() => handleRemoveEmulator(consoleId)}
+                  {configuredConsoleIds.map((consoleId) => {
+                    const entry = emulators[consoleId];
+                    const emuPath = typeof entry === "string" ? entry : entry?.path || "";
+                    const emuArgs = typeof entry === "string" ? "" : entry?.args || "";
+                    return (
+                      <div
+                        key={consoleId}
+                        className="collection-tag"
+                        style={{ justifyContent: "space-between", gap: 8 }}
                       >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
+                        <span style={{ fontWeight: 600, minWidth: 60 }}>
+                          {getConsoleName(consoleId)}
+                        </span>
+                        <span title={`${emuPath}${emuArgs ? ` ${emuArgs}` : ""}`}>
+                          {getFileName(emuPath)}
+                          {emuArgs ? ` (${emuArgs})` : ""}
+                        </span>
+                        <button
+                          type="button"
+                          className="collection-remove-btn"
+                          onClick={() => handleRemoveEmulator(consoleId)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -776,9 +1174,35 @@ function SettingsModal({ onClose, isInline = false }) {
                 </button>
               </div>
 
+              <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const preset = EMULATOR_ARG_PRESETS.find((p) => p.id === e.target.value);
+                    if (preset) setNewEmulatorArgs(preset.args);
+                  }}
+                  style={{ maxWidth: 220 }}
+                >
+                  <option value="">Preset de argumentos...</option>
+                  {EMULATOR_ARG_PRESETS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  value={newEmulatorArgs}
+                  onChange={(e) => setNewEmulatorArgs(e.target.value)}
+                  placeholder='Argumentos opcionales (ej. -b -e "{rom}")'
+                  style={{ flex: 1, minWidth: 180 }}
+                />
+              </div>
+
               <p className="form-hint" style={{ marginTop: 8 }}>
-                Asigná un emulador a cada consola. La ROM se pasa como primer
-                argumento al ejecutable.
+                Asigna un emulador y argumentos opcionales a cada consola. Variables disponibles:{" "}
+                <code>{"{rom}"}</code>, <code>{"{romDir}"}</code>, <code>{"{saveDir}"}</code>,{" "}
+                <code>{"{stateDir}"}</code>.
               </p>
             </div>
 
@@ -795,6 +1219,7 @@ function SettingsModal({ onClose, isInline = false }) {
                   >
                     <option value="screenscraper">ScreenScraper (Recomendado)</option>
                     <option value="thegamesdb">TheGamesDB</option>
+                    <option value="romm">RomM (Tu servidor)</option>
                   </select>
                 </div>
 

@@ -1,14 +1,13 @@
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { execFile, spawn, execSync } from "child_process";
+import { execFile, execSync } from "child_process";
 import axios from "axios";
 import AdmZip from "adm-zip";
 import { getConfigDirectory, getAdbConfig, setAdbConfig } from "./configService.js";
-import { getRomPathPC, getSavePathPC, getCoverPathPC } from "./utils/getPaths.js";
+import { getRomPathPC } from "./utils/getPaths.js";
 import { getAllRoms } from "./uiDataService.js";
 import { createRomTemplate, persistRomToJson } from "./utils/getJsonUtils.js";
-import { identifyRomSystem } from "./utils/getFilters.js";
 import logger from "./utils/logger.js";
 
 // Folder mappings between RomsManager console IDs and standard Android emulator folders

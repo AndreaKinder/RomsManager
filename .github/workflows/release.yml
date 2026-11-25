@@ -41,6 +41,11 @@ jobs:
             platform: win32
             arch: x64
             artifact_name: romsmanager-windows-x64
+          - os: macos-latest
+            os_name: macOS
+            platform: darwin
+            arch: arm64
+            artifact_name: romsmanager-macos-arm64
 
     steps:
       - name: Checkout code
@@ -56,7 +61,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential python3 libfuse2t64 || sudo apt-get install -y --no-install-recommends libfuse2
+          sudo apt-get install -y --no-install-recommends build-essential python3 squashfs-tools libfuse2t64 || sudo apt-get install -y --no-install-recommends build-essential python3 squashfs-tools libfuse2
 
       - name: Install npm dependencies
         run: npm ci
@@ -90,6 +95,14 @@ jobs:
             out/make/squirrel.windows/**/RELEASES
           if-no-files-found: error
 
+      - name: Upload macOS artifacts
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: out/make/zip/darwin/**/*.zip
+          if-no-files-found: error
+
   release:
     name: Publish Release
     needs: build
@@ -117,14 +130,14 @@ jobs:
           merge-multiple: true
 
       - name: Display downloaded artifacts
-        run: ls -la release-artifacts
+        run: ls -laR release-artifacts
 
-      - name: Create or update draft release
+      - name: Create or update GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.version) }}
           name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.version) }}
-          draft: true
+          draft: false
           generate_release_notes: true
           overwrite_files: true
           fail_on_unmatched_files: true

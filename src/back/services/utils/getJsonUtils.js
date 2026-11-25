@@ -1,11 +1,8 @@
-import { systemRomDecider } from "./getFilters.js";
 import fs from "fs";
 import path from "path";
 import { getPathSystemJsonSystemsPC } from "./getPaths.js";
 import { syncSystemGamelist } from "../emulationStationService.js";
 
-const FILE_EXTENSION_SEPARATOR = ".";
-const FIRST_ELEMENT = 0;
 const JSON_INDENT_SPACES = 2;
 const JSON_FILE_EXTENSION = ".json";
 const FILE_ENCODING = "utf-8";
@@ -21,7 +18,7 @@ function createRomObject(templateData) {
 
 function extractRomMetadata(romFinalPath, system) {
   const romName = path.basename(romFinalPath);
-  const romTitle = romName.split(FILE_EXTENSION_SEPARATOR)[FIRST_ELEMENT];
+  const romTitle = path.parse(romName).name || romName;
   return [romName, system, romTitle, romFinalPath];
 }
 
@@ -45,17 +42,22 @@ function readExistingRomsData(jsonFilePath) {
 }
 
 function addRomToCollection(romsData, romObject) {
+  const existing = romsData[romObject.romName] || {};
   romsData[romObject.romName] = {
+    ...existing,
     romName: romObject.romName,
     system: romObject.system,
-    title: romObject.title,
+    title: romObject.title ?? existing.title ?? path.parse(romObject.romName).name,
     romPath: romObject.romPath,
-    savePath: romObject.savePath || null,
-    coverPath: romObject.coverPath || null,
-    collections: romObject.collections || [],
-    description: romObject.description || "",
-    developer: romObject.developer || "",
-    releaseDate: romObject.releaseDate || ""
+    savePath: romObject.savePath !== undefined ? romObject.savePath : (existing.savePath || null),
+    coverPath: romObject.coverPath !== undefined ? romObject.coverPath : (existing.coverPath || null),
+    manualPath: romObject.manualPath !== undefined ? romObject.manualPath : (existing.manualPath || null),
+    collections: romObject.collections !== undefined ? romObject.collections : (existing.collections || []),
+    description: romObject.description !== undefined ? romObject.description : (existing.description || ""),
+    developer: romObject.developer !== undefined ? romObject.developer : (existing.developer || ""),
+    releaseDate: romObject.releaseDate !== undefined ? romObject.releaseDate : (existing.releaseDate || ""),
+    ...(romObject.rommId !== undefined ? { rommId: romObject.rommId } : {}),
+    ...(romObject.rommPlatformSlug !== undefined ? { rommPlatformSlug: romObject.rommPlatformSlug } : {}),
   };
 
   return romsData;
@@ -65,6 +67,19 @@ function writeRomsDataToFile(jsonFilePath, romsData) {
   fs.mkdirSync(path.dirname(jsonFilePath), { recursive: true });
   const jsonContent = JSON.stringify(romsData, null, JSON_INDENT_SPACES);
   fs.writeFileSync(jsonFilePath, jsonContent, FILE_ENCODING);
+}
+
+function getCandidateJsonFiles(baseDir, consoleId = null) {
+  if (!fs.existsSync(baseDir)) return [];
+  if (consoleId) {
+    const specific = `${consoleId}${JSON_FILE_EXTENSION}`;
+    if (fs.existsSync(path.join(baseDir, specific))) {
+      return [specific];
+    }
+  }
+  return fs
+    .readdirSync(baseDir)
+    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
 }
 
 export function persistRomToJson(romObject) {
@@ -83,21 +98,19 @@ export function persistRomToJson(romObject) {
   return updatedRomsData;
 }
 
-export function updateRomInJson(romName, fieldToUpdate, newValue) {
+export function updateRomInJson(romName, fieldToUpdate, newValue, consoleId = null) {
   const baseDir = getPathSystemJsonSystemsPC();
-  const jsonFiles = fs
-    .readdirSync(baseDir)
-    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
+  const jsonFiles = getCandidateJsonFiles(baseDir, consoleId);
 
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
-    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
+    const fileConsoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
       const syncGamelist = () => {
         try {
-          syncSystemGamelist(consoleId);
+          syncSystemGamelist(fileConsoleId);
         } catch (esErr) {
           console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
         }
@@ -116,19 +129,16 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
         const oldRomPath = romsData[romName].romPath;
         const newRomPath = path.join(path.dirname(oldRomPath), newValue);
 
-        // Renombrar archivo físico si existe
         if (fs.existsSync(oldRomPath)) {
           fs.renameSync(oldRomPath, newRomPath);
         }
 
-        // Crear nueva entrada con el nuevo nombre
         const updatedRom = {
           ...romsData[romName],
           romName: newValue,
           romPath: newRomPath,
         };
 
-        // Eliminar entrada vieja y agregar nueva
         delete romsData[romName];
         romsData[newValue] = updatedRom;
 
@@ -142,12 +152,10 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
         const oldRomPath = romsData[romName].romPath;
         const newRomName = path.basename(newValue);
 
-        // Renombrar archivo físico si existe
         if (fs.existsSync(oldRomPath)) {
           fs.renameSync(oldRomPath, newValue);
         }
 
-        // Actualizar o recrear entrada según si cambió el nombre
         if (newRomName !== romName) {
           const updatedRom = {
             ...romsData[romName],
@@ -172,31 +180,41 @@ export function updateRomInJson(romName, fieldToUpdate, newValue) {
   throw new Error(`ROM "${romName}" not found in any system`);
 }
 
-export function deleteRomFromJson(romName) {
+export function deleteRomFromJson(romName, consoleId = null) {
   const baseDir = getPathSystemJsonSystemsPC();
-  const jsonFiles = fs
-    .readdirSync(baseDir)
-    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
+  const jsonFiles = getCandidateJsonFiles(baseDir, consoleId);
 
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
-    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
+    const fileConsoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
-      const romPath = romsData[romName].romPath;
+      const { romPath, coverPath, manualPath } = romsData[romName];
 
-      // Delete ROM entry from JSON
       delete romsData[romName];
       writeRomsDataToFile(jsonFilePath, romsData);
 
-      // Delete physical ROM file if it exists
-      if (fs.existsSync(romPath)) {
+      if (romPath && fs.existsSync(romPath)) {
         fs.unlinkSync(romPath);
+      }
+      if (coverPath && fs.existsSync(coverPath)) {
+        try {
+          fs.unlinkSync(coverPath);
+        } catch {
+          // Ignore cleanup errors for optional cover
+        }
+      }
+      if (manualPath && fs.existsSync(manualPath)) {
+        try {
+          fs.unlinkSync(manualPath);
+        } catch {
+          // Ignore cleanup errors for optional manual
+        }
       }
 
       try {
-        syncSystemGamelist(consoleId);
+        syncSystemGamelist(fileConsoleId);
       } catch (esErr) {
         console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
       }
@@ -208,26 +226,23 @@ export function deleteRomFromJson(romName) {
   throw new Error(`ROM "${romName}" not found in any system`);
 }
 
-export function updateRomCollections(romName, collections) {
+export function updateRomCollections(romName, collections, consoleId = null) {
   const baseDir = getPathSystemJsonSystemsPC();
-  const jsonFiles = fs
-    .readdirSync(baseDir)
-    .filter((f) => f.endsWith(JSON_FILE_EXTENSION));
+  const jsonFiles = getCandidateJsonFiles(baseDir, consoleId);
 
   for (const jsonFile of jsonFiles) {
     const jsonFilePath = path.join(baseDir, jsonFile);
     const romsData = readExistingRomsData(jsonFilePath);
-    const consoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
+    const fileConsoleId = path.basename(jsonFile, JSON_FILE_EXTENSION);
 
     if (romsData[romName]) {
-      // Update collections field
       romsData[romName].collections = Array.isArray(collections)
         ? collections
         : [];
       writeRomsDataToFile(jsonFilePath, romsData);
 
       try {
-        syncSystemGamelist(consoleId);
+        syncSystemGamelist(fileConsoleId);
       } catch (esErr) {
         console.warn("Could not sync gamelist with EmulationStation:", esErr.message);
       }
@@ -242,9 +257,3 @@ export function updateRomCollections(romName, collections) {
 
   throw new Error(`ROM "${romName}" not found in any system`);
 }
-
-// Deprecated aliases for backward compatibility
-export const getRegisterRomTemplate = createRomTemplate;
-export const getWriteRomSystemJsonPC = persistRomToJson;
-export const getEditRomSystemJsonPC = updateRomInJson;
-export const getDeleteRomSystemJsonPC = deleteRomFromJson;

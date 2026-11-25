@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-25
+
+### Added
+- **Customizable Path Layouts**: Presets for ROM Manager Standard, RomM / RommDeck, EmulationStation / ES-DE / EmuDeck, and custom `{base}` / `{console}` templates with per-console overrides
+- **Local Library Scanner**: Index existing ROM directories (including console folder aliases like `psx`, `snes`, `ngc`) and auto-link covers, saves, and manuals without copying or moving files
+- **Emulator Launch Arguments**: Configurable per-console arguments with placeholders (`{rom}`, `{romDir}`, `{saveDir}`, `{stateDir}`) and presets for Dolphin, Eden/Yuzu, PCSX2, DuckStation, PPSSPP, and RetroArch
+- **Generic RomM Integration**: Optional RomM server connection (URL, API Token or Basic Auth, TLS toggle, optional `romm-sync` import), editable platform mapping, remote catalog browser with ROM downloads, metadata/cover sync, save sync, and RomM scraper provider
+- **Extended Console & Format Support**: Added Wii and Wii U definitions plus `.rvz`, `.wbfs`, `.chd`, `.wua`, `.cci`, `.7z`, and console aliases
+
+### Fixed
+- Preserved original save file extensions (`.gci`, `.srm`, `.mcr`, `.ps2`, `.dsv`, etc.) instead of forcing `.sav`
+- Prevented title truncation on ROM filenames containing dots and avoided cross-console collisions when updating/deleting ROMs
+- Isolated unit tests from the user's real `~/.config/romsmanager` directory via `ROMSMANAGER_CONFIG_DIR`
+- Removed dead code, unused data files, and resolved all ESLint warnings
+
+## [0.6.0] - 2026-11-14
+
 ### Added
 - **Storage Location Selection**: Choose between Internal Drive (local storage) or External Drive / SD Card during setup or in Settings
 - **Portable Database**: When External Drive is selected, the database and metadata are stored directly on the drive for full portability

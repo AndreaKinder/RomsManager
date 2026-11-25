@@ -9,6 +9,7 @@ import {
   IconDeviceGamepad2,
   IconLayoutDashboard,
   IconBrandAndroid,
+  IconServer,
 } from "@tabler/icons-react";
 
 function AppHeader({
@@ -17,6 +18,7 @@ function AppHeader({
   onAddRom,
   onOpenSettings,
   onOpenAndroidSync,
+  onOpenRommBrowser,
   onEnterBigPicture,
   isLoading,
   onOpenCustomCollectionSelect,
@@ -66,6 +68,14 @@ function AppHeader({
           title="Sincronizar con consola Android (USB)"
         >
           <IconBrandAndroid size={20} />
+        </button>
+        <button
+          className="btn btn-icon"
+          onClick={onOpenRommBrowser}
+          disabled={isLoading}
+          title="Catálogo RomM"
+        >
+          <IconServer size={20} />
         </button>
         <button
           className={`btn btn-icon btn-toggle ${onOpenCustomCollectionSelected ? "active" : ""}`}

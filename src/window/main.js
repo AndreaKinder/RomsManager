@@ -3,7 +3,6 @@ import {
   BrowserWindow,
   ipcMain,
   dialog,
-  shell,
   protocol,
   net,
   nativeTheme,
@@ -16,6 +15,10 @@ import * as configService from "../back/services/configService.js";
 import * as backupService from "../back/services/backupService.js";
 import * as emulationStationService from "../back/services/emulationStationService.js";
 import * as adbService from "../back/services/adbService.js";
+import * as libraryScannerService from "../back/services/libraryScannerService.js";
+import * as rommService from "../back/services/rommService.js";
+import { buildEmulatorArgs } from "../back/services/utils/emulatorArgs.js";
+import { getSavesDirPC, getStatesDirPC } from "../back/services/utils/getPaths.js";
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -157,9 +160,9 @@ app.whenReady().then(async () => {
     configService.getEmulatorForConsole(consoleId),
   );
 
-  ipcMain.handle("set-emulator", (event, consoleId, emulatorPath) => {
-    configService.setEmulator(consoleId, emulatorPath);
-    return { success: true };
+  ipcMain.handle("set-emulator", (event, consoleId, emulatorPathOrConfig, args = "") => {
+    const saved = configService.setEmulator(consoleId, emulatorPathOrConfig, args);
+    return { success: true, emulator: saved };
   });
 
   ipcMain.handle("remove-emulator", (event, consoleId) => {
@@ -184,21 +187,32 @@ app.whenReady().then(async () => {
     return result.canceled ? null : result.filePaths[0];
   });
 
-  ipcMain.handle("launch-rom", async (event, emulatorPath, romPath) => {
+  ipcMain.handle("launch-rom", async (event, emulatorOrPath, romPath, consoleId = null) => {
     try {
       const { spawn } = require("child_process");
+      const emuConfig =
+        typeof emulatorOrPath === "object" && emulatorOrPath !== null
+          ? emulatorOrPath
+          : { path: emulatorOrPath, args: "", workingDir: "" };
+
+      const extraContext = consoleId
+        ? {
+            saveDir: getSavesDirPC(consoleId),
+            stateDir: getStatesDirPC(consoleId),
+          }
+        : {};
+      const finalArgs = buildEmulatorArgs(emuConfig.args, romPath, extraContext);
+      const spawnOpts = {
+        detached: true,
+        stdio: "ignore",
+        ...(emuConfig.workingDir ? { cwd: emuConfig.workingDir } : {}),
+      };
 
       let child;
-      if (process.platform === "darwin" && emulatorPath.endsWith(".app")) {
-        child = spawn("open", ["-a", emulatorPath, "--args", romPath], {
-          detached: true,
-          stdio: "ignore",
-        });
+      if (process.platform === "darwin" && emuConfig.path.endsWith(".app")) {
+        child = spawn("open", ["-a", emuConfig.path, "--args", ...finalArgs], spawnOpts);
       } else {
-        child = spawn(emulatorPath, [romPath], {
-          detached: true,
-          stdio: "ignore",
-        });
+        child = spawn(emuConfig.path, finalArgs, spawnOpts);
       }
       child.unref();
       return { success: true };
@@ -312,9 +326,17 @@ app.whenReady().then(async () => {
             "nds",
             "3ds",
             "cia",
+            "cci",
             "gcm",
             "iso",
             "gcz",
+            "rvz",
+            "wbfs",
+            "wad",
+            "wud",
+            "wux",
+            "rpx",
+            "wua",
             "nsp",
             "xci",
             "nca",
@@ -325,10 +347,12 @@ app.whenReady().then(async () => {
             "ccd",
             "cue",
             "bin",
+            "chd",
             "pbp",
             "cso",
             "psp",
             "zip",
+            "7z",
           ],
         },
         { name: "All Files", extensions: ["*"] },
@@ -495,8 +519,9 @@ app.whenReady().then(async () => {
         const { updateRomInJson } =
           await import("../back/services/utils/getJsonUtils.js");
 
-        // Get destination path for save file
-        const savePathPC = getSavePathPC(consoleId, romName);
+        // Get destination path for save file preserving original extension
+        const saveExt = path.extname(saveFilePath).toLowerCase() || null;
+        const savePathPC = getSavePathPC(consoleId, romName, saveExt);
         const destDir = path.dirname(savePathPC);
 
         // Create Saves directory if it doesn't exist
@@ -509,7 +534,7 @@ app.whenReady().then(async () => {
 
         // Update ROM JSON with save path
         try {
-          updateRomInJson(romName, "savePath", savePathPC);
+          updateRomInJson(romName, "savePath", savePathPC, consoleId);
         } catch (jsonError) {
           console.warn("Could not update ROM JSON:", jsonError.message);
         }
@@ -896,7 +921,7 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("get-all-custom-collections", async (allObjectRoms) => {
+  ipcMain.handle("get-all-custom-collections", async (event, allObjectRoms) => {
     try {
       return uiDataService.getAllCustomCollections(allObjectRoms);
     } catch (error) {
@@ -905,7 +930,7 @@ app.whenReady().then(async () => {
     }
   });
 
-  ipcMain.handle("get-collection-object", async (collectionName) => {
+  ipcMain.handle("get-collection-object", async (event, collectionName) => {
     try {
       return uiDataService.getCollectionObject(collectionName);
     } catch (error) {
@@ -1133,6 +1158,94 @@ app.whenReady().then(async () => {
       }
     },
   );
+
+  // --- Path Layout & Library Scanner IPC Handlers ---
+  ipcMain.handle("get-path-layout", () => ({
+    layout: configService.getPathLayout(),
+    presets: configService.PATH_LAYOUT_PRESETS,
+  }));
+
+  ipcMain.handle("set-path-layout", (event, layoutUpdate) => {
+    const updated = configService.setPathLayout(layoutUpdate);
+    return { success: true, layout: updated };
+  });
+
+  ipcMain.handle("scan-local-library", async (event, options = {}) => {
+    try {
+      return libraryScannerService.scanLocalLibrary(options);
+    } catch (error) {
+      console.error("Failed to scan local library:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // --- RomM Integration IPC Handlers ---
+  ipcMain.handle("romm-get-config", () => configService.getRommConfig());
+
+  ipcMain.handle("romm-set-config", (event, rommConfig) => {
+    const updated = configService.setRommConfig(rommConfig);
+    return { success: true, config: updated };
+  });
+
+  ipcMain.handle("romm-detect-romm-sync", () => rommService.detectRommSyncConfig());
+
+  ipcMain.handle("romm-test-connection", async (event, overrideConfig = null) => {
+    return await rommService.testRommConnection(overrideConfig);
+  });
+
+  ipcMain.handle("romm-get-platforms", async () => {
+    try {
+      const platforms = await rommService.getRommPlatforms();
+      return { success: true, platforms };
+    } catch (error) {
+      return { success: false, error: error.message, platforms: [] };
+    }
+  });
+
+  ipcMain.handle("romm-get-roms", async (event, query = {}) => {
+    try {
+      const roms = await rommService.getRommRoms(query);
+      return { success: true, roms };
+    } catch (error) {
+      return { success: false, error: error.message, roms: [] };
+    }
+  });
+
+  ipcMain.handle("romm-download-rom", async (event, rommRom, targetConsoleId = null) => {
+    try {
+      return await rommService.downloadRommRom(rommRom, targetConsoleId, (progress) => {
+        if (event.sender && !event.sender.isDestroyed()) {
+          event.sender.send("romm-download-progress", progress);
+        }
+      });
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("romm-sync-metadata", async () => {
+    try {
+      return await rommService.syncRommMetadataForLocalLibrary();
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("romm-download-save", async (event, rommId, consoleId, romFileName) => {
+    try {
+      return await rommService.downloadLatestRommSave(rommId, consoleId, romFileName);
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("romm-upload-save", async (event, rommId, saveFilePath, emulatorName = "") => {
+    try {
+      return await rommService.uploadRommSave(rommId, saveFilePath, emulatorName);
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
 
   createWindow();
 

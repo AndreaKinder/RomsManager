@@ -9,7 +9,6 @@ import {
   IconX,
   IconFolder,
   IconAlertCircle,
-  IconDeviceGamepad2,
   IconDeviceFloppy,
   IconSearch,
 } from "@tabler/icons-react";

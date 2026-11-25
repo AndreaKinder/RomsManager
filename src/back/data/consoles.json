@@ -4,20 +4,23 @@
       "id": "1",
       "id_name": "nes",
       "name": "Nintendo Entertainment System",
-      "file": [".nes"],
+      "aliases": ["nes", "fc", "famicom"],
+      "file": [".nes", ".unf", ".7z", ".zip"],
       "save_formats": [".sav", ".srm"]
     },
     "Genesis": {
       "id": "2",
       "id_name": "genesis",
       "name": "Sega Genesis",
-      "file": [".md", ".gen", ".sms"],
+      "aliases": ["genesis", "megadrive", "md", "sms"],
+      "file": [".md", ".gen", ".sms", ".smd"],
       "save_formats": [".sav", ".srm"]
     },
     "GB": {
       "id": "3",
       "id_name": "gb",
       "name": "Game Boy",
+      "aliases": ["gb", "gameboy"],
       "file": [".gb"],
       "save_formats": [".sav", ".srm"]
     },
@@ -25,6 +28,7 @@
       "id": "4",
       "id_name": "sfc",
       "name": "Super Nintendo Entertainment System",
+      "aliases": ["sfc", "snes", "sfam"],
       "file": [".smc", ".sfc"],
       "save_formats": [".sav", ".srm"]
     },
@@ -32,27 +36,31 @@
       "id": "5",
       "id_name": "sega_cd",
       "name": "Sega CD",
-      "file": [".ccd", ".cue", ".iso"],
-      "save_formats": [".brm"]
+      "aliases": ["sega_cd", "segacd", "megacd"],
+      "file": [".ccd", ".cue", ".iso", ".chd"],
+      "save_formats": [".brm", ".srm"]
     },
     "GBC": {
       "id": "6",
       "id_name": "gbc",
       "name": "Game Boy Color",
+      "aliases": ["gbc"],
       "file": [".gbc"],
       "save_formats": [".sav", ".srm"]
     },
     "PS": {
       "id": "7",
       "id_name": "ps",
-      "name": "Play Station",
-      "file": [".pbp", ".bin", ".cue", ".iso"],
+      "name": "PlayStation",
+      "aliases": ["ps", "psx", "ps1", "playstation"],
+      "file": [".pbp", ".bin", ".cue", ".iso", ".chd", ".m3u"],
       "save_formats": [".mcr", ".mcd", ".srm"]
     },
     "N64": {
       "id": "9",
       "id_name": "n64",
       "name": "Nintendo 64",
+      "aliases": ["n64"],
       "file": [".z64", ".v64", ".n64"],
       "save_formats": [".sav", ".eep", ".sra", ".srm", ".fla"]
     },
@@ -60,6 +68,7 @@
       "id": "10",
       "id_name": "gba",
       "name": "Game Boy Advance",
+      "aliases": ["gba"],
       "file": [".gba"],
       "save_formats": [".sav", ".srm"]
     },
@@ -67,50 +76,73 @@
       "id": "11",
       "id_name": "nds",
       "name": "Nintendo DS",
+      "aliases": ["nds", "ds"],
       "file": [".nds"],
-      "save_formats": [".sav", ".dsv"]
+      "save_formats": [".sav", ".dsv", ".srm"]
     },
     "PS2": {
       "id": "12",
       "id_name": "ps2",
       "name": "PlayStation 2",
-      "file": [".bin", ".cue", ".iso"],
-      "save_formats": [".ps2"]
+      "aliases": ["ps2"],
+      "file": [".bin", ".cue", ".iso", ".chd", ".gz"],
+      "save_formats": [".ps2", ".mcd"]
     },
     "GC": {
       "id": "13",
       "id_name": "gc",
-      "name": "Nintendo Game Cube",
-      "file": [".gcm", ".iso", ".gcz"],
-      "save_formats": [".raw", ".gci"]
+      "name": "Nintendo GameCube",
+      "aliases": ["gc", "ngc", "gamecube"],
+      "file": [".gcm", ".iso", ".gcz", ".rvz", ".ciso", ".wia"],
+      "save_formats": [".raw", ".gci", ".srm"]
+    },
+    "Wii": {
+      "id": "14",
+      "id_name": "wii",
+      "name": "Nintendo Wii",
+      "aliases": ["wii"],
+      "file": [".wbfs", ".rvz", ".iso", ".wad", ".wia"],
+      "save_formats": [".bin", ".sav"]
     },
     "3DS": {
       "id": "15",
       "id_name": "3ds",
       "name": "Nintendo 3DS",
-      "file": [".3ds", ".cia"],
+      "aliases": ["3ds", "n3ds"],
+      "file": [".3ds", ".cia", ".cci", ".cxi"],
+      "save_formats": [".sav"]
+    },
+    "WiiU": {
+      "id": "16",
+      "id_name": "wiiu",
+      "name": "Nintendo Wii U",
+      "aliases": ["wiiu", "wii-u"],
+      "file": [".wud", ".wux", ".rpx", ".wua"],
       "save_formats": [".sav"]
     },
     "PSP": {
       "id": "18",
       "id_name": "psp",
       "name": "PlayStation Portable",
-      "file": [".iso", ".cso", ".psp"],
+      "aliases": ["psp"],
+      "file": [".iso", ".cso", ".psp", ".chd"],
       "save_formats": [".bin", ".sav"]
     },
     "NEOGEO": {
       "id": "19",
       "id_name": "neogeo",
       "name": "Neo Geo",
+      "aliases": ["neogeo", "ng"],
       "file": [".zip"],
-      "save_formats": [".zip"]
+      "save_formats": [".srm", ".zip"]
     },
     "Switch": {
       "id": "20",
       "id_name": "switch",
       "name": "Nintendo Switch",
+      "aliases": ["switch", "nsw"],
       "file": [".nsp", ".xci", ".nca", ".nro"],
-      "save_formats": [".bin"]
+      "save_formats": [".bin", ".sav"]
     }
   }
 }

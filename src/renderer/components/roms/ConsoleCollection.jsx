@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import RomCard from "./RomCard";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 
 // Import all console icons
 const icons = {

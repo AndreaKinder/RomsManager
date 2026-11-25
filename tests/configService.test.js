@@ -8,31 +8,33 @@ import {
   setStorageType,
   getSyncEmulationStation,
   setSyncEmulationStation,
-  getRomsBasePath,
-  setRomsBasePath,
   hasRomsBasePath,
   getAppConfig,
   setAppConfig,
+  getPathLayout,
+  setPathLayout,
+  setEmulator,
+  getEmulatorForConsole,
+  getRommConfig,
+  setRommConfig,
 } from "../src/back/services/configService.js";
 
-describe("ConfigService - Storage and Sync Options", () => {
-  const originalConfigPath =
-    process.platform === "win32"
-      ? path.join(process.env.APPDATA || "", "romsmanager", "config.json")
-      : path.join(os.homedir(), ".config/romsmanager", "config.json");
-
-  let backupConfig = null;
+describe("ConfigService - Storage, Layouts, Emulators and RomM", () => {
+  let tempConfigDir;
+  const previousConfigDir = process.env.ROMSMANAGER_CONFIG_DIR;
 
   beforeAll(() => {
-    if (fs.existsSync(originalConfigPath)) {
-      backupConfig = fs.readFileSync(originalConfigPath, "utf-8");
-    }
+    tempConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), "romsmanager-cfg-test-"));
+    process.env.ROMSMANAGER_CONFIG_DIR = tempConfigDir;
   });
 
   afterAll(() => {
-    if (backupConfig !== null) {
-      fs.writeFileSync(originalConfigPath, backupConfig, "utf-8");
+    if (previousConfigDir === undefined) {
+      delete process.env.ROMSMANAGER_CONFIG_DIR;
+    } else {
+      process.env.ROMSMANAGER_CONFIG_DIR = previousConfigDir;
     }
+    fs.rmSync(tempConfigDir, { recursive: true, force: true });
   });
 
   it("debe retornar la ruta interna por defecto para ROMs", () => {
@@ -58,7 +60,7 @@ describe("ConfigService - Storage and Sync Options", () => {
   });
 
   it("debe calcular la ruta de base de datos en disco externo cuando storageType es external", () => {
-    const mockExternalPath = path.join(os.tmpdir(), "mock-external-roms");
+    const mockExternalPath = path.join(tempConfigDir, "mock-external-roms");
     setAppConfig({
       storageType: "external",
       romsBasePath: mockExternalPath,
@@ -71,7 +73,7 @@ describe("ConfigService - Storage and Sync Options", () => {
   });
 
   it("debe calcular la ruta de base de datos en disco interno cuando storageType es internal", () => {
-    const mockInternalPath = path.join(os.homedir(), "Roms");
+    const mockInternalPath = path.join(tempConfigDir, "internal-roms");
     setAppConfig({
       storageType: "internal",
       romsBasePath: mockInternalPath,
@@ -79,9 +81,46 @@ describe("ConfigService - Storage and Sync Options", () => {
     });
 
     const dbPath = getDatabasePath();
-    expect(dbPath).not.toContain(mockInternalPath);
-    expect(dbPath).toContain("database");
+    expect(dbPath).toBe(path.join(tempConfigDir, "database"));
     expect(hasRomsBasePath()).toBe(true);
+  });
+
+  it("debe guardar y resolver presets y plantillas de pathLayout", () => {
+    const rommLayout = setPathLayout({ preset: "romm" });
+    expect(rommLayout.preset).toBe("romm");
+    expect(rommLayout.romsPattern).toBe("{base}/{console}/games");
+    expect(rommLayout.savesPattern).toBe("{base}/{console}/saves");
+
+    const customLayout = setPathLayout({
+      preset: "custom",
+      romsPattern: "{base}/custom/{console}",
+      consoleOverrides: { gc: { folderName: "gamecube" } },
+    });
+    expect(customLayout.romsPattern).toBe("{base}/custom/{console}");
+    expect(getPathLayout().consoleOverrides.gc.folderName).toBe("gamecube");
+  });
+
+  it("debe guardar emuladores con argumentos y normalizar entradas", () => {
+    setEmulator("gc", { path: "/usr/bin/dolphin-emu", args: '-b -e "{rom}"' });
+    const emu = getEmulatorForConsole("gc");
+    expect(emu).toEqual({
+      path: "/usr/bin/dolphin-emu",
+      args: '-b -e "{rom}"',
+      workingDir: "",
+    });
+  });
+
+  it("debe persistir configuración genérica de RomM", () => {
+    const updated = setRommConfig({
+      enabled: true,
+      serverUrl: "https://romm.example.com",
+      authType: "token",
+      apiToken: "secret-token",
+      platformMap: { ngc: "gc" },
+    });
+    expect(updated.enabled).toBe(true);
+    expect(updated.serverUrl).toBe("https://romm.example.com");
+    expect(getRommConfig().platformMap.ngc).toBe("gc");
   });
 
   it("debe retornar getAppConfig completo", () => {
@@ -90,5 +129,6 @@ describe("ConfigService - Storage and Sync Options", () => {
     expect(config).toHaveProperty("romsBasePath");
     expect(config).toHaveProperty("syncEmulationStation");
     expect(config).toHaveProperty("databasePath");
+    expect(config).toHaveProperty("pathLayout");
   });
 });

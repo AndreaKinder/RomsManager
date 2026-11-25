@@ -11,6 +11,7 @@ function FirstRunModal({ onComplete }) {
   const [storageType, setStorageType] = useState("internal");
   const [selectedPath, setSelectedPath] = useState("");
   const [defaultInternalPath, setDefaultInternalPath] = useState("");
+  const [pathLayoutPreset, setPathLayoutPreset] = useState("standard");
   const [syncEmulationStation, setSyncEmulationStation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,7 +84,11 @@ function FirstRunModal({ onComplete }) {
         storageType,
         romsBasePath: selectedPath.trim(),
         syncEmulationStation,
+        pathLayout: { preset: pathLayoutPreset },
       });
+      if (window.electronAPI.scanLocalLibrary) {
+        await window.electronAPI.scanLocalLibrary();
+      }
       onComplete();
     } catch (error) {
       console.error("Error al guardar la configuración:", error);
@@ -187,17 +192,42 @@ function FirstRunModal({ onComplete }) {
             </div>
             {selectedPath && (
               <p className="form-hint" style={{ marginTop: 8 }}>
-                Estructura de carpetas:{" "}
-                <strong>{selectedPath}/Roms</strong>
+                Carpeta base: <strong>{selectedPath}</strong>
                 {storageType === "external" && (
                   <span>
                     {" "}
-                    y base de datos en{" "}
+                    | Base de datos en{" "}
                     <strong>{selectedPath}/database</strong>
                   </span>
                 )}
               </p>
             )}
+          </div>
+
+          {/* Estructura de carpetas */}
+          <div className="form-field" style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: 13, fontWeight: 600 }}>
+              Estructura de carpetas de tu biblioteca:
+            </label>
+            <select
+              value={pathLayoutPreset}
+              onChange={(e) => setPathLayoutPreset(e.target.value)}
+              disabled={isLoading}
+              style={{ width: "100%", marginTop: 6 }}
+            >
+              <option value="standard">
+                ROM Manager Estándar (Roms/&#123;console&#125;, Saves/&#123;console&#125;)
+              </option>
+              <option value="romm">
+                RomM / RommDeck (&#123;console&#125;/games, &#123;console&#125;/saves)
+              </option>
+              <option value="emulationstation">
+                EmulationStation / ES-DE / EmuDeck (roms/&#123;console&#125;)
+              </option>
+            </select>
+            <p className="form-hint" style={{ marginTop: 6 }}>
+              Podrás personalizar cada plantilla de ruta y añadir overrides por consola en Ajustes.
+            </p>
           </div>
 
           {/* Paso 2: Sincronización con Emulation Station */}

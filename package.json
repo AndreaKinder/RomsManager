@@ -1,7 +1,7 @@
 {
   "name": "romsmanager",
   "productName": "ROM Manager",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A desktop application for managing retro game ROMs with SD card sync capabilities",
   "main": ".webpack/main/index.cjs",
   "private": true,
@@ -19,7 +19,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "verify-build": "node scripts/verify-build-config.js",
-    "lint": "echo \"No linting configured\"",
+    "lint": "eslint src/",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -50,6 +50,7 @@
     "babel-loader": "^10.0.0",
     "css-loader": "^6.11.0",
     "electron": "^44.5.1",
+    "eslint": "^10.11.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
@@ -61,7 +62,6 @@
     "adm-zip": "^0.6.1",
     "axios": "^1.13.2",
     "electron-squirrel-startup": "^1.0.1",
-    "eslint": "^10.11.0",
     "nes.css": "^2.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

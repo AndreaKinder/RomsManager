@@ -11,6 +11,7 @@ import FirstRunModal from "./components/layout/FirstRunModal";
 import PathMissingModal from "./components/layout/PathMissingModal";
 import BigPictureView from "./components/bigpicture/BigPictureView";
 import AndroidSyncModal from "./components/sync/AndroidSyncModal";
+import RommBrowserModal from "./components/romm/RommBrowserModal";
 import { useRomOperations } from "./hooks/useRomOperations";
 import { ERROR_MESSAGES, UI_TEXT } from "./constants/messages";
 import { getDisplacementFilter } from "./utils/liquidGlass";
@@ -23,12 +24,12 @@ function App() {
   const [showConsoleModal, setShowConsoleModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showAndroidSyncModal, setShowAndroidSyncModal] = useState(false);
+  const [showRommBrowserModal, setShowRommBrowserModal] = useState(false);
   const [singleRomForSync, setSingleRomForSync] = useState(null);
   const [showFirstRunModal, setShowFirstRunModal] = useState(false);
   const [showPathMissingModal, setShowPathMissingModal] = useState(false);
   const [missingPath, setMissingPath] = useState("");
   const [isCheckingFirstRun, setIsCheckingFirstRun] = useState(true);
-  const [error, setError] = useState(null);
   const [isBigPictureMode, setIsBigPictureMode] = useState(false);
   const [isMac, setIsMac] = useState(false);
   const { isLoading, handleAddRomFromPC } = useRomOperations();
@@ -139,6 +140,10 @@ function App() {
         strength,
         chromaticAberration: cab,
       });
+
+      const backdropValue = `blur(${blur}px) saturate(${saturate}) brightness(${brightness}) url("${filterUrl}")`;
+      el.style.backdropFilter = backdropValue;
+      el.style.webkitBackdropFilter = backdropValue;
     };
 
     const initGlassEffect = () => {
@@ -208,14 +213,12 @@ function App() {
 
   const loadConsoles = useCallback(async () => {
     try {
-      setError(null);
       const generatedConsoles = await window.electronAPI.getGeneratedConsoles();
       setConsoles(generatedConsoles);
     } catch (err) {
       const errorMessage = ERROR_MESSAGES.LOAD_CONSOLES(
         err.message || ERROR_MESSAGES.UNKNOWN_ERROR,
       );
-      setError(errorMessage);
       console.error("Failed to load consoles:", err);
       alert(errorMessage);
     }
@@ -223,7 +226,6 @@ function App() {
 
   const loadCustomCollections = useCallback(async () => {
     try {
-      setError(null);
       const allRoms = await window.electronAPI.getAllRoms();
 
       // Procesar todas las ROMs para extraer colecciones únicas
@@ -259,7 +261,6 @@ function App() {
       const errorMessage = ERROR_MESSAGES.LOAD_CONSOLES(
         err.message || ERROR_MESSAGES.UNKNOWN_ERROR,
       );
-      setError(errorMessage);
       console.error("Failed to load custom collections:", err);
       alert(errorMessage);
     }
@@ -416,6 +417,7 @@ function App() {
             setSingleRomForSync(null);
             setShowAndroidSyncModal(true);
           }}
+          onOpenRommBrowser={() => setShowRommBrowserModal(true)}
           onEnterBigPicture={enterBigPicture}
           isLoading={isLoading}
           onOpenCustomCollectionSelect={() =>
@@ -514,6 +516,17 @@ function App() {
               loadConsoles();
               loadCustomCollections();
             }}
+          />
+        )}
+
+        {showRommBrowserModal && (
+          <RommBrowserModal
+            onClose={() => setShowRommBrowserModal(false)}
+            onLibraryUpdated={() => {
+              loadConsoles();
+              loadCustomCollections();
+            }}
+            onOpenSettings={() => setShowSettingsModal(true)}
           />
         )}
       </div>

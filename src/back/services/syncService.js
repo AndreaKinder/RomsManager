@@ -27,7 +27,7 @@ function syncSingleRom(sourcePath, destinationPath, shouldRegister = false) {
   logger.copiedTo(destinationPath);
 
   if (shouldRegister) {
-    return createRomTemplate(destinationPath);
+    return createRomTemplate(destinationPath, system);
   }
 
   return null;

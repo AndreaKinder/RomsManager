@@ -7,9 +7,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   selectSaveFile: () => ipcRenderer.invoke("select-save-file"),
   selectManualPdf: () => ipcRenderer.invoke("select-manual-pdf"),
   selectFolder: () => ipcRenderer.invoke("select-folder"),
-  exportToSD: (data) => ipcRenderer.invoke("export-to-sd", data),
-  importFromSD: (data) => ipcRenderer.invoke("import-from-sd", data),
-  syncRoms: (data) => ipcRenderer.invoke("sync-roms", data),
   getGeneratedConsoles: () => ipcRenderer.invoke("get-generated-consoles"),
   getAvailableConsoles: () => ipcRenderer.invoke("get-available-consoles"),
   importRomsPC: (sdPath) => ipcRenderer.invoke("import-roms-pc", sdPath),
@@ -49,13 +46,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getEmulators: () => ipcRenderer.invoke("get-emulators"),
   getEmulatorForConsole: (consoleId) =>
     ipcRenderer.invoke("get-emulator-for-console", consoleId),
-  setEmulator: (consoleId, emulatorPath) =>
-    ipcRenderer.invoke("set-emulator", consoleId, emulatorPath),
+  setEmulator: (consoleId, emulatorPathOrConfig, args) =>
+    ipcRenderer.invoke("set-emulator", consoleId, emulatorPathOrConfig, args),
   removeEmulator: (consoleId) =>
     ipcRenderer.invoke("remove-emulator", consoleId),
   selectEmulatorFile: () => ipcRenderer.invoke("select-emulator-file"),
-  launchRom: (emulatorPath, romPath) =>
-    ipcRenderer.invoke("launch-rom", emulatorPath, romPath),
+  launchRom: (emulatorOrPath, romPath, consoleId) =>
+    ipcRenderer.invoke("launch-rom", emulatorOrPath, romPath, consoleId),
   exportBackup: (destinationPath) =>
     ipcRenderer.invoke("export-backup", destinationPath),
   importBackup: (startingDir) =>
@@ -128,4 +125,29 @@ contextBridge.exposeInMainWorld("electronAPI", {
     return () => ipcRenderer.removeListener("adb-download-progress", handler);
   },
   removeAdbDownloadProgress: () => ipcRenderer.removeAllListeners("adb-download-progress"),
+
+  // Path Layout & Library Scanner APIs
+  getPathLayout: () => ipcRenderer.invoke("get-path-layout"),
+  setPathLayout: (layoutUpdate) => ipcRenderer.invoke("set-path-layout", layoutUpdate),
+  scanLocalLibrary: (options) => ipcRenderer.invoke("scan-local-library", options),
+
+  // RomM Integration APIs
+  rommGetConfig: () => ipcRenderer.invoke("romm-get-config"),
+  rommSetConfig: (config) => ipcRenderer.invoke("romm-set-config", config),
+  rommDetectRommSync: () => ipcRenderer.invoke("romm-detect-romm-sync"),
+  rommTestConnection: (overrideConfig) => ipcRenderer.invoke("romm-test-connection", overrideConfig),
+  rommGetPlatforms: () => ipcRenderer.invoke("romm-get-platforms"),
+  rommGetRoms: (query) => ipcRenderer.invoke("romm-get-roms", query),
+  rommDownloadRom: (rommRom, targetConsoleId) =>
+    ipcRenderer.invoke("romm-download-rom", rommRom, targetConsoleId),
+  rommSyncMetadata: () => ipcRenderer.invoke("romm-sync-metadata"),
+  rommDownloadSave: (rommId, consoleId, romFileName) =>
+    ipcRenderer.invoke("romm-download-save", rommId, consoleId, romFileName),
+  rommUploadSave: (rommId, saveFilePath, emulatorName) =>
+    ipcRenderer.invoke("romm-upload-save", rommId, saveFilePath, emulatorName),
+  onRommDownloadProgress: (callback) => {
+    const handler = (_event, data) => callback(data);
+    ipcRenderer.on("romm-download-progress", handler);
+    return () => ipcRenderer.removeListener("romm-download-progress", handler);
+  },
 });

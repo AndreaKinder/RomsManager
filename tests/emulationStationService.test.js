@@ -14,14 +14,19 @@ import {
 } from "../src/back/services/configService.js";
 
 describe("EmulationStationService", () => {
-  const testDir = path.join(os.tmpdir(), "romsmanager-es-test-" + Date.now());
-  const testDbDir = path.join(testDir, "database");
+  let testDir;
+  let testDbDir;
+  let tempConfigDir;
+  const previousConfigDir = process.env.ROMSMANAGER_CONFIG_DIR;
 
   beforeAll(() => {
-    fs.mkdirSync(testDir, { recursive: true });
+    tempConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), "romsmanager-es-cfg-"));
+    process.env.ROMSMANAGER_CONFIG_DIR = tempConfigDir;
+
+    testDir = fs.mkdtempSync(path.join(os.tmpdir(), "romsmanager-es-test-"));
+    testDbDir = path.join(testDir, "database");
     fs.mkdirSync(testDbDir, { recursive: true });
 
-    // Set configuration pointing to our test directory
     setAppConfig({
       storageType: "external",
       romsBasePath: testDir,
@@ -30,9 +35,17 @@ describe("EmulationStationService", () => {
   });
 
   afterAll(() => {
+    if (previousConfigDir === undefined) {
+      delete process.env.ROMSMANAGER_CONFIG_DIR;
+    } else {
+      process.env.ROMSMANAGER_CONFIG_DIR = previousConfigDir;
+    }
     try {
       fs.rmSync(testDir, { recursive: true, force: true });
-    } catch {}
+      fs.rmSync(tempConfigDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
   });
 
   describe("formatEsReleaseDate", () => {
@@ -60,7 +73,6 @@ describe("EmulationStationService", () => {
     const romName = "Super Mario World.sfc";
 
     beforeEach(() => {
-      // Mock console database file
       const romsData = {
         [romName]: {
           romName,
